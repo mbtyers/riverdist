@@ -15,6 +15,6 @@ notifications:
     
 before_install:
   - sudo apt-get install aptitude # install aptitude as an alternative to apt-get
-  - sudo aptitude install libgdal-dev # install the package (you may have to respond to queries here)
+  - sudo aptitude install libgdal-dev -y # install the package (you may have to respond to queries here)
   - sudo aptitude install libproj-dev # install the proj.4 projection library
   - sudo aptitude install gdal-config

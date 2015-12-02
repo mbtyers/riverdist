@@ -22,4 +22,6 @@ Suggests:
     testthat
 VignetteBuilder: knitr
 LazyData: TRUE
+URL: http://github.com/mbtyers/riverdist
+BugReports: http://github.com/mbtyers/riverdist/issues
 RoxygenNote: 5.0.1

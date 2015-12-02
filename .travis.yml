@@ -14,14 +14,7 @@ notifications:
     on_failure: change
     
 before_install:
-  - sudo apt-get install libspatialite3=3.0.0~beta20110817-3
-  - echo libspatialite3 hold | sudo dpkg --set-selections
-  - sudo apt-get install libspatialite-dev
-  - sudo apt-get install libgeos-c1=3.3.3-1.1~pgdg12.4+1
-  - echo libgeos-c1 hold | sudo dpkg --set-selections
-  - sudo apt-get install libgdal1=1.9.0-3.1~pgdg12.4+1
-  - echo libgdal1 hold | sudo dpkg --set-selections
-
-  - sudo apt-get install libgdal-dev
-  - sudo apt-get install libgdal1-dev
-  - gdal-config # now works, and can now install rgdal
+  - sudo apt-get install aptitude # install aptitude as an alternative to apt-get
+  - sudo aptitude install libgdal-dev # install the package (you may have to respond to queries here)
+  - sudo aptitude install libproj-dev # install the proj.4 projection library
+  - sudo aptitude install gdal-config

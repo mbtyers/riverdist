@@ -1,0 +1,194 @@
+#' Dataset: Gulkana River
+#' 
+#' A stretch of Gulkana River and tributaries.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name Gulk
+#' @usage data(Gulk)
+#' @format A river network object, see \link{rivernetwork}
+NULL
+
+#' Dataset: Kenai River 1
+#' 
+#' A first pass at a messy river network object.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name Kenai1
+#' @usage data(Kenai1)
+#' @format A river network object, see \link{rivernetwork}
+#' @seealso \link{Kenai2}, \link{Kenai3}
+NULL
+
+#' Dataset: Kenai River 2
+#' 
+#' A second pass at a messy river network object.  In this iteration of cleanup,
+#' several non-connected segments have been removed.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name Kenai2
+#' @usage data(Kenai2)
+#' @format A river network object, see \link{rivernetwork}
+#' @seealso \link{Kenai1}, \link{Kenai3}
+NULL
+
+#' Dataset: Kenai River 3
+#' 
+#' A third pass at a messy river network object.  In this iteration of cleanup,
+#' several non-connected segments have been removed, and several series of
+#' segments have been dissolved into single segments.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name Kenai3
+#' @usage data(Kenai3)
+#' @format A river network object, see \link{rivernetwork}
+#' @seealso \link{Kenai1}, \link{Kenai2}
+NULL
+
+#' Dataset: Fakefish
+#' 
+#' A set of observations of Fakefish on the Gulkana River and its tributaries.
+#' 
+#' \itemize{ 
+#' \item \code{x}. X-coordinate of observation (Alaska Albers Equal Area). Note that the locations do not align with the river network object. 
+#' \item \code{y}. Y-coordinate of observation 
+#' \item \code{seg}. River segment (with x- and y-coordinates snapped to river network object) 
+#' \item \code{vert}. X-coordinate of observations 
+#' \item \code{fish.id}. Numeric identifier for each fish (individual fish were observed more than once) 
+#' \item \code{flight}. Numeric identifier for each telemetry flight 
+#' \item \code{flight.date}. Date of each telemetry flight 
+#' }
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name fakefish
+#' @usage data(fakefish)
+#' @format A data frame
+#' @seealso \link{Gulk}
+NULL
+
+#' Dataset: Killey River, West Channel
+#' 
+#' A messy and braided section of the Kenai River network - actually a subset of \link{Kenai3}.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name KilleyW
+#' @usage data(KilleyW)
+#' @format A river network object, see \link{rivernetwork}
+NULL
+
+#' Dataset: Koyukuk River 1
+#' 
+#' A first pass at a messy river network object.  The way it was dissolved in
+#' ArcGIS makes the endpoints appear disconnected to \link{line2network} and the
+#' topologies do not work.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name Koyukuk1
+#' @usage data(Koyukuk1)
+#' @format A river network object, see \link{rivernetwork}
+#' @seealso \link{Koyukuk2}
+NULL
+
+#' Dataset: Koyukuk River 2
+#' 
+#' A second pass at a messy river network object, with topologies fixed from \link{Koyukuk1}.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name Koyukuk2
+#' @usage data(Koyukuk2)
+#' @format A river network object, see \link{rivernetwork}
+#' @seealso \link{Koyukuk1}
+NULL
+
+#' Dataset: Koyukuk River 0
+#' 
+#' An unusably messy river network object, included for the purpose of testing river network editing functions.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name Koyukuk0
+#' @usage data(Koyukuk0)
+#' @format A river network object, see \link{rivernetwork}
+#' @seealso \link{Koyukuk1}, \link{Koyukuk2}
+NULL
+
+#' Dataset: Line 98 of Kenai River 1 (Long-Lat)
+#' 
+#' A matrix of coordinates in longitude-latitude, used to illustrate coordinate
+#' transformation.  Coordinates come from arbitrary line number 98 in the Kenai
+#' River 1 shapefile, rendered in long-lat.
+#' @docType data
+#' @keywords datasets
+#' @name line98
+#' @usage data(line98)
+#' @format A matrix of values
+NULL
+
+#' Dataset: A-B Streams
+#' 
+#' A complex river network object, a subset of the streams in the Absaroka-Beartooth Wilderness.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name abstreams
+#' @usage data(abstreams)
+#' @format A river network object, see \link{rivernetwork}
+NULL
+
+#' Dataset: A-B Streams 0
+#' 
+#' An unusably messy river network object, included for the purpose of testing river network editing functions.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name abstreams0
+#' @usage data(abstreams0)
+#' @format A river network object, see \link{rivernetwork}
+NULL
+
+#' The "rivernetwork" Class
+#'
+#' A class that holds spatial coordinates for river networks, as well as network topology and attributes.
+#'
+#' Created by \link{line2network} from an input line shapefile.  Contains all information for network distance calculation, plotting, etc. in the 'riverdist' package.
+#'
+#' Plotting methods are described in \link{plot.rivernetwork}.
+#'@section Elements: 
+#'  \describe{
+#'    \item{\code{sp}:}{Object of class \code{"SpatialLinesDataFrame"} from package 'sp'; see \link[sp]{SpatialLinesDataFrame-class}.  This is the original object as read by \link[rgdal]{readOGR}, and is preserved to maintain plotting capability.}
+#'    \item{\code{lines}:}{Object of class \code{"list"}.  Each list element is a matrix of XY coordinates of the vertices of a single river segment.}
+#'    \item{\code{connections}:}{Object of class \code{"matrix"}, with \code{"numeric"} elements.  Defined as a square matrix, with elements describing the type of connection detected between line segments.
+#'      \itemize{
+#'      \item A value of 1 in element \code{[i,j]} indicates that the beginning of segment \code{i} is connected to the beginning of segment \code{j}.
+#'      \item A value of 2 in element \code{[i,j]} indicates that the beginning of segment \code{i} is connected to the end of segment \code{j}.
+#'      \item A value of 3 in element \code{[i,j]} indicates that the end of segment \code{i} is connected to the beginning of segment \code{j}.
+#'      \item A value of 4 in element \code{[i,j]} indicates that the end of segment \code{i} is connected to the end of segment \code{j}.
+#'      \item A value of NA in element \code{[i,j]} indicates that segments \code{i} and \code{j} are not connected.}}
+#'    \item{\code{lengths}:}{Vector of class \code{"numeric"}.  Defined as the calculated total lengths of each river segment.}
+#'    \item{\code{names}:}{Vector of class \code{"character"}.  Defined as the names of each river segment.}
+#'    \item{\code{mouth}:}{Object of class \code{"list"}, with two elements.  Element \code{mouth.seg} gives the segment number of the mouth (lowest point) of the river network, and \code{mouth.vert} gives the vertex number.}
+#'    \item{\code{sequenced}:}{\code{"logical"}: has value of TRUE if line vertices have been stored in upstream sequence using \link{sequenceverts}.}
+#'    \item{\code{tolerance}:}{\code{"numeric"}: the spatial tolerance that was used in determining river segment endpoint connectivity; see \link{line2network}, \link{splitsegments}.}
+#'    \item{\code{units}:}{\code{"character"}: the spatial units detected from the input shapefile.}
+#'    \item{\code{lineID}:}{Object of class \code{"data.frame"} establishing the relationship between river segments as stored in the \code{sp} and \code{lines} elements, and is used for updating the \code{sp} element during river network editing in \link{dissolve}, \link{splitsegments}, \link{sequenceverts}, \link{trimriver}, and \link{trimtopoints}.
+#'    \itemize{
+#'      \item \code{rivID} gives the list element number of each river segment in \code{lines}.  This is the same number that is used for segment numbering in river coordinates.
+#'      \item \code{sp_line} gives the corresponding list element in \code{sp@@lines}.
+#'      \item \code{sp_seg} gives the corresponding list element in \code{sp@@lines[[]]@@Lines}.
+#'      }}
+#'    \item{\code{segroutes}:}{Object of class \code{"list"}, with each element defined as a vector of class \code{"numeric"}, describing the route from the mouth segment to the specific segment.  This element only exists if \link{buildsegroutes} has been run, and can greatly speed up route and distance calculation.}
+#'    \item{\code{braided}:}{\code{"logical"}: Has value of \code{TRUE} if \link{checkbraidedTF} has detected braiding, \code{FALSE} if no braiding has been detected, and \code{NA} if braiding has not yet been checked.}
+#'   }
+#' @name rivernetwork 
+#' @rdname rivernetwork
+#' @aliases rivernetwork-class
+#' @exportClass rivernetwork
+#' @author Matt Tyers
+NULL

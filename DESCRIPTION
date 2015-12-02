@@ -1,0 +1,25 @@
+Package: riverdist
+Type: Package
+Title: River Network Distance Computation, and Applications
+Version: 0.5
+Date: 2015-09-01
+Author: Matt Tyers [aut, cre]
+Authors@R: person("Matt", "Tyers", email = "matt.tyers@alaska.gov",
+    role = c("aut", "cre"))
+Maintainer: Matt Tyers <matt.tyers@alaska.gov>
+Description: Reads river network shapefiles and computes network distances.
+    Also included are a variety of tools designed for fisheries research.
+License: GPL (>=2)
+Depends:
+    R (>= 2.14.0)
+Imports:
+    rgdal (>= 0.9-1),
+    sp (>= 1.0-15),
+    methods
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+LazyData: TRUE
+RoxygenNote: 5.0.1

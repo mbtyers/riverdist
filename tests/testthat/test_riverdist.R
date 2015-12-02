@@ -1,0 +1,264 @@
+data(Gulk)
+test_that("distance",{
+  expect_equal(riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk), 155435.2, tolerance=0.001)
+  expect_equal(riverdistance(startseg=1, startvert=49, endseg=14, endvert=27, rivers=Gulk), 155105.9, tolerance=0.001)
+  expect_error(riverdistance(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk),"Invalid segments specified.")
+  expect_error(riverdistance(startseg=7, startvert=149, endseg=14, endvert=121, rivers=Gulk),"Invalid vertex specified.")
+})
+
+data(fakefish)
+fakefish.riv <- xy2segvert(fakefish$x[1:2], fakefish$y[1:2], rivers=Gulk)
+test_that("xy2segvert",{
+  expect_equal(fakefish.riv$seg[1],12)
+  expect_equal(fakefish.riv$vert[1],221)
+})
+
+Gulk$mouth$mouth.seg <- Gulk$mouth$mouth.vert <- 1
+Gulk1 <- buildsegroutes(Gulk)
+data(abstreams)
+abstreams_nosegroutes <- abstreams
+abstreams_nosegroutes$segroutes <- NULL
+abstreams_nosegroutes1 <- buildsegroutes(abstreams_nosegroutes)
+test_that("buildsegroutes",{
+  expect_equal(Gulk1$segroutes[[9]],c(1,4,9))
+  expect_equal(abstreams_nosegroutes1$segroutes,abstreams$segroutes)
+})
+
+data(Kenai3)
+Kenai3.subset <- trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3)
+test_that("checkbraided",{
+  expect_that(checkbraided(rivers=Gulk),prints_text("No braiding detected in river network."))
+  expect_that(checkbraided(rivers=Kenai3),prints_text("Braiding detected in river network.  Distance measurements may be inaccurate."))
+  expect_that(checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset),prints_text("No braiding detected between segments."))
+  expect_that(checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset),prints_text("Braiding detected between segments.  Distance measurements may be inaccurate."))
+})
+
+data(abstreams)
+test_that("detectroute",{
+  expect_equal(detectroute(start=1,end=9,rivers=Gulk),c(1,4,9))
+  expect_error(detectroute(start=1,end=99,rivers=Gulk),"Invalid segments specified.")
+  expect_equal(detectroute(start=120,end=111,rivers=abstreams),c(120,103,106,109,112,116,124,132,134,133,135,142,153,152,144,136,127,115,114,107,108,111))
+  expect_equal(detectroute(start=116,end=14,rivers=abstreams),detectroute(start=116,end=14,rivers=abstreams_nosegroutes))
+})
+
+data(Kenai2)
+test_that("dissolve",{
+  expect_equal(dissolve(Kenai2),Kenai3)
+})
+
+hr <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk)
+test_that("homerange",{
+  expect_equal(hr[14,1],15)
+  expect_equal(hr[14,2],111047.50,tolerance=0.001)
+  expect_equal(hr[9,1],14)
+  expect_equal(hr[9,2],167769.6,tolerance=0.001)
+  expect_equal(names(hr),c("ID","range"))
+  expect_error(homerange(unique=1:10,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk),"Input vectors must be the same length.")
+})
+
+test_that("isflowconnected",{
+  expect_true(isflowconnected(seg1=130,seg2=158,rivers=abstreams))
+  expect_true(isflowconnected(seg1=130,seg2=158,rivers=abstreams_nosegroutes))
+  expect_false(isflowconnected(seg1=130,seg2=104,rivers=abstreams))
+  expect_false(isflowconnected(seg1=130,seg2=104,rivers=abstreams_nosegroutes))
+})
+
+test_that("mouthdist",{
+  expect_equal(mouthdist(4,19,abstreams),92996.74,tolerance=0.001)
+  expect_equal(mouthdist(4,19,abstreams_nosegroutes),92996.74,tolerance=0.001)
+  expect_error(mouthdist(4,19,Kenai3),"Need to specify segment & vertex of origin")
+})
+
+test_that("direction",{
+  expect_equal(riverdirection(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk), "up")
+  expect_equal(riverdirection(startseg=12, startvert=49, endseg=3, endvert=27, rivers=Gulk), "down")
+  expect_equal(riverdirection(startseg=12, startvert=49, endseg=12, endvert=49, rivers=Gulk), "0")
+  expect_true(is.na(riverdirection(startseg=7, startvert=49, endseg=14, endvert=121, flowconnected=T, rivers=Gulk)))
+  expect_false(is.na(riverdirection(startseg=7, startvert=49, endseg=1, endvert=121, flowconnected=T, rivers=Gulk)))
+  expect_error(riverdirection(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk),"Invalid segments specified.")
+})
+
+test_that("upstream",{
+  expect_equal(upstream(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk), 155435.2, tolerance=0.001)
+  expect_equal(upstream(startseg=12, startvert=49, endseg=3, endvert=27, rivers=Gulk), -61647.23, tolerance=0.001)
+  expect_equal(upstream(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, net=T), 18764.18, tolerance=0.001)
+  expect_equal(upstream(startseg=12, startvert=49, endseg=3, endvert=27, rivers=Gulk, net=T), -57735.08, tolerance=0.001)
+  expect_equal(upstream(startseg=12, startvert=49, endseg=12, endvert=49, rivers=Gulk), 0, tolerance=0.001)
+  expect_true(is.na(upstream(startseg=7, startvert=49, endseg=14, endvert=121, flowconnected=T, rivers=Gulk)))
+  expect_false(is.na(upstream(startseg=7, startvert=49, endseg=1, endvert=121, flowconnected=T, rivers=Gulk)))
+  expect_error(upstream(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk),"Invalid segments specified.")
+})
+
+dm <- riverdistancemat(fakefish$seg,fakefish$vert, logical=(fakefish$flight.date==as.Date("2015-11-25")), rivers=Gulk)
+um <- upstreammat(fakefish$seg,fakefish$vert, logical=(fakefish$flight.date==as.Date("2015-11-25")), rivers=Gulk)
+dirm <- riverdirectionmat(fakefish$seg,fakefish$vert, logical=(fakefish$flight.date==as.Date("2015-11-25")), rivers=Gulk)
+test_that("mats",{
+  expect_equal(sum(dm),4972537,tolerance=0.001)
+  expect_equal(sum(um[,1]),-556315.2,tolerance=0.001)
+  expect_equal(dirm[2,1],"down")
+  expect_equal(dirm[1,2],"up")
+  expect_equal(dirm[1,1],"0")
+  expect_equal(row.names(dm),c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+  expect_equal(row.names(um),c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+  expect_equal(row.names(dirm),c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+})
+
+ds <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+us <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+dirs <- riverdirectionseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+test_that("seqs",{
+  expect_equal(ds[1,3],88354.404,tolerance=0.001)
+  expect_equal(us[1,3],-88354.404,tolerance=0.001)
+  expect_equal(as.character(dirs[1,3]),"down")
+  expect_true(is.na(ds[1,1]))
+  expect_true(is.na(us[1,1]))
+  expect_true(is.na(dirs[1,1]))
+  expect_equal(names(ds),c("1 to 2","2 to 3","3 to 4","4 to 5","5 to 6","6 to 7","7 to 8","8 to 9","9 to 10"))
+  expect_equal(names(us),c("1 to 2","2 to 3","3 to 4","4 to 5","5 to 6","6 to 7","7 to 8","8 to 9","9 to 10"))
+  expect_equal(names(dirs),c("1 to 2","2 to 3","3 to 4","4 to 5","5 to 6","6 to 7","7 to 8","8 to 9","9 to 10"))
+  expect_equal(row.names(ds),c("1","2","5","6","7","8","10","11","12","15","16","17","18","19","20","21","23","25","27","28","29"))
+  expect_equal(row.names(us),c("1","2","5","6","7","8","10","11","12","15","16","17","18","19","20","21","23","25","27","28","29"))
+  expect_equal(row.names(dirs),c("1","2","5","6","7","8","10","11","12","15","16","17","18","19","20","21","23","25","27","28","29"))
+})
+
+streamlocs.seg <- c(1,8,11)
+streamlocs.vert <- c(50,70,90)
+streamlocs.ID <- c("loc A","loc B","loc C")
+logi2 <- fakefish$flight.date==as.Date("2015-11-25")
+dt <- riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, ID1=streamlocs.ID, seg2=fakefish$seg, vert2=fakefish$vert, logical2=logi2, rivers=Gulk1)
+ut <- upstreamtofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, ID1=streamlocs.ID, seg2=fakefish$seg, vert2=fakefish$vert, logical2=logi2, rivers=Gulk1)
+dirt <- riverdirectiontofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, ID1=streamlocs.ID, seg2=fakefish$seg, vert2=fakefish$vert, logical2=logi2, rivers=Gulk1)
+test_that("tofrom",{
+  expect_equal(sum(dt),2813049,tolerance=0.001)
+  expect_equal(sum(ut),2279918,tolerance=0.001)
+  expect_equal(dirt[1,4],"up")
+  expect_equal(dirt[2,4],"down")
+  expect_equal(dimnames(dt)[[2]],c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+  expect_equal(dimnames(ut)[[2]],c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+  expect_equal(dimnames(dirt)[[2]],c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+  expect_equal(row.names(dt),c("loc A","loc B","loc C"))
+  expect_equal(row.names(ut),c("loc A","loc B","loc C"))
+  expect_equal(row.names(dirt),c("loc A","loc B","loc C"))
+})
+
+data(KilleyW)
+Killey.dists <- riverdistancelist(startseg=1,endseg=16,startvert=25,endvert=25,rivers=KilleyW,reps=1000)
+test_that("routedistlist",{
+  expect_equal(Killey.dists$routes[[1]],c(1,2,4,15,16))
+  expect_equal(Killey.dists$routes[[3]],c(1,3,4,15,16))
+  expect_equal(sum(Killey.dists$distances),115582.5,tolerance=0.001)
+})
+
+KilleyW <- setmouth(seg=1,vert=288,rivers=KilleyW)
+test_that("set",{
+  expect_equal(KilleyW$mouth$mouth.seg,1)
+  expect_equal(KilleyW$mouth$mouth.vert,288)
+})
+
+Killey2 <- sequenceverts(rivers=KilleyW)
+test_that("sequence",{
+  expect_equal(Killey2$lines[[1]][1,1],184621.8,tolerance=0.001)
+  expect_equal(KilleyW$lines[[1]][1,1],183649.9,tolerance=0.001)
+})
+
+data(Koyukuk1,Koyukuk2)
+Koyukuk1a <- splitsegments(rivers=Koyukuk1)
+test_that("splitsegments",{
+  expect_equal(Koyukuk1a,Koyukuk2)
+})
+
+Gulk.trim <- trimriver(trim=1:4,rivers=Gulk)
+Gulk.trimto <- trimriver(trimto=1:4,rivers=Gulk)
+data(Koyukuk0)
+Koyukuk0a <- trimriver(trimto=c(1,2,9,10,17:23),rivers=Koyukuk0)
+test_that("trimriver",{
+  expect_equal(Gulk.trimto$lines,Gulk$lines[1:4])
+  expect_equal(Gulk.trimto$connections,Gulk$connections[1:4,1:4])
+  expect_equal(Gulk.trimto$lengths,Gulk$lengths[1:4])
+  expect_equal(Gulk.trimto$names,Gulk$names[1:4])
+  expect_equal(Gulk.trimto$lineID,Gulk$lineID[1:4,])
+  expect_equal(Gulk.trimto$sequenced,Gulk$sequenced)
+  expect_equal(Gulk.trimto$tolerance,Gulk$tolerance)
+  expect_equal(Gulk.trimto$units,Gulk$units)
+  expect_equal(Gulk.trimto$mouth$mouth.seg,1)
+  expect_equal(Gulk.trim$lines,Gulk$lines[5:14])
+  expect_equal(Gulk.trim$connections,Gulk$connections[5:14,5:14])
+  expect_equal(Gulk.trim$lengths,Gulk$lengths[5:14])
+  expect_equal(Gulk.trim$names,Gulk$names[5:14])
+  expect_equal(Gulk.trim$sequenced,Gulk$sequenced)
+  expect_equal(Gulk.trim$tolerance,Gulk$tolerance)
+  expect_equal(Gulk.trim$units,Gulk$units)
+  expect_true(is.na(Gulk.trim$mouth$mouth.seg))
+  expect_equal(length(Koyukuk0a$lines),11)
+  expect_equal(dim(Koyukuk0a$connections),c(11,11))
+  expect_equal(Koyukuk0a$lineID[,1],1:11)
+  expect_equal(Koyukuk0a$lineID[,2],c(1,1,2,2,3,3,3,3,3,3,3))
+  expect_equal(Koyukuk0a$lineID[,3],c(1,2,1,2,1,2,3,4,5,6,7))
+  expect_equal(length(Koyukuk0a$sp@lines),3)
+  expect_equal(length(Koyukuk0a$sp@lines[[3]]@Lines),7)
+})
+
+x <- c(174185, 172304, 173803, 176013)
+y <- c(1173471, 1173345, 1163638, 1164801)
+Kenai3 <- setmouth(seg=61,vert=40,rivers=Kenai3)
+Kenai3.buf1 <- trimtopoints(x=x, y=y, method="snap", rivers=Kenai3)
+Kenai3.buf2 <- trimtopoints(x=x, y=y, method="snaproute", rivers=Kenai3)
+Kenai3.buf3 <- trimtopoints(x=x, y=y, method="buffer", dist=5000, rivers=Kenai3)
+test_that("trimtopoints",{
+  expect_equal(length(Kenai3.buf1$lines),2)
+  expect_equal(length(Kenai3.buf1$lengths),2)
+  expect_equal(length(Kenai3.buf1$names),2)
+  expect_equal(dim(Kenai3.buf1$connections),c(2,2))
+  expect_equal(dim(Kenai3.buf1$lineID),c(2,3))
+  expect_equal(length(Kenai3.buf2$lines),6)
+  expect_equal(length(Kenai3.buf2$lengths),6)
+  expect_equal(length(Kenai3.buf2$names),6)
+  expect_equal(dim(Kenai3.buf2$connections),c(6,6))
+  expect_equal(dim(Kenai3.buf2$lineID),c(6,3))
+  expect_equal(length(Kenai3.buf3$lines),26)
+  expect_equal(length(Kenai3.buf3$lengths),26)
+  expect_equal(length(Kenai3.buf3$names),26)
+  expect_equal(dim(Kenai3.buf3$connections),c(26,26))
+  expect_equal(dim(Kenai3.buf3$lineID),c(26,3))
+  expect_true(is.na(Kenai3.buf1$mouth$mouth.seg))
+  expect_true(is.na(Kenai3.buf2$mouth$mouth.seg))
+  expect_equal(Kenai3.buf3$mouth$mouth.seg,19)
+  expect_equal(Kenai3.buf3$mouth$mouth.vert,40)
+})
+
+data(Kenai1)
+Kenai1a <- dissolve(Kenai1)
+Kenai1a$mouth$mouth.seg <- 63
+Kenai1a$mouth$mouth.vert <- 40
+
+segs <- c(33,63,80,97)
+verts <- c(1,1,1,1)
+
+test_that("stopiferror, flowconnected",{
+  expect_error(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
+  expect_true(is.na(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
+  expect_equal(riverdistance(startseg=segs[3],endseg=segs[2],startvert=verts[3],endvert=verts[2],rivers=Kenai1a,stopiferror=F),2648.679,tolerance=0.001)
+  expect_error(riverdirection(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
+  expect_true(is.na(riverdirection(startseg=segs[3],endseg=segs[4],startvert=verts[3],endvert=verts[4],rivers=Kenai1a,flowconnected=T)))
+  expect_true(is.na(riverdirection(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
+  expect_equal(riverdirection(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),"up")
+  expect_error(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
+  expect_true(is.na(upstream(startseg=segs[3],endseg=segs[4],startvert=verts[3],endvert=verts[4],rivers=Kenai1a,flowconnected=T)))
+  expect_true(is.na(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
+  expect_equal(upstream(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),2648.679,tolerance=0.001)
+})
+
+data(abstreams0)
+Gulk <- setmouth(seg=1,vert=1,rivers=Gulk)
+Gulk1 <- trimriver(trim=10,rivers=Gulk)
+Gulk2 <- removeunconnected(Gulk1)
+test_that("cleanup funcs",{
+  expect_equal(length(removeduplicates(abstreams0)$lines),202)
+  expect_equal(length(removemicrosegs(abstreams0)$lines),179)
+  expect_equal(Gulk2,trimriver(trimto=1:9,rivers=Gulk))
+})
+
+filepath <- system.file("extdata", package="riverdist")
+test_that("line2network",{
+  expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
+}) 

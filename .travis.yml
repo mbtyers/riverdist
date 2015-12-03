@@ -4,7 +4,7 @@ language: r
 warnings_are_errors: true
 sudo: required
     
-before_script:
+before_install:
   - sudo apt-get update && sudo apt-get install libgdal1h libproj-dev
 #  - sudo apt-get update && sudo apt-get install libgdal1h libgdal-dev libgdal1-dev libproj-dev
 #  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh

@@ -3,15 +3,6 @@
 language: r
 warnings_are_errors: true
 sudo: required
-
-env:
- global:
-   - CRAN: http://cran.rstudio.com
-
-notifications:
-  email:
-    on_success: change
-    on_failure: change
     
 before_script:
   - sudo apt-get update && sudo apt-get install libgdal1h libproj-dev
@@ -49,3 +40,13 @@ before_script:
 #   - sudo aptitude install libgdal-dev # install the package (you may have to respond to queries here)
 #   - sudo aptitude install libproj-dev # install the proj.4 projection library
 #   - sudo aptitude install gdal-config
+
+
+env:
+ global:
+   - CRAN: http://cran.rstudio.com
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change

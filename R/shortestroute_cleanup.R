@@ -48,6 +48,7 @@ removeduplicates <- function(rivers) {
 #' @importFrom graphics text
 #' @export
 cleanup <- function(rivers) {
+  if(!interactive()) stop("The cleanup() function can only be used in an interactive environment.")
   cat("Cleanup started, with",length(rivers$lines),"segments.",'\n')
   plot(rivers)
   cat('\n',"Removing duplicate line segments...",'\n')
@@ -248,7 +249,15 @@ cleanup <- function(rivers) {
         plot(rivers4)
         connect1 <- as.numeric(readline("Enter the number of the segment you'd like to connect: "))
         connect2 <- as.numeric(readline("Enter the number of the segment you'd like to connect it to: "))
-        rivers4 <- connectsegs(connect=connect1,connectto=connect2,rivers=rivers4)
+        howtodo <- 0
+        while(!any(howtodo==c("c","C","e","E"))) {
+          howtodo <- readline(prompt="Connect at (e)ndpoint or (c)losest point? (e/c) ")
+        }
+        if(any(howtodo==c("c","C"))) closestpt <- T
+        if(any(howtodo==c("e","E"))) closestpt <- F
+        if(closestpt) cat('\n',"Connecting and calculating new segment splits...",'\n')
+        if(!closestpt) cat('\n',"Connecting...",'\n')
+        rivers4 <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4)
       }
     }
     if(is.null(takeout)) {
@@ -345,13 +354,22 @@ cleanup <- function(rivers) {
 
 
 #' Connect Segments
-#' @description Provides a method to manually connect unconnected segments within a river network.  The nearest endpoints of the two input segments are detected, and the nearest endpoint of the second segment is added as a new vertex to the first.  The network topology is then updated.
-#' @param connect The segment to connect to the network.  Typically, this is the segment that is disconnected from the rest of the river network.
-#' @param connectto The segment to connect it to, at the closest endpoint.
+#' @description Provides a method to manually connect unconnected segments
+#'   within a river network.  The nearest endpoint (or vertex) of the second segment is
+#'   added as a new vertex to the first, and the network topology is then updated.
+#' @param connect The segment to connect to the network.  Typically, this is the
+#'   segment that is disconnected from the rest of the river network.
+#' @param connectto The segment to connect it to.  Typically, this is a segment
+#'   that is connected to the rest of the river network.
+#' @param nearestvert Whether to connect at the nearest vertex and split the
+#'   segment (\code{FALSE}), or connect at the nearest endpoint (\code{TRUE}). 
+#'   Defaults to \code{TRUE}.
 #' @param rivers The river network object to use.
-#' @return A new river network object with the specified segments connected (see \link{rivernetwork})
+#' @return A new river network object with the specified segments connected (see
+#'   \link{rivernetwork})
 #' @seealso line2network
-#' @note This function is called within \link{cleanup}, which is recommended in most cases.
+#' @note This function is called within \link{cleanup}, which is recommended in
+#'   most cases.
 #' @author Matt Tyers
 #' @examples
 #' data(Koyukuk0)
@@ -362,61 +380,88 @@ cleanup <- function(rivers) {
 #' plot(Koyukuk0.1,ylim=c(1930500,1931500), xlim=c(194900,195100))
 #' topologydots(Koyukuk0.1, add=TRUE)
 #' @export
-connectsegs <- function(connect,connectto,rivers) {
+connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
   if(length(whoconnected(connect,rivers))>0){
     if(any(whoconnected(connect,rivers)==connectto)) stop("Segments are already connected.")
   }
   l1 <- dim(rivers$lines[[connect]])[1]
   l2 <- dim(rivers$lines[[connectto]])[1]
-  dists <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][1,])
-  dists[2] <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][l2,])
-  dists[3] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][1,])
-  dists[4] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][l2,])
-  if(min(dists)==dists[1]) {
-    # for(i in l1:1) {
-    #   rivers$lines[[connect]][i+1,]<-rivers$lines[[connect]][i,]
-    # }
-    # rivers$lines[[connect]][1,] <- rivers$lines[[connectto]][1,]
-    rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][1,],rivers$lines[[connect]])
-  }
-  if(min(dists)==dists[2]) {
-    # for(i in l1:1) {
-    #   rivers$lines[[connect]][i+1,]<-rivers$lines[[connect]][i,]
-    # }
-    # rivers$lines[[connect]][1,] <- rivers$lines[[connectto]][l2,]
-    rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][l2,],rivers$lines[[connect]])
-  }
-  if(min(dists)==dists[3]) {
-    # rivers$lines[[connect]][l1+1,] <- rivers$lines[[connectto]][1,]
-    rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][1,])
-  }
-  if(min(dists)==dists[4]) {
-    # rivers$lines[[connect]][l1+1,] <- rivers$lines[[connectto]][l2,]
-    rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][l2,])
-  }
-  
-  rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
-  rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(dists)
-  
-  # updating the connectivity matrix 
-  length <- length(rivers$lines)
-  for(i in 1:length) {
-    for(j in 1:length) {
-      i.max <- dim(rivers$lines[[i]])[1]
-      j.max <- dim(rivers$lines[[j]])[1]
-      if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][1,])<rivers$tolerance & i!=j) {
-        rivers$connections[i,j] <- 1
-      }
-      if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
-        rivers$connections[i,j] <- 2
-      }
-      if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][1,])<rivers$tolerance & i!=j) {
-        rivers$connections[i,j] <- 3
-      }
-      if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
-        rivers$connections[i,j] <- 4
+  if(!nearestvert) {
+    dists <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][1,])
+    dists[2] <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][l2,])
+    dists[3] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][1,])
+    dists[4] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][l2,])
+    if(min(dists)==dists[1]) {
+      # for(i in l1:1) {
+      #   rivers$lines[[connect]][i+1,]<-rivers$lines[[connect]][i,]
+      # }
+      # rivers$lines[[connect]][1,] <- rivers$lines[[connectto]][1,]
+      rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][1,],rivers$lines[[connect]])
+    }
+    if(min(dists)==dists[2]) {
+      # for(i in l1:1) {
+      #   rivers$lines[[connect]][i+1,]<-rivers$lines[[connect]][i,]
+      # }
+      # rivers$lines[[connect]][1,] <- rivers$lines[[connectto]][l2,]
+      rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][l2,],rivers$lines[[connect]])
+    }
+    if(min(dists)==dists[3]) {
+      # rivers$lines[[connect]][l1+1,] <- rivers$lines[[connectto]][1,]
+      rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][1,])
+    }
+    if(min(dists)==dists[4]) {
+      # rivers$lines[[connect]][l1+1,] <- rivers$lines[[connectto]][l2,]
+      rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][l2,])
+    }
+    
+    rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
+    rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(dists)
+    
+    # updating the connectivity matrix 
+    length <- length(rivers$lines)
+    for(i in 1:length) {
+      for(j in 1:length) {
+        i.max <- dim(rivers$lines[[i]])[1]
+        j.max <- dim(rivers$lines[[j]])[1]
+        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][1,])<rivers$tolerance & i!=j) {
+          rivers$connections[i,j] <- 1
+        }
+        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
+          rivers$connections[i,j] <- 2
+        }
+        if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][1,])<rivers$tolerance & i!=j) {
+          rivers$connections[i,j] <- 3
+        }
+        if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
+          rivers$connections[i,j] <- 4
+        }
       }
     }
+  }
+  
+  if(nearestvert) {
+    dbeg <- dend <- 100000*max(rivers$lengths)
+    whichbeg <- whichend <- NA
+    for(i in 1:l2) {
+      if(pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][i,])<=dbeg) {
+        dbeg <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][i,])
+        whichbeg <- i
+      }
+      if(pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][i,])<=dend) {
+        dend <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][i,])
+        whichend <- i
+      }
+    }
+    if(dbeg < dend) {
+      rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][whichbeg,],rivers$lines[[connect]])
+    }
+    if(dbeg > dend) {
+      rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][whichend,])
+    }
+    
+    rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
+    rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(c(dbeg,dend))
+    rivers <- splitsegments(rivers)
   }
   
   return(rivers)

@@ -30,6 +30,10 @@ splitsegments <- function(rivers,tolerance=NULL) {
   lines <- rivers$lines
   if(is.null(tolerance)) tolerance <- rivers$tolerance
   
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
+  }
+  
   # first identifying where breaks should go
   breaks <- list()
   for(riv.i in 1:length(lines)) {
@@ -38,7 +42,7 @@ splitsegments <- function(rivers,tolerance=NULL) {
     for(seg.i in 1:dim(lines[[riv.i]])[1]) {
       for(riv.j in 1:length(lines)) {
         if((pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][1,])<tolerance | 
-              pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][dim(lines[[riv.j]])[1],])<tolerance) & riv.i!=riv.j) {
+            pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][dim(lines[[riv.j]])[1],])<tolerance) & riv.i!=riv.j) {
           breaks.i <- breaks.i+1
           breaks[[riv.i]][breaks.i] <- seg.i
         }
@@ -123,8 +127,18 @@ splitsegments <- function(rivers,tolerance=NULL) {
   rivers$lines <- newlines
   rivers$lengths <- lengths
   rivers$names <- rep(NA,length(lines))
-  rivers$mouth$mouth.seg <- NA
-  rivers$mouth$mouth.vert <- NA
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    for(i in 1:length(rivers$lines)) {
+      for(j in 1:(dim(rivers$lines[[i]])[1])) {
+        if(all(mouthcoords==rivers$lines[[i]][j,])) {
+          rivers$mouth$mouth.seg <- i
+          rivers$mouth$mouth.vert <- j
+        }
+      }
+    }
+  }
+  # rivers$mouth$mouth.seg <- NA
+  # rivers$mouth$mouth.vert <- NA
   
   Id <- 0
   rivers$sp@data <- data.frame(Id)

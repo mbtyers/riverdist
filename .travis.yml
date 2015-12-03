@@ -13,15 +13,15 @@ notifications:
     on_success: change
     on_failure: change
     
-before_install:
+before_script:
   - sudo apt-get update
   - sudo apt-get install -y gdal-bin libgdal-dev libgdal1-dev netcdf-bin libproj-dev
-  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
-  - ./travis-tool.sh bootstrap
-  - ./travis-tool.sh install_deps
-  - ./travis-tool.sh install_r rgdal
-  - ./travis-tool.sh github_package hadley/testthat
+#  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+#  - chmod 755 ./travis-tool.sh
+#  - ./travis-tool.sh bootstrap
+#  - ./travis-tool.sh install_deps
+#  - ./travis-tool.sh install_r rgdal
+#  - ./travis-tool.sh github_package hadley/testthat
   
 #   - ./travis-tool.sh aptget_install gdal-bin libgdal1-dev
 #   - sudo apt-get update && sudo apt-get install libgdal-dev libgdal1-dev libproj-dev

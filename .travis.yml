@@ -14,7 +14,7 @@ notifications:
     on_failure: change
     
 before_install:
-  - sudo apt-get update && sudo apt-get install libgal-dev libgdal1-dev libproj-dev
+  - sudo apt-get update && sudo apt-get install libgdal-dev libgdal1-dev libproj-dev
 #   - sudo apt-get install aptitude # install aptitude as an alternative to apt-get
 #   - sudo aptitude install libgdal-dev # install the package (you may have to respond to queries here)
 #   - sudo aptitude install libproj-dev # install the proj.4 projection library

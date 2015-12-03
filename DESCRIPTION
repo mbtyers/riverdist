@@ -1,8 +1,8 @@
 Package: riverdist
 Type: Package
 Title: River Network Distance Computation, and Applications
-Version: 0.5
-Date: 2015-09-01
+Version: 0.6
+Date: 2015-12-03
 Author: Matt Tyers [aut, cre]
 Authors@R: person("Matt", "Tyers", email = "matt.tyers@alaska.gov",
     role = c("aut", "cre"))

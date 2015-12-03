@@ -59,6 +59,66 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
   return(dists)
 }
 
+#' River Distance Matrix of All Observations of an Individual
+#' @description Returns a matrix of network distances between all observations of one unique fish.
+#' @param indiv The unique identifier of the fish in question.
+#' @param ID A vector of identifiers for each fish.
+#' @param survey A vector of identifiers for each survey.  It is recommended to use a numeric or date format (see \link{as.Date}) to preserve survey order.
+#' @param seg A vector of river locations (segment component).
+#' @param vert A vector of river locations (vertex component).
+#' @param rivers The river network object to use.
+#' @param full Whether to return the full matrix, with \code{NA} values for missing data (\code{TRUE}), or a the subset of rows and columns corresponding to successful observations.
+#' @param stopiferror Whether or not to exit with an error if a route cannot be
+#'   found.  If this is set to \code{FALSE} and a route cannot be found,
+#'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
+#' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
+#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   default), the function will automatically make a selection.  See
+#'   \link{detectroute} for more details.
+#' @return A matrix of distances (numeric), with rows and columns defined by survey.
+#' @seealso \link{riverdistance}
+#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @author Matt Tyers
+#' @examples
+#' data(Gulk, fakefish)
+#' riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#'       
+#' riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
+#' @export
+riverdistancematobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,stopiferror=TRUE,algorithm=NULL) {
+  surveys <- sort(unique(survey))
+  surveys_indiv <- sort(unique(survey[ID==indiv]))
+  # IDs <- order(unique(ID))
+  
+  outmat <- matrix(NA,nrow=length(surveys),ncol=length(surveys))
+  for(ii in 1:length(surveys)) {
+    for(jj in 1:length(surveys)) {
+      outmat[ii,jj] <- ifelse((length(seg[ID==indiv & survey==surveys[ii]])==0) | (length(seg[ID==indiv & survey==surveys[jj]])==0),NA,
+                              riverdistance(startseg=seg[ID==indiv & survey==surveys[ii]], endseg=seg[ID==indiv & survey==surveys[jj]],
+                                     startvert=vert[ID==indiv & survey==surveys[ii]], endvert=vert[ID==indiv & survey==surveys[jj]],
+                                     rivers=rivers,stopiferror=stopiferror,algorithm=algorithm))
+    }
+  }
+  dimnames(outmat)[[1]] <- dimnames(outmat)[[2]] <- surveys
+  if(!full) {
+    if(!all(is.na(outmat))) {
+      whichnotna <- NA
+      iwhichnotna <- 1
+      for(i in 1:dim(outmat)[1]) {
+        if(!all(is.na(outmat[,i]))) {
+          whichnotna[iwhichnotna] <- i
+          iwhichnotna <- iwhichnotna+1
+        }
+      }
+      outmat <- outmat[whichnotna,whichnotna]
+    }
+    if(all(is.na(outmat))) outmat <- NA
+  }
+  return(outmat)
+}
+
 #' River Distance Matrix
 #' @description Returns a matrix of distances between every point and every
 #'   other point of given river coordinates (segment and vertex), or of a subset.

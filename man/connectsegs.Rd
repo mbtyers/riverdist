@@ -4,23 +4,33 @@
 \alias{connectsegs}
 \title{Connect Segments}
 \usage{
-connectsegs(connect, connectto, rivers)
+connectsegs(connect, connectto, nearestvert = F, rivers)
 }
 \arguments{
-\item{connect}{The segment to connect to the network.  Typically, this is the segment that is disconnected from the rest of the river network.}
+\item{connect}{The segment to connect to the network.  Typically, this is the
+segment that is disconnected from the rest of the river network.}
 
-\item{connectto}{The segment to connect it to, at the closest endpoint.}
+\item{connectto}{The segment to connect it to.  Typically, this is a segment
+that is connected to the rest of the river network.}
+
+\item{nearestvert}{Whether to connect at the nearest vertex and split the
+segment (\code{FALSE}), or connect at the nearest endpoint (\code{TRUE}).
+Defaults to \code{TRUE}.}
 
 \item{rivers}{The river network object to use.}
 }
 \value{
-A new river network object with the specified segments connected (see \link{rivernetwork})
+A new river network object with the specified segments connected (see
+  \link{rivernetwork})
 }
 \description{
-Provides a method to manually connect unconnected segments within a river network.  The nearest endpoints of the two input segments are detected, and the nearest endpoint of the second segment is added as a new vertex to the first.  The network topology is then updated.
+Provides a method to manually connect unconnected segments
+  within a river network.  The nearest endpoint (or vertex) of the second segment is
+  added as a new vertex to the first, and the network topology is then updated.
 }
 \note{
-This function is called within \link{cleanup}, which is recommended in most cases.
+This function is called within \link{cleanup}, which is recommended in
+  most cases.
 }
 \examples{
 data(Koyukuk0)

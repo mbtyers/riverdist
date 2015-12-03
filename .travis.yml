@@ -14,8 +14,26 @@ notifications:
     on_failure: change
     
 before_script:
+  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  - chmod 755 ./travis-tool.sh
+  - apt-cache search gdal
+  - apt-cache showpkg libgdal1
+  - apt-cache showpkg libgdal-dev
+  - apt-cache showpkg libgdal1-dev
   - sudo apt-get update
-  - sudo apt-get install -y gdal-bin libgdal-dev libgdal1-dev netcdf-bin libproj-dev
+  - ./travis-tool.sh install_aptget gdal-bin libgdal1 libgdal1-dev netcdf-bin libproj-dev
+  - ./travis-tool.sh bootstrap
+  - ./travis-tool.sh install_r_binary rjava
+  - apt-cache search gdal
+  - apt-cache showpkg libgdal1
+  - apt-cache showpkg libgdal-dev
+  - apt-cache showpkg libgdal1-dev
+  - ./travis-tool.sh install_deps
+  - ./travis-tool.sh github_package assertthat
+  - ./travis-tool.sh run_tests
+
+#  - sudo apt-get update
+#  - sudo apt-get install -y gdal-bin libgdal-dev libgdal1-dev netcdf-bin libproj-dev
 #  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
 #  - chmod 755 ./travis-tool.sh
 #  - ./travis-tool.sh bootstrap

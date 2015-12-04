@@ -110,6 +110,22 @@ riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$s
                    vert=fakefish$vert, rivers=Gulk)
 ```
 
+**Computing a matrix of network distances between all observations for an individual using `riverdistancematobs()`**
+
+River distance can also be calculated between all observations of a single individual.  In the output matrix shown below for individual 29, the element with row identifier `5` and column identifier `8` represents the river distance from the location observed in survey 5 to the location observed in survey 8, 75455m.  An important note is that the distances reported are net distance between locations, and are not intended to be cumulative.
+
+```{r}
+riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+      seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
+```
+
+Specifying `full=TRUE` reports an output matrix that includes all observations, with values of `NA` if the individual was not observed.  This allows the output matrices for multiple individuals to have the same rows and columns, thus being directly comparable.
+
+```{r}
+riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+      seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)
+```
+
 **Computing minimum observed home range for individuals using `homerange()`**
 
 The minimum observed (linear) home range for each individual can be calculated using `homerange()`.  Maps can be produced, and one is shown for fish number 15.
@@ -178,7 +194,7 @@ upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowcon
 
 **Automations of flow direction and directional network distance**
 
-River direction and upstream distance are also applied in functions `riverdirectionseq()` and `upstreamseq()` which work like `riverdistanceseq()`, `riverdirectionmat()` and `upstreammat()` which work like `riverdistancemat()`, and `riverdirectiontofrom` and `upstreamtofrom` which work like `riverdistancetofrom`.  Both `upstreamseq()` and `upstreammat()` use the additional `net=` argument, and all river direction and upstream distance functions use the additional `flowconnected=` argument.
+River direction and upstream distance are also applied in functions `riverdirectionseq()` and `upstreamseq()` which work like `riverdistanceseq()`, `riverdirectionmatobs()` and `upstreammatobs()` which work like `riverdistancematobs()`, `riverdirectionmat()` and `upstreammat()` which work like `riverdistancemat()`, and `riverdirectiontofrom` and `upstreamtofrom` which work like `riverdistancetofrom`.  The `upstreamseq()`, `upstreammatobs()`, and `upstreammat()` use the additional `net=` argument, and all river direction and upstream distance functions use the additional `flowconnected=` argument.
 
 
 Allowing different route-detection algorithms: a possible time-saver

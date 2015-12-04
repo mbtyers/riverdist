@@ -40,6 +40,14 @@ head(fakefish)
 riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
                    vert=fakefish$vert, rivers=Gulk)
 
+## ------------------------------------------------------------------------
+riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+      seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
+
+## ------------------------------------------------------------------------
+riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+      seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)
+
 ## ----fig.width=5,fig.height=5--------------------------------------------
 # calculating observed minimum home range for all individuals
 homerange(unique=fakefish$fish.id, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)

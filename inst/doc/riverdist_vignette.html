@@ -193,6 +193,28 @@ fakefish_riv &lt;-<span class="st"> </span><span class="kw">xy2segvert</span>(<s
 ## 27         NA        NA
 ## 28         NA  83805.67
 ## 29   4979.216        NA</code></pre>
+<p><strong>Computing a matrix of network distances between all observations for an individual using <code>riverdistancematobs()</code></strong></p>
+<p>River distance can also be calculated between all observations of a single individual. In the output matrix shown below for individual 29, the element with row identifier <code>5</code> and column identifier <code>8</code> represents the river distance from the location observed in survey 5 to the location observed in survey 8, 75455m. An important note is that the distances reported are net distance between locations, and are not intended to be cumulative.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">riverdistancematobs</span>(<span class="dt">indiv=</span><span class="dv">29</span>, <span class="dt">ID=</span>fakefish$fish.id, <span class="dt">survey=</span>fakefish$flight,
+      <span class="dt">seg=</span>fakefish$seg, <span class="dt">vert=</span>fakefish$vert, <span class="dt">rivers=</span>Gulk, <span class="dt">full=</span><span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>##          5         8         9
+## 5     0.00 75455.398 80434.614
+## 8 75455.40     0.000  4979.216
+## 9 80434.61  4979.216     0.000</code></pre>
+<p>Specifying <code>full=TRUE</code> reports an output matrix that includes all observations, with values of <code>NA</code> if the individual was not observed. This allows the output matrices for multiple individuals to have the same rows and columns, thus being directly comparable.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">riverdistancematobs</span>(<span class="dt">indiv=</span><span class="dv">29</span>, <span class="dt">ID=</span>fakefish$fish.id, <span class="dt">survey=</span>fakefish$flight,
+      <span class="dt">seg=</span>fakefish$seg, <span class="dt">vert=</span>fakefish$vert, <span class="dt">rivers=</span>Gulk, <span class="dt">full=</span><span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>##     1  2  3  4        5  6  7         8         9 10
+## 1  NA NA NA NA       NA NA NA        NA        NA NA
+## 2  NA NA NA NA       NA NA NA        NA        NA NA
+## 3  NA NA NA NA       NA NA NA        NA        NA NA
+## 4  NA NA NA NA       NA NA NA        NA        NA NA
+## 5  NA NA NA NA     0.00 NA NA 75455.398 80434.614 NA
+## 6  NA NA NA NA       NA NA NA        NA        NA NA
+## 7  NA NA NA NA       NA NA NA        NA        NA NA
+## 8  NA NA NA NA 75455.40 NA NA     0.000  4979.216 NA
+## 9  NA NA NA NA 80434.61 NA NA  4979.216     0.000 NA
+## 10 NA NA NA NA       NA NA NA        NA        NA NA</code></pre>
 <p><strong>Computing minimum observed home range for individuals using <code>homerange()</code></strong></p>
 <p>The minimum observed (linear) home range for each individual can be calculated using <code>homerange()</code>. Maps can be produced, and one is shown for fish number 15.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># calculating observed minimum home range for all individuals</span>
@@ -298,7 +320,7 @@ logi2 &lt;-<span class="st"> </span>fakefish$flight.date==<span class="kw">as.Da
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">upstream</span>(<span class="dt">startseg=</span><span class="dv">6</span>, <span class="dt">endseg=</span><span class="dv">4</span>, <span class="dt">startvert=</span><span class="dv">250</span>, <span class="dt">endvert=</span><span class="dv">250</span>, <span class="dt">rivers=</span>Gulk1, <span class="dt">flowconnected=</span><span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## [1] NA</code></pre>
 <p><strong>Automations of flow direction and directional network distance</strong></p>
-<p>River direction and upstream distance are also applied in functions <code>riverdirectionseq()</code> and <code>upstreamseq()</code> which work like <code>riverdistanceseq()</code>, <code>riverdirectionmat()</code> and <code>upstreammat()</code> which work like <code>riverdistancemat()</code>, and <code>riverdirectiontofrom</code> and <code>upstreamtofrom</code> which work like <code>riverdistancetofrom</code>. Both <code>upstreamseq()</code> and <code>upstreammat()</code> use the additional <code>net=</code> argument, and all river direction and upstream distance functions use the additional <code>flowconnected=</code> argument.</p>
+<p>River direction and upstream distance are also applied in functions <code>riverdirectionseq()</code> and <code>upstreamseq()</code> which work like <code>riverdistanceseq()</code>, <code>riverdirectionmatobs()</code> and <code>upstreammatobs()</code> which work like <code>riverdistancematobs()</code>, <code>riverdirectionmat()</code> and <code>upstreammat()</code> which work like <code>riverdistancemat()</code>, and <code>riverdirectiontofrom</code> and <code>upstreamtofrom</code> which work like <code>riverdistancetofrom</code>. The <code>upstreamseq()</code>, <code>upstreammatobs()</code>, and <code>upstreammat()</code> use the additional <code>net=</code> argument, and all river direction and upstream distance functions use the additional <code>flowconnected=</code> argument.</p>
 </div>
 <div id="allowing-different-route-detection-algorithms-a-possible-time-saver" class="section level2">
 <h2>Allowing different route-detection algorithms: a possible time-saver</h2>
@@ -320,14 +342,14 @@ tstart &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()
 <pre><code>## [1] 68937.76</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tend &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()
 tend -<span class="st"> </span>tstart</code></pre></div>
-<pre><code>## Time difference of 1.47303 secs</code></pre>
+<pre><code>## Time difference of 1.60416 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># distance calculation before building routes</span>
 tstart &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()
 <span class="kw">riverdistance</span>(<span class="dt">startseg=</span><span class="dv">120</span>, <span class="dt">startvert=</span><span class="dv">10</span>, <span class="dt">endseg=</span><span class="dv">131</span>, <span class="dt">endvert=</span><span class="dv">10</span>, <span class="dt">rivers=</span>abstreams_nosegroutes)</code></pre></div>
 <pre><code>## [1] 68937.76</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tend &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()
 tend -<span class="st"> </span>tstart</code></pre></div>
-<pre><code>## Time difference of 0.331007 secs</code></pre>
+<pre><code>## Time difference of 0.3350329 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># distance calculation after building routes</span>
 abstreams_segroutes &lt;-<span class="st"> </span><span class="kw">buildsegroutes</span>(abstreams_nosegroutes)
 tstart &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()
@@ -335,7 +357,7 @@ tstart &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()
 <pre><code>## [1] 68937.76</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tend &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()
 tend -<span class="st"> </span>tstart</code></pre></div>
-<pre><code>## Time difference of 0.00999999 secs</code></pre>
+<pre><code>## Time difference of 0.007000923 secs</code></pre>
 <p>In this case, building segment routes takes about as much time as calculating a single distance, a little less than a second. Calculating a single distance after building segment routes takes about a hundredth of a second, thus dramatically saving time if multiple distances were to be computed, such as in a large matrix of distances, or multiple analyses.</p>
 </div>
 <div id="editing-a-river-network-object-or-fixing-a-messy-one" class="section level2">

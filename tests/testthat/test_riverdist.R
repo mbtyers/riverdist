@@ -262,3 +262,12 @@ filepath <- system.file("extdata", package="riverdist")
 test_that("line2network",{
   expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
 }) 
+
+test_that("matobs", {
+  expect_equal(dim(riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+                                       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)),c(3,3))
+  expect_equal(dim(riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+                                       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)),c(10,10))
+  expect_equal(sum(riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+                                       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE),na.rm=TRUE),321738.5,tolerance=0.001)
+})

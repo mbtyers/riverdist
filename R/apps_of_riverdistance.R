@@ -24,7 +24,7 @@
 #' data(Gulk, fakefish)
 #' riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-#'       
+#'      
 #' riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #' @export
@@ -43,10 +43,10 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
     for(j in 1:(dim(tab)[2]-1)) {
       if(tab[i,j]*tab[i,(j+1)]!=0) {
         dists[i,j] <- riverdistance(startseg=seg[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j]][1],
-                                     endseg=seg[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j+1]][1],
-                                     startvert=vert[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j]][1],
-                                     endvert=vert[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j+1]][1],
-                                     rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)
+                                    endseg=seg[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j+1]][1],
+                                    startvert=vert[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j]][1],
+                                    endvert=vert[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j+1]][1],
+                                    rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)
       }
     }
   }
@@ -60,30 +60,37 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 }
 
 #' River Distance Matrix of All Observations of an Individual
-#' @description Returns a matrix of network distances between all observations of one unique fish.
+#' @description Returns a matrix of network distances between all observations
+#'   of one unique fish.
 #' @param indiv The unique identifier of the fish in question.
 #' @param ID A vector of identifiers for each fish.
-#' @param survey A vector of identifiers for each survey.  It is recommended to use a numeric or date format (see \link{as.Date}) to preserve survey order.
+#' @param survey A vector of identifiers for each survey.  It is recommended to
+#'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
 #' @param vert A vector of river locations (vertex component).
 #' @param rivers The river network object to use.
-#' @param full Whether to return the full matrix, with \code{NA} values for missing data (\code{TRUE}), or a the subset of rows and columns corresponding to successful observations.
+#' @param full Whether to return the full matrix, with \code{NA} values for
+#'   missing data (\code{TRUE}), or a the subset of rows and columns
+#'   corresponding to successful observations.  Defaults to \code{TRUE}.
 #' @param stopiferror Whether or not to exit with an error if a route cannot be
-#'   found.  If this is set to \code{FALSE} and a route cannot be found,
-#'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
+#'   found.  If this is set to \code{FALSE} and a route cannot be found, the
+#'   function will return \code{NA} in the appropriate entry.  Defaults to
+#'   \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
 #'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
-#' @return A matrix of distances (numeric), with rows and columns defined by survey.
+#' @return A matrix of distances (numeric), with rows and columns defined by
+#'   survey.
 #' @seealso \link{riverdistance}
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment may
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
 #' riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-#'       
+#'      
 #' riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
@@ -97,11 +104,11 @@ riverdistancematobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,stopif
     for(jj in 1:length(surveys)) {
       outmat[ii,jj] <- ifelse((length(seg[ID==indiv & survey==surveys[ii]])==0) | (length(seg[ID==indiv & survey==surveys[jj]])==0),NA,
                               riverdistance(startseg=seg[ID==indiv & survey==surveys[ii]], endseg=seg[ID==indiv & survey==surveys[jj]],
-                                     startvert=vert[ID==indiv & survey==surveys[ii]], endvert=vert[ID==indiv & survey==surveys[jj]],
-                                     rivers=rivers,stopiferror=stopiferror,algorithm=algorithm))
+                                            startvert=vert[ID==indiv & survey==surveys[ii]], endvert=vert[ID==indiv & survey==surveys[jj]],
+                                            rivers=rivers,stopiferror=stopiferror,algorithm=algorithm))
     }
   }
-  dimnames(outmat)[[1]] <- dimnames(outmat)[[2]] <- surveys
+  dimnames(outmat)[[1]] <- dimnames(outmat)[[2]] <- as.character(surveys)
   if(!full) {
     if(!all(is.na(outmat))) {
       whichnotna <- NA
@@ -143,9 +150,9 @@ riverdistancematobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,stopif
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' 
+#'
 #' logi1 <- (fakefish$flight.date==as.Date("2015-11-25"))
-#' 
+#'
 #' riverdistancemat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 #' @export
 riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TRUE,algorithm=NULL) {
@@ -170,13 +177,13 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 
 
 #' Home Range
-#' @description Returns the minimum observed home range for multiple 
+#' @description Returns the minimum observed home range for multiple
 #'   observations of each individual fish.
 #' @param unique A vector of unique identifiers for each fish.
 #' @param seg A vector of river locations (segment component).
 #' @param vert A vector of river locations (vertex component).
 #' @param rivers The river network object to use.
-#' @param map Boolean (defaults to FALSE) Whether to produce sanity-check maps 
+#' @param map Boolean (defaults to FALSE) Whether to produce sanity-check maps
 #'   of observed locations and calculated home range for each fish.
 #' @return A data frame with two columns: \code{$ID} is a list of unique fish
 #'   (as specified by \code{unique=}), and \code{$range} is calculated minimum
@@ -191,12 +198,12 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 #' @examples
 #' data(Gulk, fakefish)
 #' homerange(unique=fakefish$fish.id, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-#' 
+#'
 #' # mapping shown just for fish 15
 #' homerange(unique=fakefish$fish.id[fakefish$fish.id==15], seg=fakefish$seg[fakefish$fish.id==15],
 #'           vert=fakefish$vert[fakefish$fish.id==15], rivers=Gulk, map=TRUE)
 #' @importFrom graphics plot
-#' @importFrom graphics lines 
+#' @importFrom graphics lines
 #' @export
 homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
@@ -218,7 +225,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
       routes <- list()
       vert2 <- NA
       vert2 <- list()
-      for(j in 1:n.entries) { 
+      for(j in 1:n.entries) {
         for(k in 1:n.entries) {
           routes[[((j-1)*n.entries+k)]] <- detectroute(start=seg1[j],end=seg1[k],rivers=rivers,algorithm=algorithm)
           vert2[[((j-1)*n.entries+k)]] <- c(vert1[j],vert1[k])
@@ -279,7 +286,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
                 }
               }
             }
-          }          
+          }         
         }
       }
       range[i] <- sum(seg.rep.max)
@@ -320,23 +327,23 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk)
-#' 
+#'
 #' streamlocs.seg <- c(1,8,11)
 #' streamlocs.vert <- c(50,70,90)
 #' streamlocs.ID <- c("A","B","C")
-#' 
+#'
 #' fish.seg <- c(1,4,9,12,14)
 #' fish.vert <- c(10,11,12,13,14)
 #' fish.ID <- c("fish1","fish2","fish3","fish4","fish5")
-#' 
+#'
 #' riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert,
 #'   seg2=fish.seg, vert2=fish.vert, rivers=Gulk, ID1=streamlocs.ID, ID2=fish.ID)
-#' 
+#'
 #' logi1 <- streamlocs.ID=="B" | streamlocs.ID=="C"
 #' logi2 <- fish.ID!="fish3"
-#' 
+#'
 #' riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert,
-#'   seg2=fish.seg, vert2=fish.vert, rivers=Gulk, logical1=logi1, logical2=logi2, 
+#'   seg2=fish.seg, vert2=fish.vert, rivers=Gulk, logical1=logi1, logical2=logi2,
 #'   ID1=streamlocs.ID, ID2=fish.ID)
 #' @export
 riverdistancetofrom <- function(seg1,vert1,seg2,vert2,rivers,logical1=NULL,logical2=NULL,ID1=NULL,ID2=NULL,stopiferror=TRUE,algorithm=NULL) {

@@ -1,7 +1,7 @@
 #'Split Segments by Endpoint Proximity
 #'@description Detects cases in which segments should be split to establish
 #'  appropriate topology, and splits them.  Specifically, it looks for segment
-#'  endpoints intersecting (or within a tolerance of) the middle of another
+#'  endpoints intersecting (or within a tolerance of) another
 #'  segment.  It then splits the intersected segment at the point where the
 #'  endpoint of the other segment breaks it.
 #'@param rivers The river network object to use
@@ -152,6 +152,11 @@ splitsegments <- function(rivers,tolerance=NULL) {
   sp_line <- rep(1,length)
   sp_seg <- 1:length
   rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
+  
+  if(!is.null(rivers$segroutes)) {
+    rivers$segroutes <- NULL
+    warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+  }
   
   return(rivers)
 }

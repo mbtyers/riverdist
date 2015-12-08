@@ -746,7 +746,7 @@ plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,.
     if(type=="dotline" | type=="boxline") {
       for(i in 1:(dim(seqobs)[1])) {
         lines((1:dim(seqobs)[2])[!is.na(seqobs[i,])],seqobs[i,][!is.na(seqobs[i,])],col="grey80",lty=3)
-        lines(1:dim(seqobs)[2],seqobs[i,],col="grey80")
+        lines(1:dim(seqobs)[2],seqobs[i,],col=1)
       }
     }
     for(i in 1:(dim(seqobs)[2])) {
@@ -757,22 +757,19 @@ plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,.
     axis(side=1,at=1:(dim(seqobs)[2]),labels=names(seqobs),cex.axis=cex.axisX,las=2)
   }
   if(is.character(seqobs[1,1])|is.factor(seqobs[1,1])) {
-    #seqobs <- as.character(seqobs)
-    #seqobs[seqobs=="down"] <- "1 down"
-    #seqobs[seqobs=="0"] <- "2 0"
-    #seqobs[seqobs=="up"] <- "3 up"
-    colname <- NULL
-    contents <- NULL
-    for(i in 1:(dim(seqobs)[2])) {
-      colname <- c(colname,rep(names(seqobs)[i],(dim(seqobs)[1])))
-      contents <- c(contents,seqobs[,i])
-    }
-    contents <- as.character(contents)
-    contents[contents=="down"] <- "3 down"
-    contents[contents=="0"] <- "2 0"
-    contents[contents=="up"] <- "1 up"
-    contents <- as.factor(contents)
-    plot(table(colname,contents))
+    stop("Plotting methods do not yet exist for matrices returned from riverdirectionseq().")
+#     colname <- NULL
+#     contents <- NULL
+#     for(i in 1:(dim(seqobs)[2])) {
+#       colname <- c(colname,rep(names(seqobs)[i],(dim(seqobs)[1])))
+#       contents <- c(contents,seqobs[,i])
+#     }
+#     contents <- as.character(contents)
+#     contents[contents=="down"] <- "3 down"
+#     contents[contents=="0"] <- "2 0"
+#     contents[contents=="up"] <- "1 up"
+#     contents <- as.factor(contents)
+#     plot(table(colname,contents))
   }
 }
 

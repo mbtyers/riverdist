@@ -82,6 +82,23 @@ upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, net=FAL
 upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, net=TRUE)
 upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowconnected=TRUE)
 
+## ------------------------------------------------------------------------
+mouthdist(seg=fakefish$seg[1], vert=fakefish$vert[1], rivers=Gulk)
+x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
+    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+
+head(x)
+
+## ----fig.width=7.5,fig.height=4------------------------------------------
+x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
+    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+
+# this is all randomly generated data and will not show much pattern
+par(mfrow=c(1,2))
+plotseq(seqobs=x)
+plotseq(seqobs=x, type="dotline")
+par(mfrow=c(1,1))
+
 ## ----fig.width=7,fig.height=7--------------------------------------------
 data(abstreams)
 plot(x=abstreams)

@@ -16,13 +16,13 @@ Detects and removes segments that are not connected to the river mouth.
 This function is called within \link{cleanup}, which is recommended in most cases.
 }
 \examples{
-data(Kenai1)
-Kenai1.1 <- dissolve(Kenai1)
-Kenai1.1 <- setmouth(seg=63,vert=40,rivers=Kenai1.1)
-plot(Kenai1.1)
+data(Koyukuk2)
+Koy_subset <- trimriver(trimto=c(30,28,29,3,19,27,4),rivers=Koyukuk2)
+Koy_subset <- setmouth(seg=1,vert=427,rivers=Koy_subset)
+plot(Koy_subset)
 
-Kenai1.2 <- removeunconnected(Kenai1.1)
-plot(Kenai1.2)
+Koy_subset_trim <- removeunconnected(Koy_subset)
+plot(Koy_subset_trim)
 }
 \author{
 Matt Tyers

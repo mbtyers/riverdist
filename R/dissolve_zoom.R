@@ -192,6 +192,11 @@ dissolve <- function(rivers) {
   sp_seg <- 1:length
   rivers1$lineID <- data.frame(rivID,sp_line,sp_seg)
   
+  if(!is.null(rivers1$segroutes)) {
+    rivers1$segroutes <- NULL
+    warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+  }
+  
   return(rivers1)
 }
 

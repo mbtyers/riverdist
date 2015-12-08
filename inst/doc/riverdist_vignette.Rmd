@@ -1,5 +1,5 @@
 ---
-title: "A 'riverdist' Vignette that needs a better title"
+title: "River Network Distance Computation and Applications with `riverdist`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{riverdist_vignette}
@@ -37,6 +37,7 @@ AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154
 MyRivernetwork <- line2network(path=".", layer="MyShapefile", reproject=AKalbers)
 ```
 
+
 **Displaying a river network using `plot()`**
 
 Basic plotting is provided using the `plot()` function.  See `help(plot.rivernetwork)` for additonal plotting arguments and graphical parameters.  Shown below is the Gulkana River network, included as a dataset.
@@ -53,6 +54,7 @@ Once the river network has been imported, some cleanup may be necessary, dependi
 # should I maybe show usage here?
 ```
 
+
 **Checking connectedness using `topologydots()`**
 
 For route and distance calculation to work, the topologies must be correct, with all the right segments being treated as connected.  The `topologydots()` function can check for this, and plots connected segment endpoints as green, and non-connected endpoints as red.  This is shown below, and all appears good.
@@ -60,6 +62,7 @@ For route and distance calculation to work, the topologies must be correct, with
 ```{r,fig.width=5,fig.height=5}
 topologydots(rivers=Gulk)
 ```
+
 
 **Converting XY data to river coordinates using `xy2segvert()`**
 
@@ -72,6 +75,7 @@ data(fakefish)
 fakefish_riv <- xy2segvert(x=fakefish$x, y=fakefish$y, rivers=Gulk)
 head(fakefish_riv)  # a look at what it returned
 ```
+
 
 **Displaying point data in river coordinates using `riverpoints()`**
 
@@ -100,6 +104,7 @@ riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, map
 detectroute(start=7, end=14, rivers=Gulk)
 ```
 
+
 **Computing network distances between sequential observations of individuals using `riverdistanceseq()`**
 
 River distance can be calculated manually between any two connected locations on a river network.  However, a few common summary analyses were automated and are included in 'riverdist'.  First, the `riverdistanceseq()` function returns a matrix of the distances between sequential observations for a set of individuals observed multiple times.  In the fakefish example, the set of 30 fish were observed (or not) during 10 telemetry flights.  Fakefish number 2 traveled 65.53 km between flights 1 and 2, and was not observed during flights 5 or 6.
@@ -109,6 +114,7 @@ head(fakefish)
 riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
                    vert=fakefish$vert, rivers=Gulk)
 ```
+
 
 **Computing a matrix of network distances between all observations for an individual using `riverdistancematobs()`**
 
@@ -126,6 +132,7 @@ riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)
 ```
 
+
 **Computing minimum observed home range for individuals using `homerange()`**
 
 The minimum observed (linear) home range for each individual can be calculated using `homerange()`.  Maps can be produced, and one is shown for fish number 15.
@@ -139,6 +146,7 @@ homerange(unique=fakefish$fish.id[fakefish$fish.id==15], seg=fakefish$seg[fakefi
            vert=fakefish$vert[fakefish$fish.id==15], rivers=Gulk, map=TRUE)
 ```
 
+
 **Computing a matrix of network distances between all observations using `riverdistancemat()`**
 
 A matrix of the river network distance from every observation to every other observation can also be calculated using `riverdistancemat()`.  The `logical` argument can be used for subsetting, if the full network distance matrix is not needed.  This capability is shown below, calculating the distance matrix only for observations occurring on a flight date of November 25.
@@ -147,6 +155,7 @@ A matrix of the river network distance from every observation to every other obs
 logi1 <- fakefish$flight.date==as.Date("2015-11-25")
 riverdistancemat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 ```
+
 
 **Computing a matrix of network distances between all observations of two different datasets using `riverdistancetofrom()`**
 
@@ -175,6 +184,7 @@ showends(seg=1,rivers=Gulk)
 Gulk1 <- setmouth(seg=1, vert=1, rivers=Gulk)
 ```
 
+
 **Calculating flow direction using `riverdirection()` and directional network distance using `upstream()`**
 
 If the flow direction has been established by specifying the river network mouth, river direction can be calculated using `riverdirection()`, and upstream distance can be calculated using `upstream()`.  If the input river locations are flow-connected, `riverdirection()` returns "up" if the second location is upstream of the first and "down" if downstream.  In the flow-connected case, `upstream()` returns the network distance as positive if the second location is upstream of the first, and negative if downstream.  If the input locations are not flow-connected, `riverdirection()` returns "up" if the total upstream distance is greater than the total downstream distance, and "down" otherwise.  In the non flow-connected case, upstream distance in `upstream()` can return one of two things, depending on the user's research intent.  Specifying `net=TRUE` will return the "net" distance (upstream distance - downstream distance between the two locations).  Specifying `net=FALSE` (the default) will return the total distance between the two locations, with the sign depending on whether the upstream distance exceeds the downstream distance.
@@ -192,9 +202,41 @@ upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, net=TRU
 upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowconnected=TRUE)
 ```
 
+
 **Automations of flow direction and directional network distance**
 
 River direction and upstream distance are also applied in functions `riverdirectionseq()` and `upstreamseq()` which work like `riverdistanceseq()`, `riverdirectionmatobs()` and `upstreammatobs()` which work like `riverdistancematobs()`, `riverdirectionmat()` and `upstreammat()` which work like `riverdistancemat()`, and `riverdirectiontofrom` and `upstreamtofrom` which work like `riverdistancetofrom`.  The `upstreamseq()`, `upstreammatobs()`, and `upstreammat()` use the additional `net=` argument, and all river direction and upstream distance functions use the additional `flowconnected=` argument.
+
+
+**Summarizing up-river position, defined as distance from mouth, using `mouthdist()` for one observation and `mouthdistobs()` for a dataset**
+
+Distance between one observation and the river mouth can be calculated using `mouthdist()`, which can be used as a summary measure of up-river or down-river position, with appropriateness depending on the river system.  In the case of multiple observations of a set of individuals, a summary matrix can be calculated using `mouthdistobs()`, which returns a matrix of distances from the river mouth, with each row corresponding to a unique individual and each column corresponding to a unique survey.
+
+```{r}
+mouthdist(seg=fakefish$seg[1], vert=fakefish$vert[1], rivers=Gulk)
+x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
+    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+
+head(x)
+```
+
+
+**Plotting the summary matrix from `mouthdistobs()` or other distance sequence using `plotseq()`**
+
+The resulting matrix of up-river position returned from `mouthdistobs()`, or another distance sequence returned from `riverdistanceseq()` or `upstreamseq()`, can be plotted using `plotseq()`.  A few types of plots are available, with two shown below.  Additional `type=` arguments can be seen by calling `?plotseq`.  
+
+The user is cautioned to use any plots returned as descriptive tools only, as ANOVA-type inference would likely be inappropriate without accounting for repeated-measures and/or serial autocorrelation.
+
+```{r,fig.width=7.5,fig.height=4}
+x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
+    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+
+# this is all randomly generated data and will not show much pattern
+par(mfrow=c(1,2))
+plotseq(seqobs=x)
+plotseq(seqobs=x, type="dotline")
+par(mfrow=c(1,1))
+```
 
 
 Allowing different route-detection algorithms: a possible time-saver
@@ -242,6 +284,7 @@ Editing a river network object, or fixing a messy one
 ----------------------------------------------------------
 Ideally, the shapefile used to define a river network object should be refined in GIS *before* importing into R.  That being said, there are sure to be instances in which it is advantageous or necessary to make changes to the river network object within R.
 
+
 **All-purpose river network cleanup using `cleanup()`**
 
 In many cases, the `cleanup()` function will be the recommended first step in fixing a messy river network object after importing it.  The `cleanup()` function should be called within the console, and interactively calls the editing functions in sequence.  It then returns a new, edited river network object which can be edited further, or used as is.  It may even be the most straightforward to call `cleanup()` multiple times.
@@ -252,6 +295,7 @@ Usage will look like
 data(abstreams0)  # a messy river network
 abstreams_fixed <- cleanup(abstreams0)  # fixing many problems
 ```
+
 
 **Issue: the river network contains unneeded or unconnected segments - fixes using `trimriver()` and `trimtopoints()`**
 
@@ -322,6 +366,7 @@ Kenai1.1 <- setmouth(seg=63,vert=40,rivers=Kenai1.1)
 Kenai1.2 <- removeunconnected(Kenai1.1)
 plot(Kenai1.2)
 ```
+
 
 **Issue: the river network contains sequential "runs" of segments that do not otherwise branch - a fix using `dissolve()`**
 

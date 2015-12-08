@@ -19,7 +19,7 @@ A new, updated river network object
 \description{
 Detects cases in which segments should be split to establish
  appropriate topology, and splits them.  Specifically, it looks for segment
- endpoints intersecting (or within a tolerance of) the middle of another
+ endpoints intersecting (or within a tolerance of) another
  segment.  It then splits the intersected segment at the point where the
  endpoint of the other segment breaks it.
 }

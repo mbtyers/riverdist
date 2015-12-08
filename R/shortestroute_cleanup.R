@@ -417,6 +417,11 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
     rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
     rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(dists)
     
+    if(!is.null(rivers$segroutes)) {
+      rivers$segroutes <- NULL
+      warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+    }
+    
     # updating the connectivity matrix 
     length <- length(rivers$lines)
     for(i in 1:length) {
@@ -461,6 +466,11 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
     
     rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
     rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(c(dbeg,dend))
+    
+    if(!is.null(rivers$segroutes)) {
+      rivers$segroutes <- NULL
+      warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+    }
     rivers <- splitsegments(rivers)
   }
   

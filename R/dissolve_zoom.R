@@ -19,6 +19,9 @@ dissolve <- function(rivers) {
   lines <- rivers$lines
   connections <- rivers$connections
   length <- length(lines)
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
+  }
   
   # calculating a new connectivity matrix to capture beginning-beginning/end-end and beginning-end/end-beginning connections (special braided case)
   for(i in 1:length) {
@@ -158,11 +161,21 @@ dissolve <- function(rivers) {
   
   #updating rivers object
   rivers1 <- rivers
-  rivers1$mouth$mouth.seg <- NA
-  rivers1$mouth$mouth.vert <- NA
+  #rivers1$mouth$mouth.seg <- NA
+  #rivers1$mouth$mouth.vert <- NA
   rivers1$sequenced <- F
   rivers1$names <- rep(NA,length)
   rivers1$lines <- newlines
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    for(i in 1:length(rivers1$lines)) {
+      for(j in 1:(dim(rivers1$lines[[i]])[1])) {
+        if(all(mouthcoords==rivers1$lines[[i]][j,])) {
+          rivers1$mouth$mouth.seg <- i
+          rivers1$mouth$mouth.vert <- j
+        }
+      }
+    }
+  }
   rivers1$connections <- connections
   rivers1$lengths <- lengths
   

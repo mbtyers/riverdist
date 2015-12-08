@@ -13,7 +13,7 @@
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A data frame of distances (numeric), with rows defined by unique fish and columns defined by observation increment (1 to 2, 2 to 3, etc.)
@@ -77,7 +77,7 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 #'   function will return \code{NA} in the appropriate entry.  Defaults to
 #'   \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of distances (numeric), with rows and columns defined by
@@ -141,7 +141,7 @@ riverdistancematobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,stopif
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of distances (numeric) with rows and columns labeled by corresponding values of \code{ID}.
@@ -190,7 +190,7 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 #'   home range, in the units of the coordinate system (this will likely be
 #'   meters).
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
@@ -318,7 +318,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of distances (numeric) with rows and columns labeled by corresponding values of \code{ID}.

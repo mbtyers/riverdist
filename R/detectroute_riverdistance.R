@@ -324,7 +324,7 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
   }
   order <- order(dists)
   rivers1 <- rivers
-  rivers1$connections <- rivers$connections[order,order]
+  rivers1$connections <- rivers$connections[order, order]
   rivers1$lines <- rivers$lines[order]
   # rivers1$segroutes <- rivers$segroutes[order]
   rivers1$lengths <- rivers$lengths[order]
@@ -378,7 +378,7 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
 #'   \code{riverdistance()} will return \code{NA}.  Defaults to \code{TRUE}. 
 #'   See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return Total route distance, in the units of the coordinate system used 

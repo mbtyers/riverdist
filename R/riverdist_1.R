@@ -383,20 +383,25 @@ whoconnected <- function(seg,rivers) {
 #' @export
 xy2segvert <- function(x,y,rivers) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
   seg <- rep(NA,length(x))
   vert <- rep(NA,length(x))
   lines <- rivers$lines
   
+  pdist2 <- function(p1,p2mat) {
+    dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
+    return(dist)
+  }
+  
   for(i in 1:length(x)) {
     min.dist1 <- 1000000
     for(river.i in 1:length(lines)) {
-      for(vert.i in 1:dim(lines[[river.i]])[1]) {
-        dist.trial <- pdist(c(x[i],y[i]),lines[[river.i]][vert.i,])
-        if(dist.trial<min.dist1) {
-          min.dist1 <- dist.trial
-          seg[i] <- river.i
-          vert[i] <- vert.i
-        }
+      dists <- pdist2(c(x[i],y[i]),lines[[river.i]])
+      min.i <- min(dists)
+      if(min.i < min.dist1) {
+        min.dist1 <- min.i
+        seg[i] <- river.i
+        vert[i] <- which(dists==min.i)
       }
     }
   }

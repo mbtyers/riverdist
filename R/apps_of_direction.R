@@ -7,7 +7,7 @@
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return Logical \code{TRUE} if the two segments are flow-connected, \code{FALSE} if they are not
@@ -47,7 +47,7 @@ isflowconnected <- function(seg1,seg2,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @param flowconnected If \code{TRUE}, only returns direction if the two input segments are flow-connected.  Defaults to \code{FALSE}.
@@ -123,7 +123,7 @@ riverdirection <- function(startseg,endseg,startvert,endvert,rivers,flowconnecte
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return Upstream distance (numeric).  Returns NA if \code{flowconnected} has value \code{TRUE} and the two segments are not flow-connected.
@@ -199,7 +199,7 @@ upstream <- function(startseg,endseg,startvert,endvert,rivers,flowconnected=FALS
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A data frame of directions (character), with rows defined by unique
@@ -272,7 +272,7 @@ riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowcon
 #'   function will return \code{NA} in the appropriate entry.  Defaults to
 #'   \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of directions (character), with rows and columns defined by
@@ -342,7 +342,7 @@ riverdirectionmatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowc
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of directions (character) with rows and columns labeled by
@@ -401,7 +401,7 @@ riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A data frame of upstream distances (numeric), with rows defined by
@@ -479,7 +479,7 @@ upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected
 #'   function will return \code{NA} in the appropriate entry.  Defaults to
 #'   \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of upstream distances (numeric), with rows and columns defined by
@@ -551,7 +551,7 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of upstream distances (numeric) with rows and columns
@@ -602,7 +602,7 @@ upstreammat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected=FALSE
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return Distance (numeric)
@@ -638,6 +638,144 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 }
 
 
+#' Distance From Mouth for All Observations of Individuals
+#' @description Calculates distance from the mouth of a river network to all 
+#'   observations of each individual (given as segment and vertex). and the 
+#'   specified mouth of the river network.  The mouth must first be specified 
+#'   (see \link{setmouth}).  Returns a matrix of distances, with a row for each 
+#'   unique individual and a column for each survey.
+#' @param unique A vector of identifiers for each fish.
+#' @param survey A vector of identifiers for each survey.  It is recommended to
+#'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
+#' @param seg A vector of river coordinates (segment)
+#' @param vert A vectpr pf rover coordinates (vertex)
+#' @param rivers The river network object to use
+#' @param logical A boolean vector that can be used for subsetting - if used, 
+#'   \code{mouthdistobs()} will only return distances in which a specified
+#'   condition is met.
+#' @param stopiferror Whether or not to exit with an error if a route cannot be 
+#'   found.  If this is set to \code{FALSE} and a route cannot be found, the 
+#'   function will return \code{NA} in the appropriate entry.  Defaults to 
+#'   \code{TRUE}.  See \link{detectroute}.
+#' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"}, 
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the 
+#'   default), the function will automatically make a selection.  See 
+#'   \link{detectroute} for more details.
+#' @return A vector of river network distances (numeric), with each row
+#'   corresponding to a unique fish and each column corresponding to a unique
+#'   survey.  Values of \code{NA} indicate the individual not being located
+#'   during the survey in question.
+#' @note Building routes from the river mouth to each river network segment may 
+#'   greatly reduce computation time (see \link{buildsegroutes}).
+#' @author Matt Tyers
+#' @examples
+#' data(Gulk, fakefish)
+#' 
+#' mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date, 
+#'     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#' @export
+mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
+  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(is.null(logical)) logical <- rep(T,length(unique))
+  
+  unique<-unique[logical]
+  survey<-survey[logical]
+  seg<-seg[logical]
+  vert<-vert[logical]
+  tab <- table(unique,survey)
+  if(max(tab)>1) cat("Warning: multiple entries exist for at least one unique/survey combination (first one used)")
+  dists <- matrix(NA,nrow=dim(tab)[1],ncol=(dim(tab)[2]))
+  for(i in 1:dim(tab)[1]) {
+    for(j in 1:(dim(tab)[2])) {
+      if(tab[i,j]!=0) {
+        dists[i,j] <- mouthdist(seg=seg[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j]][1],
+                                vert=vert[unique==sort(unique(unique))[i] & survey==sort(unique(survey))[j]][1],
+                                rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)
+      }
+    }
+  }
+  dists<-as.data.frame(dists)
+  row.names(dists) <- row.names(tab)
+  col.name<-NA
+  names(dists) <- dimnames(tab)$survey
+  dists <- dists[rowSums(is.na(dists)) != ncol(dists),]
+  return(dists)
+}
+
+
+#' Plot Sequence of Observations
+#' @description Plots the sequence of observations of each individual (given as 
+#'   segment and vertex).  This function is primarily intended for use with 
+#'   \link{mouthdistobs}, but will also work with \link{riverdistanceseq} and 
+#'   \link{upstreamseq}.
+#' @param seqobs A matrix returned from \link{mouthdistobs},
+#'   \link{riverdistanceseq}, or \link{upstreamseq}.
+#' @param type The type of plot to generate.  Options are
+#'   \code{"boxplot"},\code{"dotplot"},\code{"boxline"},or \code{"dotline"}. 
+#'   Defaults to \code{"boxplot"}.
+#' @param xlab X-axis label
+#' @param ylab Y-axis label
+#' @param main Plot title
+#' @param cex.axisX Character expansion factor for X-axis labels
+#' @param ... Additional plotting parameters
+#' @note Plots are intended as descriptive only.  Any ANOVA-like inference that
+#'   is suggested from these plots is strongly discouraged.  The user is instead
+#'   advised to use a mixed-effects model or some other inferential tool that
+#'   accounts for repeated-measures and/or temporal autocorrelation.
+#' @author Matt Tyers
+#' @examples
+#' data(Gulk, fakefish)
+#' 
+#' x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date, 
+#'     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#'     
+#' # this is all randomly generated data and will not show much pattern
+#' plotseq(seqobs=x)
+#' plotseq(seqobs=x, type="boxline")
+#' plotseq(seqobs=x, type="dotplot")
+#' plotseq(seqobs=x, type="dotline")
+#' 
+#' from_upstreamseq <- upstreamseq(unique=fakefish$fish.id, 
+#'    survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, 
+#'    rivers=Gulk)
+#' plotseq(seqobs=from_upstreamseq)
+#' @export
+plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,...) {
+  if(is.numeric(seqobs[1,1])) {
+    plot(NA,xlim=c(1,dim(seqobs)[2]),ylim=c(min(seqobs,na.rm=T),max(seqobs,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,...=...)
+    if(type=="dotline" | type=="boxline") {
+      for(i in 1:(dim(seqobs)[1])) {
+        lines((1:dim(seqobs)[2])[!is.na(seqobs[i,])],seqobs[i,][!is.na(seqobs[i,])],col="grey80",lty=3)
+        lines(1:dim(seqobs)[2],seqobs[i,],col="grey80")
+      }
+    }
+    for(i in 1:(dim(seqobs)[2])) {
+      if(type=="boxplot" | type=="boxline") boxplot(seqobs[,i],at=i,add=T,yaxt='n',col=NA)
+      if(type=="dotplot") points(jitter(rep(i,(dim(seqobs)[1])),amount=.1),seqobs[,i])
+      if(type=="dotline") points(rep(i,(dim(seqobs)[1])),seqobs[,i])
+    }
+    axis(side=1,at=1:(dim(seqobs)[2]),labels=names(seqobs),cex.axis=cex.axisX,las=2)
+  }
+  if(is.character(seqobs[1,1])|is.factor(seqobs[1,1])) {
+    #seqobs <- as.character(seqobs)
+    #seqobs[seqobs=="down"] <- "1 down"
+    #seqobs[seqobs=="0"] <- "2 0"
+    #seqobs[seqobs=="up"] <- "3 up"
+    colname <- NULL
+    contents <- NULL
+    for(i in 1:(dim(seqobs)[2])) {
+      colname <- c(colname,rep(names(seqobs)[i],(dim(seqobs)[1])))
+      contents <- c(contents,seqobs[,i])
+    }
+    contents <- as.character(contents)
+    contents[contents=="down"] <- "3 down"
+    contents[contents=="0"] <- "2 0"
+    contents[contents=="up"] <- "1 up"
+    contents <- as.factor(contents)
+    plot(table(colname,contents))
+  }
+}
+
 
 #' River Direction Matrix between Two Datasets
 #' @description Returns a matrix of directions between each river location in two datasets, with one expressed as rows and the other expressed as columns.
@@ -659,7 +797,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of directions (character) with rows and columns labeled by corresponding values of \code{ID}.  See \link{riverdirection} for additional information.
@@ -745,7 +883,7 @@ riverdirectiontofrom <- function(seg1,vert1,seg2,vert2,rivers,logical1=NULL,logi
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
 #'   the function will return \code{NA} in the appropriate entry.  Defaults to \code{TRUE}.  See \link{detectroute}.
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
-#'   \code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+#'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A matrix of upstream distances (numeric) with rows and columns labeled by corresponding values of \code{ID}.  See \link{upstream} for additional information.

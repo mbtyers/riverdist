@@ -31,7 +31,7 @@ function will return \code{NA} in the appropriate entry.  Defaults to
 \code{TRUE}.  See \link{detectroute}.}
 
 \item{algorithm}{Which route detection algorithm to use (\code{"Dijkstra"},
-\code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+\code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 default), the function will automatically make a selection.  See
 \link{detectroute} for more details.}
 }

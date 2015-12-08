@@ -19,7 +19,7 @@ homerange(unique, seg, vert, rivers, map = FALSE, algorithm = NULL)
 of observed locations and calculated home range for each fish.}
 
 \item{algorithm}{Which route detection algorithm to use (\code{"Dijkstra"},
-\code{"sequential"},or \code{"segroutes"}).  If left as \code{NULL} (the
+\code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 default), the function will automatically make a selection.  See
 \link{detectroute} for more details.}
 }

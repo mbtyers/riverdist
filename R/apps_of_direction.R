@@ -740,21 +740,40 @@ mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=
 #'    rivers=Gulk)
 #' plotseq(seqobs=from_upstreamseq)
 #' @export
-plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,...) {
+plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,lowerbound=NULL,upperbound=NULL,boundtype="negative",surveysareDates=F,...) {
+  if(!surveysareDates) xplot <- 1:(dim(seqobs)[2])
+  if(surveysareDates) xplot <- as.Date(names(seqobs))
   if(is.numeric(seqobs[1,1])) {
-    plot(NA,xlim=c(1,dim(seqobs)[2]),ylim=c(min(seqobs,na.rm=T),max(seqobs,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,...=...)
+    plot(NA,xlim=c(xplot[1],xplot[length(xplot)]),ylim=c(min(seqobs,na.rm=T),max(seqobs,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,...=...)
+    if(!is.null(lowerbound)&!is.null(upperbound)) {
+      if(boundtype=="negative") {
+        polygon(x=c(xplot[1],xplot,xplot[length(xplot)]),y=c(par("usr")[3],lowerbound,par("usr")[3]),col="grey90",border=NA)
+        polygon(x=c(xplot[1],xplot,xplot[length(xplot)]),y=c(par("usr")[4],upperbound,par("usr")[4]),col="grey90",border=NA)
+        lines(par("usr")[1:2],par("usr")[c(4,4)])
+      }
+      if(boundtype=="positive") {
+        polygon(x=c(xplot,xplot[(length(xplot)):1]),y=c(lowerbound,(upperbound[(length(upperbound)):1])),col="grey90",border=NA)
+      }
+      if(boundtype=="lines") {
+        del <- .4*min(xplot[2:length(xplot)] - xplot[1:(length(xplot)-1)])
+        for(i in 1:length(lowerbound)) {
+          lines(xplot[i]+c(-1,1)*del,rep(lowerbound[i],2),lwd=2)
+          lines(xplot[i]+c(-1,1)*del,rep(upperbound[i],2),lwd=2)
+        }
+      }
+    }
     if(type=="dotline" | type=="boxline") {
       for(i in 1:(dim(seqobs)[1])) {
-        lines((1:dim(seqobs)[2])[!is.na(seqobs[i,])],seqobs[i,][!is.na(seqobs[i,])],col="grey80",lty=3)
-        lines(1:dim(seqobs)[2],seqobs[i,],col=1)
+        lines(xplot[!is.na(seqobs[i,])],seqobs[i,][!is.na(seqobs[i,])],col="grey60",lty=3)
+        lines(xplot,seqobs[i,],col="grey30")
       }
     }
     for(i in 1:(dim(seqobs)[2])) {
-      if(type=="boxplot" | type=="boxline") boxplot(seqobs[,i],at=i,add=T,yaxt='n',col=NA)
-      if(type=="dotplot") points(jitter(rep(i,(dim(seqobs)[1])),amount=.1),seqobs[,i])
-      if(type=="dotline") points(rep(i,(dim(seqobs)[1])),seqobs[,i])
+      if(type=="boxplot" | type=="boxline") boxplot(seqobs[,i],at=xplot[i],add=T,yaxt='n',col=NA)
+      if(type=="dotplot") points(jitter(rep(xplot[i],(dim(seqobs)[1])),amount=.1),seqobs[,i])
+      if(type=="dotline") points(rep(xplot[i],(dim(seqobs)[1])),seqobs[,i])
     }
-    axis(side=1,at=1:(dim(seqobs)[2]),labels=names(seqobs),cex.axis=cex.axisX,las=2)
+    axis(side=1,at=xplot,labels=names(seqobs),cex.axis=cex.axisX,las=2)
   }
   if(is.character(seqobs[1,1])|is.factor(seqobs[1,1])) {
     stop("Plotting methods do not yet exist for matrices returned from riverdirectionseq().")

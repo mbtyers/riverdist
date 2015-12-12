@@ -5,7 +5,8 @@
 \title{Plot Sequence of Observations}
 \usage{
 plotseq(seqobs, type = "boxplot", xlab = "", ylab = "", main = "",
-  cex.axisX = 0.8, ...)
+  cex.axisX = 0.8, lowerbound = NULL, upperbound = NULL,
+  boundtype = "negative", surveysareDates = F, ...)
 }
 \arguments{
 \item{seqobs}{A matrix returned from \link{mouthdistobs},

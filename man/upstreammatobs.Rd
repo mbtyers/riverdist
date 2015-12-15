@@ -58,10 +58,10 @@ Building routes from the river mouth to each river network segment may
 }
 \examples{
 data(Gulk, fakefish)
-upstreammatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+upstreammatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
-upstreammatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+upstreammatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 }
 \author{

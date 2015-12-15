@@ -24,6 +24,20 @@ Defaults to \code{"boxplot"}.}
 
 \item{cex.axisX}{Character expansion factor for X-axis labels}
 
+\item{lowerbound}{An optional vector of lower survey bounds}
+
+\item{upperbound}{An optional vector of upper survey bounds}
+
+\item{boundtype}{Method of plotting survey bounds.  Options are
+\code{"positive"}, \code{"negative"} (default), and \code{"lines"}.}
+
+\item{surveysareDates}{If surveys are in Date format (see \link{as.Date}), a
+value of \code{TRUE} allows the x-coordinates points to be spaced apart
+according to date, not equidistantly.  Defaults to \code{FALSE}.  Any formatting of
+the survey variable must be done within the original call to \link{mouthdistobs},
+\link{riverdistanceseq}, or \link{upstreamseq}.  Dates must already be formatted as dates,
+or in the form \code{"YYYY-MM-DD"} or \code{"YYYY/MM/DD"}.}
+
 \item{...}{Additional plotting parameters}
 }
 \description{

@@ -14,7 +14,7 @@ data(Gulk)
 plot(x=Gulk)
 
 ## ----eval=FALSE----------------------------------------------------------
-#  # should I maybe show usage here?
+#  abstreams_fixed <- cleanup(abstreams0)
 
 ## ----fig.width=5,fig.height=5--------------------------------------------
 topologydots(rivers=Gulk)
@@ -41,11 +41,11 @@ riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$s
                    vert=fakefish$vert, rivers=Gulk)
 
 ## ------------------------------------------------------------------------
-riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+riverdistancematobs(indiv=2, ID=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 
 ## ------------------------------------------------------------------------
-riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)
 
 ## ----fig.width=5,fig.height=5--------------------------------------------
@@ -93,7 +93,6 @@ head(x)
 x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
-# this is all randomly generated data and will not show much pattern
 par(mfrow=c(1,2))
 plotseq(seqobs=x)
 plotseq(seqobs=x, type="dotline")

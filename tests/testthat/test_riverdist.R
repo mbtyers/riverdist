@@ -9,8 +9,8 @@ test_that("distance",{
 data(fakefish)
 fakefish.riv <- xy2segvert(fakefish$x[1:2], fakefish$y[1:2], rivers=Gulk)
 test_that("xy2segvert",{
-  expect_equal(fakefish.riv$seg[1],12)
-  expect_equal(fakefish.riv$vert[1],221)
+  expect_equal(fakefish.riv$seg[1],1)
+  expect_equal(fakefish.riv$vert[1],595)
 })
 
 Gulk$mouth$mouth.seg <- Gulk$mouth$mouth.vert <- 1
@@ -48,10 +48,10 @@ test_that("dissolve",{
 
 hr <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk)
 test_that("homerange",{
-  expect_equal(hr[14,1],15)
-  expect_equal(hr[14,2],111047.50,tolerance=0.001)
-  expect_equal(hr[9,1],14)
-  expect_equal(hr[9,2],167769.6,tolerance=0.001)
+  expect_equal(hr[14,1],19)
+  expect_equal(hr[14,2],151397,tolerance=0.001)
+  expect_equal(hr[9,1],2)
+  expect_equal(hr[9,2],94833.3,tolerance=0.001)
   expect_equal(names(hr),c("ID","range"))
   expect_error(homerange(unique=1:10,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk),"Input vectors must be the same length.")
 })
@@ -93,32 +93,32 @@ dm <- riverdistancemat(fakefish$seg,fakefish$vert, logical=(fakefish$flight.date
 um <- upstreammat(fakefish$seg,fakefish$vert, logical=(fakefish$flight.date==as.Date("2015-11-25")), rivers=Gulk)
 dirm <- riverdirectionmat(fakefish$seg,fakefish$vert, logical=(fakefish$flight.date==as.Date("2015-11-25")), rivers=Gulk)
 test_that("mats",{
-  expect_equal(sum(dm),4972537,tolerance=0.001)
-  expect_equal(sum(um[,1]),-556315.2,tolerance=0.001)
+  expect_equal(sum(dm),5027666,tolerance=0.001)
+  expect_equal(sum(um[,1]),-583799.3,tolerance=0.001)
   expect_equal(dirm[2,1],"down")
   expect_equal(dirm[1,2],"up")
   expect_equal(dirm[1,1],"0")
-  expect_equal(row.names(dm),c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
-  expect_equal(row.names(um),c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
-  expect_equal(row.names(dirm),c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+  expect_equal(row.names(dm),c("91",  "92",  "93",  "94",  "95",  "96",  "97",  "98",  "99",  "100"))
+  expect_equal(row.names(um),c("91",  "92",  "93",  "94",  "95",  "96",  "97",  "98",  "99",  "100"))
+  expect_equal(row.names(dirm),c("91",  "92",  "93",  "94",  "95",  "96",  "97",  "98",  "99",  "100"))
 })
 
 ds <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 us <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 dirs <- riverdirectionseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 test_that("seqs",{
-  expect_equal(ds[1,3],88354.404,tolerance=0.001)
-  expect_equal(us[1,3],-88354.404,tolerance=0.001)
-  expect_equal(as.character(dirs[1,3]),"down")
-  expect_true(is.na(ds[1,1]))
-  expect_true(is.na(us[1,1]))
-  expect_true(is.na(dirs[1,1]))
+  expect_equal(ds[1,8],54220.046,tolerance=0.001)
+  expect_equal(us[1,8],-54220.046,tolerance=0.001)
+  expect_equal(as.character(dirs[1,8]),"down")
+  expect_true(is.na(ds[1,2]))
+  expect_true(is.na(us[1,2]))
+  expect_true(is.na(dirs[1,2]))
   expect_equal(names(ds),c("1 to 2","2 to 3","3 to 4","4 to 5","5 to 6","6 to 7","7 to 8","8 to 9","9 to 10"))
   expect_equal(names(us),c("1 to 2","2 to 3","3 to 4","4 to 5","5 to 6","6 to 7","7 to 8","8 to 9","9 to 10"))
   expect_equal(names(dirs),c("1 to 2","2 to 3","3 to 4","4 to 5","5 to 6","6 to 7","7 to 8","8 to 9","9 to 10"))
-  expect_equal(row.names(ds),c("1","2","5","6","7","8","10","11","12","15","16","17","18","19","20","21","23","25","27","28","29"))
-  expect_equal(row.names(us),c("1","2","5","6","7","8","10","11","12","15","16","17","18","19","20","21","23","25","27","28","29"))
-  expect_equal(row.names(dirs),c("1","2","5","6","7","8","10","11","12","15","16","17","18","19","20","21","23","25","27","28","29"))
+  expect_equal(row.names(ds),c("1",  "3",  "4",  "6",  "7",  "8",  "9",  "10", "11", "13", "14", "15", "16", "17", "18", "19", "20"))
+  expect_equal(row.names(us),c("1",  "3",  "4",  "6",  "7",  "8",  "9",  "10", "11", "13", "14", "15", "16", "17", "18", "19", "20"))
+  expect_equal(row.names(dirs),c("1",  "3",  "4",  "6",  "7",  "8",  "9",  "10", "11", "13", "14", "15", "16", "17", "18", "19", "20"))
 })
 
 streamlocs.seg <- c(1,8,11)
@@ -129,13 +129,13 @@ dt <- riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, ID1=stream
 ut <- upstreamtofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, ID1=streamlocs.ID, seg2=fakefish$seg, vert2=fakefish$vert, logical2=logi2, rivers=Gulk1)
 dirt <- riverdirectiontofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, ID1=streamlocs.ID, seg2=fakefish$seg, vert2=fakefish$vert, logical2=logi2, rivers=Gulk1)
 test_that("tofrom",{
-  expect_equal(sum(dt),2813049,tolerance=0.001)
-  expect_equal(sum(ut),2279918,tolerance=0.001)
+  expect_equal(sum(dt),2446906,tolerance=0.001)
+  expect_equal(sum(ut),-1205628,tolerance=0.001)
   expect_equal(dirt[1,4],"up")
   expect_equal(dirt[2,4],"down")
-  expect_equal(dimnames(dt)[[2]],c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
-  expect_equal(dimnames(ut)[[2]],c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
-  expect_equal(dimnames(dirt)[[2]],c("60", "64", "71", "74", "80", "82", "89", "94", "98"))
+  expect_equal(dimnames(dt)[[2]],c("91",  "92",  "93",  "94",  "95",  "96",  "97",  "98",  "99",  "100"))
+  expect_equal(dimnames(ut)[[2]],c("91",  "92",  "93",  "94",  "95",  "96",  "97",  "98",  "99",  "100"))
+  expect_equal(dimnames(dirt)[[2]],c("91",  "92",  "93",  "94",  "95",  "96",  "97",  "98",  "99",  "100"))
   expect_equal(row.names(dt),c("loc A","loc B","loc C"))
   expect_equal(row.names(ut),c("loc A","loc B","loc C"))
   expect_equal(row.names(dirt),c("loc A","loc B","loc C"))
@@ -167,8 +167,10 @@ test_that("splitsegments",{
   expect_equal(Koyukuk1a,Koyukuk2)
 })
 
-Gulk.trim <- trimriver(trim=1:4,rivers=Gulk)
-Gulk.trimto <- trimriver(trimto=1:4,rivers=Gulk)
+Gulk3 <- Gulk
+Gulk3$segroutes <- NULL
+Gulk.trim <- trimriver(trim=1:4,rivers=Gulk3)
+Gulk.trimto <- trimriver(trimto=1:4,rivers=Gulk3)
 data(Koyukuk0)
 Koyukuk0a <- trimriver(trimto=c(1,2,9,10,17:23),rivers=Koyukuk0)
 test_that("trimriver",{
@@ -250,12 +252,12 @@ test_that("stopiferror, flowconnected",{
 
 data(abstreams0)
 Gulk <- setmouth(seg=1,vert=1,rivers=Gulk)
-Gulk1 <- trimriver(trim=10,rivers=Gulk)
+Gulk1 <- trimriver(trim=10,rivers=Gulk3)
 Gulk2 <- removeunconnected(Gulk1)
 test_that("cleanup funcs",{
   expect_equal(length(removeduplicates(abstreams0)$lines),202)
   expect_equal(length(removemicrosegs(abstreams0)$lines),179)
-  expect_equal(Gulk2,trimriver(trimto=1:9,rivers=Gulk))
+  expect_equal(Gulk2,trimriver(trimto=1:9,rivers=Gulk3))
 })
 
 filepath <- system.file("extdata", package="riverdist")
@@ -264,10 +266,10 @@ test_that("line2network",{
 }) 
 
 test_that("matobs", {
-  expect_equal(dim(riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
-                                       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)),c(3,3))
-  expect_equal(dim(riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+  expect_equal(dim(riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+                                       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)),c(7,7))
+  expect_equal(dim(riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
                                        seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)),c(10,10))
-  expect_equal(sum(riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
-                                       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE),na.rm=TRUE),321738.5,tolerance=0.001)
+  expect_equal(sum(riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+                                       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE),na.rm=TRUE),2694810,tolerance=0.001)
 })

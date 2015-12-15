@@ -45,6 +45,8 @@ Calculates distance from the mouth of a river network to all
   specified mouth of the river network.  The mouth must first be specified
   (see \link{setmouth}).  Returns a matrix of distances, with a row for each
   unique individual and a column for each survey.
+
+  Plotting a matrix returned from \code{mouthdistobs()} can be done using \link{plotseq}.
 }
 \note{
 Building routes from the river mouth to each river network segment may
@@ -58,5 +60,8 @@ mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
 }
 \author{
 Matt Tyers
+}
+\seealso{
+\link{plotseq}
 }
 

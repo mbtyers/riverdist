@@ -54,10 +54,10 @@ Building routes from the river mouth to each river network segment may
 }
 \examples{
 data(Gulk, fakefish)
-riverdirectionmatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
-riverdirectionmatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 }
 \author{

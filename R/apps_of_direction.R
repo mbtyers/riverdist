@@ -286,10 +286,10 @@ riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowcon
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' riverdirectionmatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' riverdirectionmatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
 riverdirectionmatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
@@ -493,10 +493,10 @@ upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' upstreammatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#' upstreammatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' upstreammatobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#' upstreammatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
 upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
@@ -644,6 +644,8 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   specified mouth of the river network.  The mouth must first be specified 
 #'   (see \link{setmouth}).  Returns a matrix of distances, with a row for each 
 #'   unique individual and a column for each survey.
+#'   
+#'   Plotting a matrix returned from \code{mouthdistobs()} can be done using \link{plotseq}. 
 #' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
@@ -667,6 +669,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   during the survey in question.
 #' @note Building routes from the river mouth to each river network segment may 
 #'   greatly reduce computation time (see \link{buildsegroutes}).
+#' @seealso \link{plotseq}
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
@@ -708,21 +711,34 @@ mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=
 #'   segment and vertex).  This function is primarily intended for use with 
 #'   \link{mouthdistobs}, but will also work with \link{riverdistanceseq} and 
 #'   \link{upstreamseq}.
-#' @param seqobs A matrix returned from \link{mouthdistobs},
+#' @param seqobs A matrix returned from \link{mouthdistobs}, 
 #'   \link{riverdistanceseq}, or \link{upstreamseq}.
-#' @param type The type of plot to generate.  Options are
+#' @param type The type of plot to generate.  Options are 
 #'   \code{"boxplot"},\code{"dotplot"},\code{"boxline"},or \code{"dotline"}. 
 #'   Defaults to \code{"boxplot"}.
 #' @param xlab X-axis label
 #' @param ylab Y-axis label
 #' @param main Plot title
 #' @param cex.axisX Character expansion factor for X-axis labels
+#' @param lowerbound An optional vector of lower survey bounds
+#' @param upperbound An optional vector of upper survey bounds
+#' @param boundtype Method of plotting survey bounds.  Options are
+#'   \code{"positive"}, \code{"negative"} (default), and \code{"lines"}.
+#' @param surveysareDates If surveys are in Date format (see \link{as.Date}), a
+#'   value of \code{TRUE} allows the x-coordinates points to be spaced apart
+#'   according to date, not equidistantly.  Defaults to \code{FALSE}.  Any formatting of 
+#'   the survey variable must be done within the original call to \link{mouthdistobs}, 
+#'   \link{riverdistanceseq}, or \link{upstreamseq}.  Dates must already be formatted as dates,
+#'   or in the form \code{"YYYY-MM-DD"} or \code{"YYYY/MM/DD"}.
 #' @param ... Additional plotting parameters
-#' @note Plots are intended as descriptive only.  Any ANOVA-like inference that
+#' @note Plots are intended as descriptive only.  Any ANOVA-like inference that 
 #'   is suggested from these plots is strongly discouraged.  The user is instead
-#'   advised to use a mixed-effects model or some other inferential tool that
+#'   advised to use a mixed-effects model or some other inferential tool that 
 #'   accounts for repeated-measures and/or temporal autocorrelation.
 #' @author Matt Tyers
+#' @importFrom graphics polygon
+#' @importFrom graphics boxplot
+#' @importFrom graphics axis
 #' @examples
 #' data(Gulk, fakefish)
 #' 
@@ -735,14 +751,16 @@ mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=
 #' plotseq(seqobs=x, type="dotplot")
 #' plotseq(seqobs=x, type="dotline")
 #' 
+#' plotseq(seqobs=x, type="dotline",surveysareDates=TRUE)
+#' 
 #' from_upstreamseq <- upstreamseq(unique=fakefish$fish.id, 
 #'    survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, 
 #'    rivers=Gulk)
 #' plotseq(seqobs=from_upstreamseq)
 #' @export
 plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,lowerbound=NULL,upperbound=NULL,boundtype="negative",surveysareDates=F,...) {
-  if(!surveysareDates) xplot <- 1:(dim(seqobs)[2])
   if(surveysareDates) xplot <- as.Date(names(seqobs))
+  if(!surveysareDates) xplot <- 1:(dim(seqobs)[2])
   if(is.numeric(seqobs[1,1])) {
     plot(NA,xlim=c(xplot[1],xplot[length(xplot)]),ylim=c(min(seqobs,na.rm=T),max(seqobs,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,...=...)
     if(!is.null(lowerbound)&!is.null(upperbound)) {

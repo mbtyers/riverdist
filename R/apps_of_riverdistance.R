@@ -88,10 +88,10 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' riverdistancematobs(indiv=29, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
 riverdistancematobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,stopiferror=TRUE,algorithm=NULL) {

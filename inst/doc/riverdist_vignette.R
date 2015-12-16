@@ -24,6 +24,9 @@ data(fakefish)
 fakefish_riv <- xy2segvert(x=fakefish$x, y=fakefish$y, rivers=Gulk)
 head(fakefish_riv)  # a look at what it returned
 
+## ----eval=FALSE----------------------------------------------------------
+#  segvert_from_shp <- pointshp2segvert(path=".", layer="MyPointShapefile", rivers=MyRivernetwork)
+
 ## ----fig.width=5,fig.height=5--------------------------------------------
 zoomtoseg(seg=c(11, 14), rivers=Gulk)
 points(fakefish$x, fakefish$y, pch=16, col="red")

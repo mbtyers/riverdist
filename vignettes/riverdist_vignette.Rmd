@@ -24,7 +24,7 @@ Importing and displaying river network data
 
 **Importing a river network using `line2network()`**
 
-In a typical workflow, a user will first import a projected polyline shapefile using `line2network()`.  This function reads the specified shapefile using the 'sp' and 'rgdal' packages, and adds the network connectivity, thus creating a river network object.  If an unprojected shapefile is detected, an error will be generated.  However, the `reproject=` argument allows the `line2network()` to reproject the shapefile before importing it as a river network.
+In a typical workflow, a user will first import a projected polyline shapefile using `line2network()`.  This function reads the specified shapefile using the 'sp' and 'rgdal' packages, and adds the network connectivity, thus creating a river network object.  If an unprojected shapefile is detected, an error will be generated.  However, the `reproject=` argument allows the `line2network()` to re-project the shapefile before importing it as a river network.
 
 ```{r,eval=FALSE}
 library(riverdist)

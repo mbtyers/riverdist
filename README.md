@@ -12,21 +12,22 @@ The 'riverdist' package is intended as a free and readily-available resource for
 
 * `plot()` when used with a river network object produces a simple map of the network, with segments labeled and differentiated by color or line type.
 
-* `xy2segvert()` converts a set of X-Y coordinates to river network coordinates by "snapping" each point to the nearest river vertex.
+* `xy2segvert()` converts a set of X-Y coordinates to river network coordinates by "snapping" each point to the nearest river vertex.  `pointshp2segvert()` does the same, with the input being a point shapefile.
 
 * `riverdistance()`, `riverdirection()`, and `upstream()` return the network distance, the travel direction (upstream or downstream), and the directional (upstream) distance between two river locations, respectively.  Options are included for different handling of locations that are flow-connected or flow-separate, as well as net directional distance when locations are flow-separate.
 
 Several automated analyses are built in.  In most cases, there is a direction or directional distance equivalent.
 
-* `homerange()` returns the minimum observed home range for each individual in a data set
-* `riverdistanceseq()` and `riverdistanceseqobs()` return different forms of matrices of pairwise network distances between observations of each individual in a dataset
-* `riverdistancemat()` returns a matrix of network distances between all observations in a dataset
-* `riverdistancetofrom()` returns a matrix of network distances between two datasets, 
-* `mouthdistobs()` returns a matrix of distances between each observation and the mouth of the river network, with rows corresponding to unique individual, and columns corresponding to unique survey 
+* `homerange()` returns the minimum observed home range for each individual in a data set.
+* `riverdistanceseq()` and `riverdistanceseqobs()` return different forms of matrices of pairwise network distances between observations of each individual in a dataset.
+* `riverdistancemat()` returns a matrix of network distances between all observations in a dataset.
+* `riverdistancetofrom()` returns a matrix of network distances between two datasets.
+* `mouthdistobs()` returns a matrix of distances between each observation and the mouth of the river network, with rows corresponding to unique individual, and columns corresponding to unique survey.
 
 ### Installation
 
-The 'riverdist' package is currently available on Github, and can be installed with the following code:
+The 'riverdist' package is currently available on Github, and can be installed in R with the following code:
+
 `install.packages("devtools",dependencies=T)`
 
 `install_github("mbtyers/riverdist")`
@@ -35,6 +36,6 @@ The 'riverdist' package is currently available on Github, and can be installed w
 
 A major dependency of the 'riverdist' package is the 'rgdal' package, which allows importing shapefiles.  For installation on a non-windows machine, please refer to the SystemRequirements given at https://cran.r-project.org/web/packages/rgdal/index.html
 
-'riverdist' passes R CMD check on both Windows 7 and OS X 10.10.3, but package testing using Travis-CI still gives a Build-Error.  This is not a 'riverdist' issue and does not affect the performance of 'riverdist' within R.  This is a testing issue, since I have not been able to configure my .travis.yml file such that the libraries 'rgdal' needs are loaded.
+'riverdist' passes R CMD check on both Windows 7 and OS X 10.10.3, but package testing using Travis-CI still gives a Build-Error.  This is not a 'riverdist' issue and does not affect the performance of 'riverdist' within R.  This is solely a testing issue, and is due to the fact that I have not yet been able to configure my .travis.yml file such that the libraries 'rgdal' needs are loaded.
 
 [![Travis-CI Build Status](https://travis-ci.org/mbtyers/riverdist.svg?branch=master)](https://travis-ci.org/mbtyers/riverdist)

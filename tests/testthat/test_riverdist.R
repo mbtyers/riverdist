@@ -263,6 +263,7 @@ test_that("cleanup funcs",{
 filepath <- system.file("extdata", package="riverdist")
 test_that("line2network",{
   expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
+  expect_equal(dim(pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)),c(100,7))
 }) 
 
 test_that("matobs", {

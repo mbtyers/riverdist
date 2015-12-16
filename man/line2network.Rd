@@ -7,9 +7,9 @@
 line2network(path = ".", layer, tolerance = 100, reproject = NULL)
 }
 \arguments{
-\item{path}{File path, default is the current working directory}
+\item{path}{File path, default is the current working directory.}
 
-\item{layer}{Name of the shapefile, without the file extension}
+\item{layer}{Name of the shapefile, without the .shp extension.}
 
 \item{tolerance}{Snapping tolerance of segment endpoints to determine
 connectivity.  Default is 100, therefore care should be exercised when

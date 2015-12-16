@@ -64,7 +64,7 @@ topologydots(rivers=Gulk)
 ```
 
 
-**Converting XY data to river coordinates using `xy2segvert()`**
+**Converting XY data to river coordinates using `xy2segvert()` and `pointshp2segvert()`**
 
 Once an appropriate river network has been obtained, point data can be read.  Function `xy2segvert()` converts XY data into river coordinates, by "snapping" each point to the closest segment and vertex.  Because of this, river coordinates can only be used in the context of the river network they belong to.  
 
@@ -74,6 +74,12 @@ The `fakefish` dataset includes coordinates from a sequence of telemetry flights
 data(fakefish)
 fakefish_riv <- xy2segvert(x=fakefish$x, y=fakefish$y, rivers=Gulk)
 head(fakefish_riv)  # a look at what it returned
+```
+
+Spatial data can be read directly from a point shapefile using `pointshp2segvert()`, which returns the resulting river coordinates added to the data table from the point shapefile.
+
+```{r,eval=FALSE}
+segvert_from_shp <- pointshp2segvert(path=".", layer="MyPointShapefile", rivers=MyRivernetwork)
 ```
 
 

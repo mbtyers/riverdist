@@ -19,8 +19,8 @@ pdist <- function(p1,p2) {
 #' @description Uses \link[rgdal]{readOGR} in package 'rgdal' to read a river 
 #'   shapefile, and establishes connectivity of segment endpoints based on 
 #'   spatial proximity.
-#' @param path File path, default is the current working directory
-#' @param layer Name of the shapefile, without the file extension
+#' @param path File path, default is the current working directory.
+#' @param layer Name of the shapefile, without the .shp extension.
 #' @param tolerance Snapping tolerance of segment endpoints to determine 
 #'   connectivity.  Default is 100, therefore care should be exercised when 
 #'   working with larger units of distance, such as km.
@@ -36,9 +36,9 @@ pdist <- function(p1,p2) {
 #'   example below.
 #' @author Matt Tyers
 #' @importFrom rgdal readOGR
-#' @importFrom sp spTransform
 #' @importFrom sp is.projected
 #' @importFrom sp CRS
+#' @importFrom sp spTransform
 #' @examples 
 #' filepath <- system.file("extdata", package="riverdist")
 #' 
@@ -62,7 +62,7 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   if(is.null(reproject) & !projected) stop("Error - Distances can only be computed from a projected coordinate system.  Use reproject= to specify a Proj.4 projection to use.")
   
   if(!is.null(reproject)) {
-    sp <- spTransform(sp,CRS(reproject))
+    sp <- sp::spTransform(sp,sp::CRS(reproject))
   }
   
   units <- "unknown"
@@ -156,6 +156,49 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   names(out) <- out.names
   class(out) <- "rivernetwork"
   return(out)
+}
+
+
+#' Convert a Point Shapefile to River Coordinates
+#' @description This function reads a point shapefile and determines the closest
+#'   vertex in the river network to each point of XY data, returning a data
+#'   frame with river coordinates, defined as segment numbers and vertex
+#'   numbers, along with the data table read from the input shapefile.
+#' @param path File path, default is the current working directory.
+#' @param layer Name of the shapefile, without the .shp extension.
+#' @param rivers The river network object to use.
+#' @return A data frame of river coordinates, with segment numbers in
+#'   \code{$seg} and vertex numbers in \code{$vert}, and the remaining columns
+#'   corresponding to the data table in the input point shapefile.
+#' @author Matt Tyers
+#' @note If the input shapefile is detected to be in a different projection than
+#'   the river network, the input shapefile will be re-projected before
+#'   conversion to river coordinates.
+#' @importFrom rgdal readOGR
+#' @importFrom sp proj4string
+#' @importFrom sp CRS
+#' @importFrom sp spTransform
+#' @examples 
+#' filepath <- system.file("extdata", package="riverdist")
+#' 
+#' fakefish_UTM5 <- pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)
+#' head(fakefish_UTM5)
+#' 
+#' plot(x=Gulk)
+#' points(fakefish_UTM5$x, fakefish_UTM5$y)
+#' riverpoints(seg=fakefish_UTM5$seg, vert=fakefish_UTM5$vert, rivers=Gulk, pch=16, col=2)
+#' 
+#' @export
+pointshp2segvert <- function(path=".",layer,rivers) {
+  shp <- rgdal::readOGR(dsn=path,layer=layer,pointDropZ=TRUE)
+  if(sp::proj4string(shp) != sp::proj4string(rivers$sp)) {
+    cat('\n',"Point projection detected as different from river network.  Re-projecting points before snapping to river network...")
+    projection <- sp::CRS(sp::proj4string(rivers$sp))
+    shp <- sp::spTransform(shp,projection) ##
+  }
+  segvert <- xy2segvert(x=shp@coords[,1],y=shp@coords[,2],rivers=rivers)
+  outdf <- cbind(segvert,shp@data)
+  return(outdf)
 }
 
 

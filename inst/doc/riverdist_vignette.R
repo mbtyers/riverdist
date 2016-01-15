@@ -73,6 +73,15 @@ logi2 <- fakefish$flight.date==as.Date("2015-11-25")
 riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, seg2=fakefish$seg, 
                     vert2=fakefish$vert, ID1=streamlocs.ID, logical2=logi2, rivers=Gulk)
 
+## ----fig.width=7,fig.height=3.5------------------------------------------
+data(Gulk, fakefish)
+fakefish_sub <- subset(fakefish, flight<=3)
+Gulk_dens <- riverdensity(seg=fakefish_sub$seg, vert=fakefish_sub$vert, rivers=Gulk, 
+  survey=fakefish_sub$flight.date, resolution=2000, bw=10000)
+
+par(mfrow=c(1,3))
+plotriverdensity(riverdensity=Gulk_dens, ramp="blue", dark=0.85, maxlwd=15)
+
 ## ----fig.width=5,fig.height=5--------------------------------------------
 showends(seg=1,rivers=Gulk)
 Gulk1 <- setmouth(seg=1, vert=1, rivers=Gulk)
@@ -206,6 +215,16 @@ topologydots(Koyukuk0.1, add=TRUE)
 ## ----eval=FALSE----------------------------------------------------------
 #  data(abstreams1)
 #  abstreams2 <- removemicrosegs(abstreams1)
+
+## ----fig.width=5,fig.height=5--------------------------------------------
+data(Kenai3)
+zoomtoseg(seg=c(73,70,71), rivers=Kenai3)
+points(Kenai3$lines[[71]]) 
+
+## ----fig.width=5,fig.height=5--------------------------------------------
+Kenai3split <- addverts(Kenai3, mindist=200)
+zoomtoseg(seg=c(73,70,71), rivers=Kenai3split)
+points(Kenai3split$lines[[71]])  
 
 ## ----fig.width=5,fig.height=5--------------------------------------------
 data(Gulk)

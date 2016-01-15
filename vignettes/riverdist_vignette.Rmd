@@ -178,6 +178,24 @@ riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, seg2=fakefish$se
                     vert2=fakefish$vert, ID1=streamlocs.ID, logical2=logi2, rivers=Gulk)
 ```
 
+
+**Calculating and plotting kernel density using `riverdensity()` and `plotriverdensity()`**
+
+A method has been provided to display kernel density calculated from point data, using river network distance.  The `riverdensity()` function calculates scaled kernel density at approximately regularly-spaced river network locations, with the linear resolution specified by the optional `resolution=` argument.  A gaussian (normal) kernel is used by default, but a rectangular (simple density) kernel can be used as well.  The `survey=` argument may also be used with a vector of survey identifiers corresponding to the point data.  If the `survey=` argument is used, `riverdensity()` will calculate separate densities for each unique survey, and `plotriverdensity()` will produce a separate plot for each unique survey.
+
+The `plotriverdensity()` function can display densities using line thickness, color, or both.  For additional plotting arguments including possible color ramps, see `?plotriverdensity`.
+
+```{r,fig.width=7,fig.height=3.5}
+data(Gulk, fakefish)
+fakefish_sub <- subset(fakefish, flight<=3)
+Gulk_dens <- riverdensity(seg=fakefish_sub$seg, vert=fakefish_sub$vert, rivers=Gulk, 
+  survey=fakefish_sub$flight.date, resolution=2000, bw=10000)
+
+par(mfrow=c(1,3))
+plotriverdensity(riverdensity=Gulk_dens, ramp="blue", dark=0.85, maxlwd=15)
+```
+
+
 Incorporating flow direction
 -------------------------------------
 
@@ -423,6 +441,27 @@ This is an issue that may be difficult to recognize, and may cause mysterious pr
 ```{r,eval=FALSE}
 data(abstreams1)
 abstreams2 <- removemicrosegs(abstreams1)
+```
+
+
+**Issue: A long straight-line section of the river network does not contain vertices between endpoints - a fix using `addverts()`**
+
+In some cases, such as when a river network contains a lake, the shapefile will contain long straight-line sections, with vertices retained only for the beginning and end.  If point data exist in these regions, when they are converted to river locations, they will be snapped to the nearest vertex - in this case, one of the endpoints of the straight stretch.  Since it is likely that a greater degree of precision is desired in distance calculations, `addverts()` provides a method of inserting additional vertices, wherever the river network contains vertices that are spaced at a greater distance than a specified threshold.
+
+The example below shows how the Skilak Lake section of the Kenai River network was originally read from a shapefile, with the vertices of segment 71 overlayed. 
+
+```{r,fig.width=5,fig.height=5}
+data(Kenai3)
+zoomtoseg(seg=c(73,70,71), rivers=Kenai3)
+points(Kenai3$lines[[71]]) 
+```
+
+The same section is shown below after adding vertices every 200 meters.
+
+```{r,fig.width=5,fig.height=5}
+Kenai3split <- addverts(Kenai3, mindist=200)
+zoomtoseg(seg=c(73,70,71), rivers=Kenai3split)
+points(Kenai3split$lines[[71]])  
 ```
 
 

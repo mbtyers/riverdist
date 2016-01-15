@@ -10,12 +10,22 @@ cleanup(rivers)
 \item{rivers}{The river network object to use}
 }
 \value{
-A new river network object with duplicated segments removed, see \link{rivernetwork}
+A new river network object with duplicated segments removed, see
+  \link{rivernetwork}
 }
 \description{
-This is the recommended function to use for cleanup of a river network.  It calls all available river network editing functions in appropriate sequence, detecting which are needed or recommended, and prompts user input wherever necessary.
+This is the recommended function to use for cleanup of a river
+  network.  It calls all available river network editing functions in
+  appropriate sequence, detecting which are needed or recommended, and
+  prompts user input wherever necessary.
 
-Currently, it automatically calls \link{removeduplicates}, prompts the user whether to run \link{dissolve}, automatically runs \link{removemicrosegs} and \link{splitsegments} if needed, provides user prompts for \link{setmouth}, detects if segments are unconnected and provides user prompts for \link{removeunconnected} or \link{connectsegs}, automatically runs \link{checkbraidedTF}, and prompts the user whether to run \link{buildsegroutes} if no braiding is detected.
+  Currently, it automatically calls \link{removeduplicates}, prompts the user
+  whether to run \link{dissolve}, automatically runs \link{removemicrosegs}
+  and \link{splitsegments} if needed, provides user prompts for
+  \link{addverts} and \link{setmouth}, detects if segments are unconnected
+  and provides user prompts for \link{removeunconnected} or
+  \link{connectsegs}, automatically runs \link{checkbraidedTF}, and prompts
+  the user whether to run \link{buildsegroutes} if no braiding is detected.
 }
 \examples{
 data(abstreams0,Koyukuk0,Kenai1)

@@ -14,7 +14,7 @@ xy2segvert(x, y, rivers)
 \item{rivers}{The river network object to use}
 }
 \value{
-A data frame of river coordinates, with segment numbers in \code{$seg} and vertex numbers in \code{$vert}.
+A data frame of river coordinates, with segment numbers in \code{$seg}, vertex numbers in \code{$vert}, and the snapping distance for each point in \code{$snapdist}.
 }
 \description{
 This function determines the closest vertex in the river network

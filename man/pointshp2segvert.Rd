@@ -26,7 +26,7 @@ This function reads a point shapefile and determines the closest
 }
 \note{
 If the input shapefile is detected to be in a different projection than
-  the river network, the input shapefile will be reprojected before
+  the river network, the input shapefile will be re-projected before
   conversion to river coordinates.
 }
 \examples{

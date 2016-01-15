@@ -2,8 +2,8 @@ data(Gulk)
 test_that("distance",{
   expect_equal(riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk), 155435.2, tolerance=0.001)
   expect_equal(riverdistance(startseg=1, startvert=49, endseg=14, endvert=27, rivers=Gulk), 155105.9, tolerance=0.001)
-  expect_error(riverdistance(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk),"Invalid segments specified.")
-  expect_error(riverdistance(startseg=7, startvert=149, endseg=14, endvert=121, rivers=Gulk),"Invalid vertex specified.")
+  expect_error(riverdistance(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk))
+  expect_error(riverdistance(startseg=7, startvert=149, endseg=14, endvert=121, rivers=Gulk))
 })
 
 data(fakefish)
@@ -25,18 +25,19 @@ test_that("buildsegroutes",{
 })
 
 data(Kenai3)
+Kenai3.1 <- setmouth(seg=61,vert=40,rivers=Kenai3)
 Kenai3.subset <- trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3)
 test_that("checkbraided",{
-  expect_that(checkbraided(rivers=Gulk),prints_text("No braiding detected in river network."))
-  expect_that(checkbraided(rivers=Kenai3),prints_text("Braiding detected in river network.  Distance measurements may be inaccurate."))
-  expect_that(checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset),prints_text("No braiding detected between segments."))
-  expect_that(checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset),prints_text("Braiding detected between segments.  Distance measurements may be inaccurate."))
+  expect_false(checkbraidedTF(rivers=Gulk, toreturn="logical"))
+  expect_true(checkbraidedTF(rivers=Kenai3.1, toreturn="logical"))
+  #expect_that(checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset),prints_text("No braiding detected between segments."))
+  #expect_that(checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset),prints_text("Braiding detected between segments.  Distance measurements may be inaccurate."))
 })
 
 data(abstreams)
 test_that("detectroute",{
   expect_equal(detectroute(start=1,end=9,rivers=Gulk),c(1,4,9))
-  expect_error(detectroute(start=1,end=99,rivers=Gulk),"Invalid segments specified.")
+  expect_error(detectroute(start=1,end=99,rivers=Gulk))
   expect_equal(detectroute(start=120,end=111,rivers=abstreams),c(120,103,106,109,112,116,124,132,134,133,135,142,153,152,144,136,127,115,114,107,108,111))
   expect_equal(detectroute(start=116,end=14,rivers=abstreams),detectroute(start=116,end=14,rivers=abstreams_nosegroutes))
 })
@@ -53,7 +54,7 @@ test_that("homerange",{
   expect_equal(hr[9,1],2)
   expect_equal(hr[9,2],94833.3,tolerance=0.001)
   expect_equal(names(hr),c("ID","range"))
-  expect_error(homerange(unique=1:10,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk),"Input vectors must be the same length.")
+  expect_error(homerange(unique=1:10,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk))
 })
 
 test_that("isflowconnected",{
@@ -66,7 +67,7 @@ test_that("isflowconnected",{
 test_that("mouthdist",{
   expect_equal(mouthdist(4,19,abstreams),92996.74,tolerance=0.001)
   expect_equal(mouthdist(4,19,abstreams_nosegroutes),92996.74,tolerance=0.001)
-  expect_error(mouthdist(4,19,Kenai3),"Need to specify segment & vertex of origin")
+  expect_error(mouthdist(4,19,Kenai3))
 })
 
 test_that("direction",{
@@ -75,7 +76,7 @@ test_that("direction",{
   expect_equal(riverdirection(startseg=12, startvert=49, endseg=12, endvert=49, rivers=Gulk), "0")
   expect_true(is.na(riverdirection(startseg=7, startvert=49, endseg=14, endvert=121, flowconnected=T, rivers=Gulk)))
   expect_false(is.na(riverdirection(startseg=7, startvert=49, endseg=1, endvert=121, flowconnected=T, rivers=Gulk)))
-  expect_error(riverdirection(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk),"Invalid segments specified.")
+  expect_error(riverdirection(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk))
 })
 
 test_that("upstream",{
@@ -86,7 +87,7 @@ test_that("upstream",{
   expect_equal(upstream(startseg=12, startvert=49, endseg=12, endvert=49, rivers=Gulk), 0, tolerance=0.001)
   expect_true(is.na(upstream(startseg=7, startvert=49, endseg=14, endvert=121, flowconnected=T, rivers=Gulk)))
   expect_false(is.na(upstream(startseg=7, startvert=49, endseg=1, endvert=121, flowconnected=T, rivers=Gulk)))
-  expect_error(upstream(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk),"Invalid segments specified.")
+  expect_error(upstream(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk))
 })
 
 dm <- riverdistancemat(fakefish$seg,fakefish$vert, logical=(fakefish$flight.date==as.Date("2015-11-25")), rivers=Gulk)
@@ -263,7 +264,7 @@ test_that("cleanup funcs",{
 filepath <- system.file("extdata", package="riverdist")
 test_that("line2network",{
   expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
-  expect_equal(dim(pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)),c(100,7))
+  expect_equal(dim(pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)),c(100,8))
 }) 
 
 test_that("matobs", {

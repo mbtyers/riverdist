@@ -4,7 +4,7 @@
 \alias{riverpoints}
 \title{Draw Points from River Coordinates}
 \usage{
-riverpoints(seg, vert, rivers, pch = 1, col = 1)
+riverpoints(seg, vert, rivers, pch = 1, col = 1, ...)
 }
 \arguments{
 \item{seg}{A vector of segments}
@@ -16,6 +16,8 @@ riverpoints(seg, vert, rivers, pch = 1, col = 1)
 \item{pch}{Point character}
 
 \item{col}{Point color}
+
+\item{...}{Additional arguments for \link{points}}
 }
 \description{
 Adds points to an active plot.  Works like \link[graphics]{points} but with river coordinates (segments and vertices) rather than xy coordinates.

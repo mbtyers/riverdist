@@ -30,7 +30,7 @@ The 'riverdist' package is currently available on Github, and can be installed i
 
 `install.packages("devtools",dependencies=T)`
 
-`install_github("mbtyers/riverdist")`
+`devtools::install_github("mbtyers/riverdist")`
 
 ### Issues
 

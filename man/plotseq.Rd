@@ -58,13 +58,12 @@ data(Gulk, fakefish)
 x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
-# this is all randomly generated data and will not show much pattern
 plotseq(seqobs=x)
 plotseq(seqobs=x, type="boxline")
 plotseq(seqobs=x, type="dotplot")
 plotseq(seqobs=x, type="dotline")
 
-plotseq(seqobs=x, type="dotline",surveysareDates=TRUE)
+plotseq(seqobs=x, type="dotline", surveysareDates=TRUE)
 
 from_upstreamseq <- upstreamseq(unique=fakefish$fish.id,
    survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert,

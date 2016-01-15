@@ -31,11 +31,21 @@ removeduplicates <- function(rivers) {
 
 
 #' Interactive Cleanup of a River Network
-#' @description This is the recommended function to use for cleanup of a river network.  It calls all available river network editing functions in appropriate sequence, detecting which are needed or recommended, and prompts user input wherever necessary.  
-#' 
-#' Currently, it automatically calls \link{removeduplicates}, prompts the user whether to run \link{dissolve}, automatically runs \link{removemicrosegs} and \link{splitsegments} if needed, provides user prompts for \link{setmouth}, detects if segments are unconnected and provides user prompts for \link{removeunconnected} or \link{connectsegs}, automatically runs \link{checkbraidedTF}, and prompts the user whether to run \link{buildsegroutes} if no braiding is detected. 
+#' @description This is the recommended function to use for cleanup of a river
+#'   network.  It calls all available river network editing functions in
+#'   appropriate sequence, detecting which are needed or recommended, and
+#'   prompts user input wherever necessary.
+#'   
+#'   Currently, it automatically calls \link{removeduplicates}, prompts the user
+#'   whether to run \link{dissolve}, automatically runs \link{removemicrosegs}
+#'   and \link{splitsegments} if needed, provides user prompts for
+#'   \link{addverts} and \link{setmouth}, detects if segments are unconnected
+#'   and provides user prompts for \link{removeunconnected} or
+#'   \link{connectsegs}, automatically runs \link{checkbraidedTF}, and prompts
+#'   the user whether to run \link{buildsegroutes} if no braiding is detected.
 #' @param rivers The river network object to use
-#' @return A new river network object with duplicated segments removed, see \link{rivernetwork}
+#' @return A new river network object with duplicated segments removed, see
+#'   \link{rivernetwork}
 #' @seealso line2network
 #' @author Matt Tyers
 #' @examples
@@ -184,6 +194,26 @@ cleanup <- function(rivers) {
     cat("Splitting segments...",'\n')
     rivers4 <- splitsegments(rivers=rivers3)
     cat("Identified",(length(rivers4$lines)-length(rivers3$lines)),"new segment breaks.",'\n')
+  }
+  
+  # checking segment lengths
+  distances <- NULL
+  for(segi in 1:length(rivers4$lines)) {
+    if(dim(rivers4$lines[[segi]])[1]>1) {
+      for(verti in 2:(dim(rivers4$lines[[segi]])[1])) {
+        distances <- c(distances,pdist(rivers4$lines[[segi]][verti,],rivers4$lines[[segi]][(verti-1),]))
+      }
+    }
+  }
+  maxlength <- max(distances,na.rm=T)
+  cat("Maximum distance between vertices is",round(maxlength),'\n')
+  hist(distances)
+  yes <- 0
+  while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Insert vertices to reduce distances and increase point snapping precision? (y/n) ")
+  if(yes=="Y" | yes=="y") {
+    mindist <- as.numeric(readline(prompt="Minimum distance to use: "))
+    cat("Inserting vertices...",'\n')
+    rivers4 <- addverts(rivers4, mindist=mindist)
   }
   
   if(is.na(rivers4$mouth$mouth.seg) | is.na(rivers4$mouth$mouth.vert)) {
@@ -347,6 +377,7 @@ cleanup <- function(rivers) {
   } 
   
   cat('\n',"Cleanup completed, returning a network with",length(rivers6$lines),"segments.",'\n')
+  cat('\n',"Recommend saving output to a .Rdata or .rda file.",'\n')
   return(rivers6)
 }
 
@@ -511,4 +542,70 @@ removemicrosegs <- function(rivers) {
   }
   rivers <- trimriver(trim=problems,rivers=rivers)
   return(rivers)
+}
+
+
+#' Add Vertices To Maintain a Minumum Distance Between Vertices
+#' @description In certain cases, such as when there is a lake within a river system, there may be long, straight lines in a river network with vertices only at either end.
+#' In these cases, any point data along these stretches would be snapped to the vertices at either end.  This function automatically
+#' adds equally-spaced vertices along the straight line, according to a specified minimum allowable distance between vertices. 
+#' @param rivers The river network object to use.
+#' @param mindist The minimum distance to use between vertices.  Defaults to 500.
+#' @return A new river network object with the specified segments connected (see \link{rivernetwork})
+#' @seealso line2network
+#' @note This function is called within \link{cleanup}, which is recommended in most cases.
+#' @author Matt Tyers
+#' @examples
+#' data(Kenai3)
+#' Kenai3split <- addverts(Kenai3,mindist=200)
+#' 
+#' zoomtoseg(seg=c(73,70,71), rivers=Kenai3)
+#' points(Kenai3$lines[[71]])        # vertices before adding
+#' 
+#' zoomtoseg(seg=c(73,70,71), rivers=Kenai3split)
+#' points(Kenai3split$lines[[71]])   # vertices after adding
+#' @export
+addverts <- function(rivers,mindist=500) {
+# this function needs a better name
+  
+  lines <- rivers$lines 
+  rivers1 <- rivers
+  for(segi in 1:length(lines)) {
+    seginew <- NULL #matrix(data=lines[[segi]][1,],nrow=1,ncol=2)
+    if(dim(lines[[segi]])[1] > 1) {
+      for(verti in 2:(dim(lines[[segi]])[1])) {
+        if(pdist(lines[[segi]][verti,],lines[[segi]][(verti-1),]) > mindist) {
+          mindistx <- mindist*(lines[[segi]][verti,1]-lines[[segi]][(verti-1),1])/pdist(lines[[segi]][verti,],lines[[segi]][(verti-1),])
+          mindisty <- mindist*(lines[[segi]][verti,2]-lines[[segi]][(verti-1),2])/pdist(lines[[segi]][verti,],lines[[segi]][(verti-1),])
+          if(mindistx!=0) xtoadd <- seq(from=lines[[segi]][(verti-1),1],to=lines[[segi]][(verti),1],by=mindistx)
+          if(mindisty!=0) ytoadd <- seq(from=lines[[segi]][(verti-1),2],to=lines[[segi]][(verti),2],by=mindisty)
+          if(mindistx==0 & mindisty!=0) xtoadd <- rep(lines[[segi]][(verti),1],length(ytoadd))
+          if(mindisty==0 & mindistx!=0) ytoadd <- rep(lines[[segi]][(verti),2],length(xtoadd))
+        }
+        if(pdist(lines[[segi]][verti,],lines[[segi]][(verti-1),]) <= mindist) {
+          xtoadd <- lines[[segi]][(verti-1),1]
+          ytoadd <- lines[[segi]][(verti-1),2]
+        }
+        seginew <- rbind(seginew,cbind(xtoadd,ytoadd))
+      }
+      seginew <- rbind(seginew,lines[[segi]][dim(lines[[segi]])[1],])
+      lines[[segi]] <- unname(seginew)
+    }
+    
+    # updating the sp object!
+    rivers1$sp@lines[[rivers$lineID[segi,2]]]@Lines[[rivers$lineID[segi,3]]]@coords <- unname(seginew)
+  }
+   
+  rivers1$lines <- lines
+  
+  # mouth 
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
+    for(j in 1:(dim(rivers1$lines[[rivers$mouth$mouth.seg]])[1])) {
+      if(all(mouthcoords==rivers1$lines[[rivers$mouth$mouth.seg]][j,])) {
+        rivers1$mouth$mouth.vert <- j
+      }
+    }
+  }
+  return(rivers1)
 }

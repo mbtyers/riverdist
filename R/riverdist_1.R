@@ -393,7 +393,7 @@ whoconnected <- function(seg,rivers) {
 #' @param x A vector of x-coordinates to transform
 #' @param y A vector of y-coordinates to transform
 #' @param rivers The river network object to use
-#' @return A data frame of river coordinates, with segment numbers in \code{$seg} and vertex numbers in \code{$vert}.
+#' @return A data frame of river coordinates, with segment numbers in \code{$seg}, vertex numbers in \code{$vert}, and the snapping distance for each point in \code{$snapdist}.
 #' @author Matt Tyers
 #' @note Conversion to river coordinates is only valid if the input XY 
 #'   coordinates and river network are in the same projected coordinate system. 
@@ -429,6 +429,7 @@ xy2segvert <- function(x,y,rivers) {
   if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
   seg <- rep(NA,length(x))
   vert <- rep(NA,length(x))
+  snapdist <- rep(NA,length(x))
   lines <- rivers$lines
   
   pdist2 <- function(p1,p2mat) {
@@ -444,11 +445,12 @@ xy2segvert <- function(x,y,rivers) {
       if(min.i < min.dist1) {
         min.dist1 <- min.i
         seg[i] <- river.i
-        vert[i] <- which(dists==min.i)
+        vert[i] <- which(dists==min.i)[1]  # if there's a tie, accept the first vertex
+        snapdist[i] <- pdist(c(x[i],y[i]),lines[[river.i]][vert[i],])
       }
     }
   }
-  out <- data.frame(seg,vert)
+  out <- data.frame(seg,vert,snapdist)
   return(out)
 }
 
@@ -459,6 +461,7 @@ xy2segvert <- function(x,y,rivers) {
 #' @param rivers The river network object to use
 #' @param pch Point character
 #' @param col Point color
+#' @param ... Additional arguments for \link{points}
 #' @author Matt Tyers
 #' @examples
 #' data(fakefish,Gulk)
@@ -468,7 +471,7 @@ xy2segvert <- function(x,y,rivers) {
 #' riverpoints(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, pch=15, col=4)
 #' @importFrom graphics points
 #' @export
-riverpoints <- function(seg,vert,rivers,pch=1,col=1) {
+riverpoints <- function(seg,vert,rivers,pch=1,col=1,...) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- rivers$lines
   if(max(seg,na.rm=T)>length(lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
@@ -476,7 +479,7 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1) {
   for(i in 1:length(seg)) {
     if(vert[i]>dim(lines[[seg[i]]])[1] | vert[i]<1) stop("Invalid vertex numbers specified.")
     points(lines[[seg[i]]][vert[i],1],
-           lines[[seg[i]]][vert[i],2],pch=pch,col=col)
+           lines[[seg[i]]][vert[i],2],pch=pch,col=col,...=...)
   }
 }
 

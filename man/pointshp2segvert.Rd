@@ -2,7 +2,7 @@
 % Please edit documentation in R/riverdist_1.R
 \name{pointshp2segvert}
 \alias{pointshp2segvert}
-\title{Convert a Point Shapefile to River Coordinates}
+\title{Convert a Point Shapefile to River Locations}
 \usage{
 pointshp2segvert(path = ".", layer, rivers)
 }
@@ -14,20 +14,20 @@ pointshp2segvert(path = ".", layer, rivers)
 \item{rivers}{The river network object to use.}
 }
 \value{
-A data frame of river coordinates, with segment numbers in
-  \code{$seg} and vertex numbers in \code{$vert}, and the remaining columns
+A data frame of river locations, with segment numbers in
+  \code{$seg}, vertex numbers in \code{$vert}, snapping distances in \code{$snapdist}, and the remaining columns
   corresponding to the data table in the input point shapefile.
 }
 \description{
 This function reads a point shapefile and determines the closest
   vertex in the river network to each point of XY data, returning a data
-  frame with river coordinates, defined as segment numbers and vertex
+  frame with river locations, defined as segment numbers and vertex
   numbers, along with the data table read from the input shapefile.
 }
 \note{
 If the input shapefile is detected to be in a different projection than
   the river network, the input shapefile will be re-projected before
-  conversion to river coordinates.
+  conversion to river locations.
 }
 \examples{
 filepath <- system.file("extdata", package="riverdist")

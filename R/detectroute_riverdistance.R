@@ -361,7 +361,7 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
 
 #' River Distance
 #' @description Calculates the total river network distance between two points 
-#'   on the river network, given in river coordinates (segment and vertex).
+#'   on the river network, given in river locations (segment and vertex).
 #' @param startseg Segment number of the start of the route
 #' @param endseg Segment number of the end of the route
 #' @param startvert Vertex number of the start of the route

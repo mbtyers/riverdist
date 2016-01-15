@@ -326,7 +326,7 @@ riverdirectionmatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowc
 
 #' River Direction Matrix
 #' @description Returns a matrix of calculated travel direction between every
-#'   point and every other point of given river coordinates (segment and
+#'   point and every other point of given river locations (segment and
 #'   vertex), or of a subset.  The mouth (lowest point) segment and vertex must
 #'   be specified (see \link{setmouth}).
 #' @param seg A vector of river locations (segment component).
@@ -533,7 +533,7 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 
 #' Upstream Distance Matrix
 #' @description Returns a matrix of upstream distance between every point and
-#'   every other point of given river coordinates (segment and vertex), or of a
+#'   every other point of given river locations (segment and vertex), or of a
 #'   subset.  The mouth (lowest point) segment and vertex must be specified
 #'   (see \link{setmouth}).
 #' @param seg A vector of river locations (segment component).
@@ -649,7 +649,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
-#' @param seg A vector of river coordinates (segment)
+#' @param seg A vector of river locations (segment)
 #' @param vert A vectpr pf rover coordinates (vertex)
 #' @param rivers The river network object to use
 #' @param logical A boolean vector that can be used for subsetting - if used, 

@@ -128,7 +128,7 @@ riverdistancematobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,stopif
 
 #' River Distance Matrix
 #' @description Returns a matrix of distances between every point and every
-#'   other point of given river coordinates (segment and vertex), or of a subset.
+#'   other point of given river locations (segment and vertex), or of a subset.
 #' @param seg A vector of river locations (segment component).
 #' @param vert A vector of river locations (vertex component).
 #' @param rivers The river network object to use.

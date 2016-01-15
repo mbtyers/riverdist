@@ -64,9 +64,9 @@ topologydots(rivers=Gulk)
 ```
 
 
-**Converting XY data to river coordinates using `xy2segvert()` and `pointshp2segvert()`**
+**Converting XY data to river locations using `xy2segvert()` and `pointshp2segvert()`**
 
-Once an appropriate river network has been obtained, point data can be read.  Function `xy2segvert()` converts XY data into river coordinates, by "snapping" each point to the closest segment and vertex.  Because of this, river coordinates can only be used in the context of the river network they belong to.  
+Once an appropriate river network has been obtained, point data can be read.  Function `xy2segvert()` converts XY data into river locations, by "snapping" each point to the closest segment and vertex.  Because of this, river locations can only be used in the context of the river network they belong to.  
 
 The `fakefish` dataset includes coordinates from a sequence of telemetry flights.
 
@@ -76,16 +76,16 @@ fakefish_riv <- xy2segvert(x=fakefish$x, y=fakefish$y, rivers=Gulk)
 head(fakefish_riv)  # a look at what it returned
 ```
 
-Spatial data can be read directly from a point shapefile using `pointshp2segvert()`, which returns the resulting river coordinates added to the data table from the point shapefile.
+Spatial data can be read directly from a point shapefile using `pointshp2segvert()`, which returns the resulting river locations added to the data table from the point shapefile.
 
 ```{r,eval=FALSE}
 segvert_from_shp <- pointshp2segvert(path=".", layer="MyPointShapefile", rivers=MyRivernetwork)
 ```
 
 
-**Displaying point data in river coordinates using `riverpoints()`**
+**Displaying point data in river locations using `riverpoints()`**
 
-The `riverpoints()` function works essentially like `points()` to overlay point data on an existing plot, but using river coordinates (segment and vertex).  The `zoomtoseg()` function produces a plot zoomed to the specified segment number, or vector of segment numbers.
+The `riverpoints()` function works essentially like `points()` to overlay point data on an existing plot, but using river locations (segment and vertex).  The `zoomtoseg()` function produces a plot zoomed to the specified segment number, or vector of segment numbers.
 
 In the plot below, the raw coordinates are displayed as red circles and the river locations are displayed as blue squares.
 
@@ -101,7 +101,7 @@ Basic distance calculation in a non-messy river network
 
 **Computing network distance using `riverdistance()`**
 
-River network distance can be calculated directly with the `riverdistance()` function.  The `riverdistance()` function calls `detectroute()` internally, which the user will probably never need, but usage is shown below.  The `riverdistance()` function needs river coordinates (segment and vertex) for both starting and ending locations.  Specifying `map=TRUE` as shown below is not necessary, but can provide a check to verify that the function is working properly.
+River network distance can be calculated directly with the `riverdistance()` function.  The `riverdistance()` function calls `detectroute()` internally, which the user will probably never need, but usage is shown below.  The `riverdistance()` function needs river locations (segment and vertex) for both starting and ending locations.  Specifying `map=TRUE` as shown below is not necessary, but can provide a check to verify that the function is working properly.
 
 ```{r,fig.width=5,fig.height=5}
 # starting location: segment 7, vertex 49

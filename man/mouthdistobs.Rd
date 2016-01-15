@@ -13,7 +13,7 @@ mouthdistobs(unique, survey, seg, vert, rivers, logical = NULL,
 \item{survey}{A vector of identifiers for each survey.  It is recommended to
 use a numeric or date format (see \link{as.Date}) to preserve survey order.}
 
-\item{seg}{A vector of river coordinates (segment)}
+\item{seg}{A vector of river locations (segment)}
 
 \item{vert}{A vectpr pf rover coordinates (vertex)}
 

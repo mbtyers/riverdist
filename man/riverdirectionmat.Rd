@@ -38,7 +38,7 @@ A matrix of directions (character) with rows and columns labeled by
 }
 \description{
 Returns a matrix of calculated travel direction between every
-  point and every other point of given river coordinates (segment and
+  point and every other point of given river locations (segment and
   vertex), or of a subset.  The mouth (lowest point) segment and vertex must
   be specified (see \link{setmouth}).
 }

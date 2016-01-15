@@ -2,7 +2,7 @@
 % Please edit documentation in R/riverdist_1.R
 \name{xy2segvert}
 \alias{xy2segvert}
-\title{Convert XY Coordinates to River Coordinates}
+\title{Convert XY Coordinates to River Locations}
 \usage{
 xy2segvert(x, y, rivers)
 }
@@ -14,15 +14,15 @@ xy2segvert(x, y, rivers)
 \item{rivers}{The river network object to use}
 }
 \value{
-A data frame of river coordinates, with segment numbers in \code{$seg}, vertex numbers in \code{$vert}, and the snapping distance for each point in \code{$snapdist}.
+A data frame of river locations, with segment numbers in \code{$seg}, vertex numbers in \code{$vert}, and the snapping distance for each point in \code{$snapdist}.
 }
 \description{
 This function determines the closest vertex in the river network
-  to each point of XY data and returns a list of river coordinates, defined
+  to each point of XY data and returns a list of river locations, defined
   as segment numbers and vertex numbers.
 }
 \note{
-Conversion to river coordinates is only valid if the input XY
+Conversion to river locations is only valid if the input XY
   coordinates and river network are in the same projected coordinate system.
   Point data in geographic coordinates can be projected using
   \link[rgdal]{project} in package 'rgdal', and an example is shown below.

@@ -42,7 +42,7 @@ A matrix of upstream distances (numeric) with rows and columns
 }
 \description{
 Returns a matrix of upstream distance between every point and
-  every other point of given river coordinates (segment and vertex), or of a
+  every other point of given river locations (segment and vertex), or of a
   subset.  The mouth (lowest point) segment and vertex must be specified
   (see \link{setmouth}).
 }

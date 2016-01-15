@@ -179,7 +179,7 @@ NULL
 #'    \item{\code{units}:}{\code{"character"}: the spatial units detected from the input shapefile.}
 #'    \item{\code{lineID}:}{Object of class \code{"data.frame"} establishing the relationship between river segments as stored in the \code{sp} and \code{lines} elements, and is used for updating the \code{sp} element during river network editing in \link{dissolve}, \link{splitsegments}, \link{sequenceverts}, \link{trimriver}, and \link{trimtopoints}.
 #'    \itemize{
-#'      \item \code{rivID} gives the list element number of each river segment in \code{lines}.  This is the same number that is used for segment numbering in river coordinates.
+#'      \item \code{rivID} gives the list element number of each river segment in \code{lines}.  This is the same number that is used for segment numbering in river locations.
 #'      \item \code{sp_line} gives the corresponding list element in \code{sp@@lines}.
 #'      \item \code{sp_seg} gives the corresponding list element in \code{sp@@lines[[]]@@Lines}.
 #'      }}

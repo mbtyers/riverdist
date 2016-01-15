@@ -44,7 +44,7 @@ Total route distance, in the units of the coordinate system used
 }
 \description{
 Calculates the total river network distance between two points
-  on the river network, given in river coordinates (segment and vertex).
+  on the river network, given in river locations (segment and vertex).
 }
 \note{
 Building routes from the river mouth to each river network segment may

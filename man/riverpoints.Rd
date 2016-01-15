@@ -2,7 +2,7 @@
 % Please edit documentation in R/riverdist_1.R
 \name{riverpoints}
 \alias{riverpoints}
-\title{Draw Points from River Coordinates}
+\title{Draw Points from River Locations}
 \usage{
 riverpoints(seg, vert, rivers, pch = 1, col = 1, ...)
 }
@@ -20,7 +20,7 @@ riverpoints(seg, vert, rivers, pch = 1, col = 1, ...)
 \item{...}{Additional arguments for \link{points}}
 }
 \description{
-Adds points to an active plot.  Works like \link[graphics]{points} but with river coordinates (segments and vertices) rather than xy coordinates.
+Adds points to an active plot.  Works like \link[graphics]{points} but with river locations (segments and vertices) rather than xy coordinates.
 }
 \examples{
 data(fakefish,Gulk)

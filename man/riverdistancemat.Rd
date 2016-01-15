@@ -35,7 +35,7 @@ A matrix of distances (numeric) with rows and columns labeled by corresponding v
 }
 \description{
 Returns a matrix of distances between every point and every
-  other point of given river coordinates (segment and vertex), or of a subset.
+  other point of given river locations (segment and vertex), or of a subset.
 }
 \note{
 Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).

@@ -159,21 +159,21 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
 }
 
 
-#' Convert a Point Shapefile to River Coordinates
+#' Convert a Point Shapefile to River Locations
 #' @description This function reads a point shapefile and determines the closest
 #'   vertex in the river network to each point of XY data, returning a data
-#'   frame with river coordinates, defined as segment numbers and vertex
+#'   frame with river locations, defined as segment numbers and vertex
 #'   numbers, along with the data table read from the input shapefile.
 #' @param path File path, default is the current working directory.
 #' @param layer Name of the shapefile, without the .shp extension.
 #' @param rivers The river network object to use.
-#' @return A data frame of river coordinates, with segment numbers in
-#'   \code{$seg} and vertex numbers in \code{$vert}, and the remaining columns
+#' @return A data frame of river locations, with segment numbers in
+#'   \code{$seg}, vertex numbers in \code{$vert}, snapping distances in \code{$snapdist}, and the remaining columns
 #'   corresponding to the data table in the input point shapefile.
 #' @author Matt Tyers
 #' @note If the input shapefile is detected to be in a different projection than
 #'   the river network, the input shapefile will be re-projected before
-#'   conversion to river coordinates.
+#'   conversion to river locations.
 #' @importFrom rgdal readOGR
 #' @importFrom sp proj4string
 #' @importFrom sp CRS
@@ -386,16 +386,16 @@ whoconnected <- function(seg,rivers) {
 }
 
 
-#' Convert XY Coordinates to River Coordinates
+#' Convert XY Coordinates to River Locations
 #' @description This function determines the closest vertex in the river network
-#'   to each point of XY data and returns a list of river coordinates, defined 
+#'   to each point of XY data and returns a list of river locations, defined 
 #'   as segment numbers and vertex numbers.
 #' @param x A vector of x-coordinates to transform
 #' @param y A vector of y-coordinates to transform
 #' @param rivers The river network object to use
-#' @return A data frame of river coordinates, with segment numbers in \code{$seg}, vertex numbers in \code{$vert}, and the snapping distance for each point in \code{$snapdist}.
+#' @return A data frame of river locations, with segment numbers in \code{$seg}, vertex numbers in \code{$vert}, and the snapping distance for each point in \code{$snapdist}.
 #' @author Matt Tyers
-#' @note Conversion to river coordinates is only valid if the input XY 
+#' @note Conversion to river locations is only valid if the input XY 
 #'   coordinates and river network are in the same projected coordinate system. 
 #'   Point data in geographic coordinates can be projected using 
 #'   \link[rgdal]{project} in package 'rgdal', and an example is shown below.
@@ -454,8 +454,8 @@ xy2segvert <- function(x,y,rivers) {
   return(out)
 }
 
-#' Draw Points from River Coordinates
-#' @description Adds points to an active plot.  Works like \link[graphics]{points} but with river coordinates (segments and vertices) rather than xy coordinates.
+#' Draw Points from River Locations
+#' @description Adds points to an active plot.  Works like \link[graphics]{points} but with river locations (segments and vertices) rather than xy coordinates.
 #' @param seg A vector of segments
 #' @param vert A vector of vertices
 #' @param rivers The river network object to use

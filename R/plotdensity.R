@@ -175,6 +175,7 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
         if(kernel=="rect") densitiesi <- (tofromi<bw)
       }
       densitiesii <- rep(NA,length(densvertsTF))
+      if(!any(densvertsTF)) densitiesi <- matrix(0)
       densitiesii[densvertsTF] <- unname(rowSums(densitiesi))
       densitiesii[!densvertsTF] <- 0
       densities[[isurvey]][[segi]] <- densitiesii

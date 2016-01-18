@@ -274,4 +274,17 @@ test_that("matobs", {
                                        seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)),c(10,10))
   expect_equal(sum(riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
                                        seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE),na.rm=TRUE),2694810,tolerance=0.001)
+}) 
+
+fakefish_sub <- subset(fakefish,vert<40)
+fakesubdens <- riverdensity(seg=fakefish_sub$seg,vert=fakefish_sub$vert,survey=fakefish_sub$flight.date,rivers=Gulk)
+test_that("riverdensity", {
+  expect_equal(length(fakesubdens$densities),7)
+  expect_equal(length(fakesubdens$densities[[1]]),14)
+  expect_equal(sum(unlist(fakesubdens$densities)),0.04732881,tolerance=0.0000001)
+})
+
+test_that("addverts", {
+  expect_equal(dim(Gulk$lines[[1]]),c(812,2))
+  expect_equal(dim(addverts(rivers=Gulk,mindist=100)$lines[[1]]),c(1130,2))
 })

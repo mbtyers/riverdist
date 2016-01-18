@@ -204,6 +204,11 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #'   by the \code{pwr} argument.  Setting \code{pwr} to a value less than 1 
 #'   allows smaller values to be more visible on the plot.
 #' @param riverdensity A river density object created by \link{riverdensity}.
+#' @param whichplot A vector of plots to produce, if multiple plots are 
+#'   produced.  For example, specifying \code{whichplot=c(2,3,4)} will result in
+#'   only the second, third, and fourth plots of the sequence being produced. 
+#'   Accepting the default (\code{NULL}) will result in all plots being 
+#'   produced.
 #' @param points Whether to add the points used for density calculation. 
 #'   Defaults to \code{TRUE}.
 #' @param bycol Whether to use a color ramp to show densities.  Defaults to 
@@ -214,6 +219,13 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #'   \code{TRUE}.  Defaults to 10.
 #' @param pwr The power to use in the nonlinear transformation calculating the 
 #'   relative density values to be displayed (see above.)  Defaults to 0.7.
+#' @param scalebyN Whether to display relative density values scaled by sample
+#'   size.  Specifying \code{scalebyN=TRUE} will show larger density values
+#'   associated with surveys with more points, and may be more appropriate for
+#'   displaying total density.  Specifying \code{scalebyN=FALSE} will allow
+#'   surveys with smaller sample sizes to be plotted with similar density values
+#'   as those with larger sample sizes, and may be more appropriate for
+#'   displaying relative density.  Defaults to \code{TRUE}.
 #' @param ramp The color ramp used to display densities if \code{bycol} is set 
 #'   to \code{TRUE}.  Allowed values are \code{"grey"} (or \code{"gray"}), 
 #'   \code{"red"}, \code{"green"}, \code{"blue"}, \code{"heat"}, 
@@ -227,9 +239,9 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #'   set to \code{TRUE}.  Defaults to \code{"black"}.
 #' @param alpha The opacity value for lines.  This could potentially allow 
 #'   multiple density plots to be overlayed with different colors.
-#' @param dark A color-saturation adjustment, with values in [0,1].  A value of
-#'   1 uses the true colors, and a value less than 1 will render the colors as
-#'   slightly darker (less saturated), which may be appear better.  Defaults to
+#' @param dark A color-saturation adjustment, with values in [0,1].  A value of 
+#'   1 uses the true colors, and a value less than 1 will render the colors as 
+#'   slightly darker (less saturated), which may be appear better.  Defaults to 
 #'   1.
 #' @param showN Whether to automatically include the number of points used as 
 #'   part of the plot title(s).
@@ -256,7 +268,7 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 #' # plotriverdensity(riverdensity=Gulk_dens)
 #' @export
-plotriverdensity <- function(riverdensity,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,...) {
+plotriverdensity <- function(riverdensity,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,...) {
   if(dark>1 | dark<0) dark <-1
   if(alpha>1 | alpha<0) alpha <-1
   densities <- riverdensity$densities
@@ -284,17 +296,40 @@ plotriverdensity <- function(riverdensity,points=TRUE,bycol=TRUE,bylwd=TRUE,maxl
       # print(c(j,xmin,xmax,ymin,ymax))
     }
   }
-  
+    
+  nsize <- NA
   isurvey <- 1
   for(surveyi in sort(unique(survey))) {
+    nsize[isurvey] <- length(seg[survey==surveyi])
+    isurvey <- isurvey+1
+  }
+  
+  iisurvey <- 1
+  if(is.null(whichplots)) whichplots <- 1:length(unique(survey))
+  whichplotsurvey <- (sort(unique(survey)))[whichplots]
+  
+  if(!scalebyN){ 
+    isurvey <- 1
+    for(surveyi in sort(unique(survey))) {
+      for(segi in 1:length(rivers$lines)) {
+        densities[[isurvey]][[segi]] <- densities[[isurvey]][[segi]]*max(nsize[whichplots])/nsize[isurvey]
+      }
+      isurvey <- isurvey+1
+    }
+  }
+  
+  for(surveyi in whichplotsurvey) {
+    isurvey <- whichplots[iisurvey]
     # if(showN) mainforplot <- c(main[isurvey],paste("n =",length(seg[survey==surveyi])))
     if(showN) mainforplot <- paste0(main[isurvey],"  (n=",length(seg[survey==surveyi]),")")
     if(!showN) mainforplot <- main[isurvey]
-    if(!add) plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,main=mainforplot,...=...)
+    if(!add) plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,main=mainforplot)#,...=...)
     
     for(segi in 1:length(rivers$lines)) {
       #cols <- grey(densities[[isurvey]][[segi]]/max(unlist(densities)))
       quants <- (densities[[isurvey]][[segi]]/max(unlist(densities)))^pwr
+      #if(!scalebyN) quants <- (max(nsize)/nsize[isurvey]*densities[[isurvey]][[segi]]/max(unlist(densities)))^pwr
+      #if(!scalebyN) quants <- (densities[[isurvey]][[segi]]/max(unlist(densities[[isurvey]])))^pwr
       if(bycol) {
         if(ramp=="grey" | ramp=="gray") {
           cols <- grey((1-quants)*.8)
@@ -317,19 +352,19 @@ plotriverdensity <- function(riverdensity,points=TRUE,bycol=TRUE,bylwd=TRUE,maxl
           linecol <- rgb(.8,.8,1)
         }
         if(ramp=="heat") {
-          cols <- heat.colors(1000)[ceiling(900*(1-quants))]
+          cols <- heat.colors(1000)[ceiling(900*(1-quants))+1]
           denscol <- heat.colors(1000)[1]
-          linecol <- heat.colors(1000)[900]
+          linecol <- heat.colors(1000)[901]
         }
         if(ramp=="stoplight") {
-          cols <- rainbow(1000)[ceiling(300*(1-quants))] 
+          cols <- rainbow(1000)[ceiling(300*(1-quants))+1] 
           denscol <- rainbow(1000)[1] 
-          linecol <- rainbow(1000)[300]
+          linecol <- rainbow(1000)[301]
         }
         if(ramp=="rainbow") {
-          cols <- rainbow(1000)[ceiling(700*(1-quants))]
+          cols <- rainbow(1000)[ceiling(700*(1-quants))+1]
           denscol <- rainbow(1000)[1] 
-          linecol <- rainbow(1000)[700]
+          linecol <- rainbow(1000)[701]
         }
       }
       if(bylwd) {
@@ -352,8 +387,8 @@ plotriverdensity <- function(riverdensity,points=TRUE,bycol=TRUE,bylwd=TRUE,maxl
         }
       }
     }
-    isurvey <- isurvey+1
     if(points) riverpoints(seg=seg[survey==surveyi],vert=vert[survey==surveyi],rivers=rivers,pch=21,bg=0,col=denscol)
+    iisurvey <- iisurvey+1
   }
 }
 # 

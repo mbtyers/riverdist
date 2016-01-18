@@ -4,10 +4,11 @@
 \alias{plotriverdensity}
 \title{Plot Kernel Density Using River Distance}
 \usage{
-plotriverdensity(riverdensity, points = TRUE, bycol = TRUE, bylwd = TRUE,
-  maxlwd = 10, pwr = 0.7, ramp = "grey", lwd = 1, linecol = "black",
-  denscol = "black", alpha = 1, dark = 1, showN = TRUE, main = NULL,
-  xlab = "", ylab = "", add = FALSE, ...)
+plotriverdensity(riverdensity, whichplots = NULL, points = TRUE,
+  bycol = TRUE, bylwd = TRUE, maxlwd = 10, pwr = 0.7, scalebyN = TRUE,
+  ramp = "grey", lwd = 1, linecol = "black", denscol = "black",
+  alpha = 1, dark = 1, showN = TRUE, main = NULL, xlab = "",
+  ylab = "", add = FALSE, ...)
 }
 \arguments{
 \item{riverdensity}{A river density object created by \link{riverdensity}.}
@@ -26,6 +27,14 @@ Defaults to \code{TRUE}.}
 
 \item{pwr}{The power to use in the nonlinear transformation calculating the
 relative density values to be displayed (see above.)  Defaults to 0.7.}
+
+\item{scalebyN}{Whether to display relative density values scaled by sample
+size.  Specifying \code{scalebyN=TRUE} will show larger density values
+associated with surveys with more points, and may be more appropriate for
+displaying total density.  Specifying \code{scalebyN=FALSE} will allow
+surveys with smaller sample sizes to be plotted with similar density values
+as those with larger sample sizes, and may be more appropriate for
+displaying relative density.  Defaults to \code{TRUE}.}
 
 \item{ramp}{The color ramp used to display densities if \code{bycol} is set
 to \code{TRUE}.  Allowed values are \code{"grey"} (or \code{"gray"}),
@@ -68,6 +77,12 @@ size if \code{showN} is set to \code{TRUE}.}
 existing plot (\code{TRUE}).  Defaults to \code{FALSE}.}
 
 \item{...}{Additional plotting parameters.}
+
+\item{whichplot}{A vector of plots to produce, if multiple plots are
+produced.  For example, specifying \code{whichplot=c(2,3,4)} will result in
+only the second, third, and fourth plots of the sequence being produced.
+Accepting the default (\code{NULL}) will result in all plots being
+produced.}
 }
 \description{
 Produces a kernel density plot from a kernel density object

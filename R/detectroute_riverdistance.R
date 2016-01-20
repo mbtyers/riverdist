@@ -460,7 +460,7 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
     # distance on the full segments between the beginning and end segments
     if(length(path)>2) {
       route.dist <- route.dist+sum(seg.lengths[path[2:(length(path)-1)]])
-      if(map==T) for(i in path[2:(length(path)-1)]) lines(lines[[i]],col=2,lty=1,lwd=3)
+      if(map==T) for(i in path[2:(length(path)-1)]) lines(lines[[i]],col=4,lty=1,lwd=3)
     }
     #distance on the partial segment the end is on
     if(connections[path[length(path)-1],path[length(path)]]==1 | connections[path[length(path)-1],path[length(path)]]==3) {

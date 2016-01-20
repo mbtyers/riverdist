@@ -207,6 +207,7 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #' @aliases mapriver
 #' @param x The river network object to plot
 #' @param segmentnum Whether or not to plot segment numbers (defaults to TRUE)
+#' @param offset Whether to offset segment numbers from lines (defaults to TRUE)
 #' @param lwd Line width
 #' @param cex Global character expansion factor for plotting
 #' @param scale Whether or not to give x- and y-axes the same scale
@@ -231,7 +232,7 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #' @importFrom stats cor
 #' @importFrom graphics axTicks
 #' @export
-plot.rivernetwork <- function(x,segmentnum=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,xlab="",ylab="",...) {
+plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,xlab="",ylab="",...) {
   rivers <- x
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- rivers$lines
@@ -254,7 +255,8 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,lwd=1,cex=.6,scale=TRUE,color=TR
   midptx <- midpty <- NA
   for(j in 1:length) {
     if(!color) lines(lines[[j]],col=1,lty=j,lwd=lwd)
-    if(color) lines(lines[[j]],col=rgb((sin(j)+1)/2.3,(cos(7*j)+1)/2.3,(sin(3*(length-j))+1)/2.3),lty=1,lwd=lwd)
+    linecolor <- rgb((sin(j)+1)/2.3,(cos(7*j)+1)/2.3,(sin(3*(length-j))+1)/2.3)
+    if(color) lines(lines[[j]],col=linecolor,lty=1,lwd=lwd)
     linelength <- dim(lines[[j]])[1]
     
     xplot <- lines[[j]][,1][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
@@ -262,7 +264,13 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,lwd=1,cex=.6,scale=TRUE,color=TR
     if(length(xplot)>0) midptx[j] <- mean(xplot)
     if(length(yplot)>0) midpty[j] <- mean(yplot)
     if(length(xplot)==0 | length(yplot)==0) midptx[j] <- midpty[j] <-NA
-    if(segmentnum) text(midptx[j],midpty[j],j,cex=cex)
+    middle <- floor(length(xplot)/2)
+    direction <- 3+(abs(xplot[floor(length(xplot)*.25)]-xplot[floor(length(xplot)*.75)]) < abs(yplot[floor(length(yplot)*.25)]-yplot[floor(length(yplot)*.75)]))
+    if(!offset) direction <- NULL
+    xtext <- ifelse(length(xplot)>0,xplot[middle],NA)
+    ytext <- ifelse(length(yplot)>0,yplot[middle],NA)
+    if(segmentnum) text(x=xtext,y=ytext,labels=j,pos=direction,cex=cex,col=ifelse(color,linecolor,1))
+    # if(segmentnum) text(midptx[j],midpty[j],j,cex=cex)
   }
   if(scale) {
     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")

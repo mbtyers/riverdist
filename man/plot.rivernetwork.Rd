@@ -5,13 +5,15 @@
 \alias{plot.rivernetwork}
 \title{Plotting a River Network}
 \usage{
-\method{plot}{rivernetwork}(x, segmentnum = TRUE, lwd = 1, cex = 0.6,
-  scale = TRUE, color = TRUE, xlab = "", ylab = "", ...)
+\method{plot}{rivernetwork}(x, segmentnum = TRUE, offset = TRUE, lwd = 1,
+  cex = 0.6, scale = TRUE, color = TRUE, xlab = "", ylab = "", ...)
 }
 \arguments{
 \item{x}{The river network object to plot}
 
 \item{segmentnum}{Whether or not to plot segment numbers (defaults to TRUE)}
+
+\item{offset}{Whether to offset segment numbers from lines (defaults to TRUE)}
 
 \item{lwd}{Line width}
 

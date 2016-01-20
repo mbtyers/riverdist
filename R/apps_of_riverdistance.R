@@ -213,7 +213,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
   
   for(i in 1:length(ID)) {
     if(map==T) {
-      plot(x=rivers,main=ID[i],color=F)
+      plot(x=rivers,main=ID[i],color=F,segmentnum=F)
     }
     
     n.entries <- length(unique[unique==ID[i]])
@@ -291,7 +291,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
       }
       range[i] <- sum(seg.rep.max)
     }
-    if(map) riverpoints(seg=seg[unique==ID[i]],vert=vert[unique==ID[i]],rivers=rivers,pch=15,col=2)
+    if(map) riverpoints(seg=seg[unique==ID[i]],vert=vert[unique==ID[i]],rivers=rivers,pch=15,col=4)
   }
   
   thing <- data.frame(ID,range)

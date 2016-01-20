@@ -113,53 +113,52 @@ detectroute(start=7, end=14, rivers=Gulk)
 
 **Computing network distances between sequential observations of individuals using `riverdistanceseq()`**
 
-River distance can be calculated manually between any two connected locations on a river network.  However, a few common summary analyses were automated and are included in 'riverdist'.  First, the `riverdistanceseq()` function returns a matrix of the distances between sequential observations for a set of individuals observed multiple times.  In the fakefish example, the set of 20 fish were observed (or not) during 10 telemetry flights.  Fakefish number 1 traveled 95.08 km between flights 1 and 2, and was not observed during flights 3, 6, or 7.
+River distance can be calculated manually between any two connected locations on a river network.  However, a few common summary analyses were automated and are included in 'riverdist'.  First, the `riverdistanceseq()` function returns a matrix of the distances between sequential observations for a set of individuals observed multiple times.  In the example below, three fish were observed (or not) during 5 telemetry flights.  The dataset is shown first, then the output from `riverdistanceseq()`.  Fish number 1 traveled 83.87 km between flights 3 and 4, and was not observed during flight 2.
 
-```{r,fig.width=7,fig.height=7}
-head(fakefish)
-riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
-                   vert=fakefish$vert, rivers=Gulk)
+```{r}
+data(smallset)
+smallset
+riverdistanceseq(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
+                   vert=smallset$vert, rivers=Gulk)
 ```
 
 
 **Computing a matrix of network distances between all observations for an individual using `riverdistancematobs()`**
 
-River distance can also be calculated between all observations of a single individual.  In the output matrix shown below for individual 2, the element with row identifier `1` and column identifier `4` represents the river distance from the location observed in survey 1 to the location observed in survey 4, 94833m.  An important note is that the distances reported are net distance between locations, and are not intended to be cumulative.
+River distance can also be calculated between all observations of a single individual.  In the output matrix shown below for individual 1, the element with row identifier `1` and column identifier `3` represents the river distance from the location observed in survey 1 to the location observed in survey 3, 83.6 km.  An important note is that the distances reported are net distance between locations, and are not intended to be cumulative.
 
 ```{r}
-riverdistancematobs(indiv=2, ID=fakefish$fish.id, survey=fakefish$flight,
-      seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
+riverdistancematobs(indiv=1, ID=smallset$id, survey=smallset$flight,
+      seg=smallset$seg, vert=smallset$vert, rivers=Gulk, full=FALSE)
 ```
 
 Specifying `full=TRUE` reports an output matrix that includes all observations, with values of `NA` if the individual was not observed.  This allows the output matrices for multiple individuals to have the same rows and columns, thus being directly comparable.
 
 ```{r}
-riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
-      seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)
+riverdistancematobs(indiv=1, ID=smallset$id, survey=smallset$flight,
+      seg=smallset$seg, vert=smallset$vert, rivers=Gulk, full=TRUE)
 ```
 
 
 **Computing minimum observed home range for individuals using `homerange()`**
 
-The minimum observed (linear) home range for each individual can be calculated using `homerange()`.  Maps can be produced, and one is shown for fish number 15.
+The minimum observed (linear) home range for each individual can be calculated using `homerange()`.  Maps can be produced if desired, by specifying `map=TRUE`.
 
-```{r,fig.width=5,fig.height=5}
+```{r,fig.width=7,fig.height=3.5}
 # calculating observed minimum home range for all individuals
-homerange(unique=fakefish$fish.id, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-
-# calculating and mapping observed minimum home range for individual 15
-homerange(unique=fakefish$fish.id[fakefish$fish.id==15], seg=fakefish$seg[fakefish$fish.id==15],
-           vert=fakefish$vert[fakefish$fish.id==15], rivers=Gulk, map=TRUE)
+par(mfrow=c(1,3))
+homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk, map=TRUE)
 ```
 
 
 **Computing a matrix of network distances between all observations using `riverdistancemat()`**
 
-A matrix of the river network distance from every observation to every other observation can also be calculated using `riverdistancemat()`.  The `logical` argument can be used for subsetting, if the full network distance matrix is not needed.  This capability is shown below, calculating the distance matrix only for observations occurring on a flight date of November 25.
+A matrix of the river network distance from every observation to every other observation can also be calculated using `riverdistancemat()`.  The `logical` argument can be used for subsetting, if the full network distance matrix is not needed.  This capability is shown below, calculating the distance matrix only for observations occurring on segment number 2.  The `ID` argument can be used with a vector of observation labels, to display row and column labels that might be more meaningful than observation indices.
 
 ```{r}
-logi1 <- fakefish$flight.date==as.Date("2015-11-25")
-riverdistancemat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
+logi1 <- (smallset$seg==2)
+obsID <- paste0("id",smallset$id,"-flight",smallset$flight)
+riverdistancemat(seg=smallset$seg, vert=smallset$vert, rivers=Gulk, logical=logi1, ID=obsID)
 ```
 
 
@@ -168,32 +167,18 @@ riverdistancemat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi
 A matrix of river network distance between two location datasets can be calculated using `riverdistancetofrom()`, which can be similarly subsetted using the `logical1` and `logical2` arguments.  Row and column names can be added using the `ID1` and `ID2` arguments.
 
 ```{r}
-streamlocs.seg <- c(1,8,11)
-streamlocs.vert <- c(50,70,90)
+streamlocs.seg <- c(2,2,2)
+streamlocs.vert <- c(10,20,30)
 streamlocs.ID <- c("loc A","loc B","loc C")
 
-logi2 <- fakefish$flight.date==as.Date("2015-11-25")
+logi2 <- (smallset$seg==2)
+obsID <- paste0("id",smallset$id,"-flight",smallset$flight)
 
-riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, seg2=fakefish$seg, 
-                    vert2=fakefish$vert, ID1=streamlocs.ID, logical2=logi2, rivers=Gulk)
+riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, seg2=smallset$seg, 
+                    vert2=smallset$vert, ID1=streamlocs.ID, ID2=obsID, logical2=logi2, 
+                    rivers=Gulk)
 ```
 
-
-**Calculating and plotting kernel density using `riverdensity()` and `plotriverdensity()`**
-
-A method has been provided to display kernel density calculated from point data, using river network distance.  The `riverdensity()` function calculates scaled kernel density at approximately regularly-spaced river network locations, with the linear resolution specified by the optional `resolution=` argument.  A gaussian (normal) kernel is used by default, but a rectangular (simple density) kernel can be used as well.  The `survey=` argument may also be used with a vector of survey identifiers corresponding to the point data.  If the `survey=` argument is used, `riverdensity()` will calculate separate densities for each unique survey, and `plotriverdensity()` will produce a separate plot for each unique survey.
-
-The `plotriverdensity()` function can display densities using line thickness, color, or both.  For additional plotting arguments including possible color ramps, see `?plotriverdensity`.
-
-```{r,fig.width=7,fig.height=3.5}
-data(Gulk, fakefish)
-fakefish_sub <- subset(fakefish, flight<=3)
-Gulk_dens <- riverdensity(seg=fakefish_sub$seg, vert=fakefish_sub$vert, rivers=Gulk, 
-  survey=fakefish_sub$flight.date, resolution=2000, bw=10000)
-
-par(mfrow=c(1,3))
-plotriverdensity(riverdensity=Gulk_dens, ramp="blue", dark=0.85, maxlwd=15)
-```
 
 
 Incorporating flow direction
@@ -217,8 +202,10 @@ For example, the route between two points goes downstream along a river for 100m
 
 Specifying `flowconnected=TRUE` in both `riverdirection()` and `upstream()` will only return distances or directions if the input locations are flow-connected, and will return `NA` otherwise.
 
-```{r,fig.width=7,fig.height=7}
-riverdistance(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, map=TRUE)
+```{r,fig.width=5,fig.height=4}
+zoomtoseg(seg=c(6,3), rivers=Gulk)
+riverpoints(seg=c(6,4), vert=c(250,250), col=4, pch=15, rivers=Gulk1)
+#riverdistance(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, map=TRUE)
 text(c(859122.4, 872104.1), c(6964127.4,6969741.0), pos=c(3, 4), labels=c("beginning", "end"))
 riverdirection(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1)
 upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, net=FALSE)
@@ -232,40 +219,11 @@ upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowcon
 River direction and upstream distance are also applied in functions `riverdirectionseq()` and `upstreamseq()` which work like `riverdistanceseq()`, `riverdirectionmatobs()` and `upstreammatobs()` which work like `riverdistancematobs()`, `riverdirectionmat()` and `upstreammat()` which work like `riverdistancemat()`, and `riverdirectiontofrom` and `upstreamtofrom` which work like `riverdistancetofrom`.  The `upstreamseq()`, `upstreammatobs()`, and `upstreammat()` use the additional `net=` argument, and all river direction and upstream distance functions use the additional `flowconnected=` argument.
 
 
-**Summarizing up-river position, defined as distance from mouth, using `mouthdist()` for one observation and `mouthdistobs()` for a dataset**
-
-Distance between one observation and the river mouth can be calculated using `mouthdist()`, which can be used as a summary measure of up-river or down-river position, with appropriateness depending on the river system.  In the case of multiple observations of a set of individuals, a summary matrix can be calculated using `mouthdistobs()`, which returns a matrix of distances from the river mouth, with each row corresponding to a unique individual and each column corresponding to a unique survey.
-
-```{r}
-mouthdist(seg=fakefish$seg[1], vert=fakefish$vert[1], rivers=Gulk)
-x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
-    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-
-head(x)
-```
-
-
-**Plotting the summary matrix from `mouthdistobs()` or other distance sequence using `plotseq()`**
-
-The resulting matrix of up-river position returned from `mouthdistobs()`, or another distance sequence returned from `riverdistanceseq()` or `upstreamseq()`, can be plotted using `plotseq()`.  A few types of plots are available, with two shown below.  Additional `type=` arguments can be seen by calling `?plotseq`.  
-
-The user is cautioned to use any plots returned as descriptive tools only, as ANOVA-type inference would likely be inappropriate without accounting for repeated-measures and/or serial autocorrelation.
-
-```{r,fig.width=7.5,fig.height=4}
-x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
-    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-
-par(mfrow=c(1,2))
-plotseq(seqobs=x)
-plotseq(seqobs=x, type="dotline")
-par(mfrow=c(1,1))
-```
-
 
 Allowing different route-detection algorithms: a possible time-saver
 -----------------------------------------------------
 
-Currently three algorithms are implemented to detect routes between river locations, with the functions automatically selecting the most appropriate unless another is specified.  If braiding presence is detected or unknown, Dijkstra's algorithm is used (`algorithm="Dijkstra`) to return the shortest route, which is safe but slow.  If braiding is confirmed to be absent using `checkbraidedTF()`, the first complete route detected between locations is used, which can save considerable processing time.  
+Currently three algorithms are implemented to detect routes between river locations, with the functions automatically selecting the most appropriate unless another is specified.  If braiding presence is detected or unknown, Dijkstra's algorithm is used (`algorithm="Dijkstra"`) to return the shortest route, which is safe but slow.  If braiding is confirmed to be absent using `checkbraidedTF()`, the first complete route detected between locations is used, which can save considerable processing time.  
 
 Running `buildsegroutes()` calculates the routes to each network segment from a single point, defined as the river network mouth.  This allows route calculation to switch to an even simpler method, further reducing processing time.
 
@@ -302,6 +260,80 @@ tend - tstart
 ```
 
 In this case, building segment routes takes about as much time as calculating a single distance, a little less than a second.  Calculating a single distance after building segment routes takes about a hundredth of a second, thus dramatically saving time if multiple distances were to be computed, such as in a large matrix of distances, or multiple analyses.
+
+
+Beyond individuals: summarizing or plotting at the dataset level
+----------------------------------------
+
+**Calculating and plotting kernel density using `riverdensity()` and `plotriverdensity()`**
+
+A method has been provided to display kernel density calculated from point data, using river network distance.  The `riverdensity()` function calculates scaled kernel density at approximately regularly-spaced river network locations, with the linear resolution specified by the optional `resolution=` argument.  A gaussian (normal) kernel is used by default, but a rectangular (simple density) kernel can be used as well.  The `survey=` argument may also be used with a vector of survey identifiers corresponding to the point data.  If the `survey=` argument is used, `riverdensity()` will calculate separate densities for each unique survey, and `plotriverdensity()` will produce a separate plot for each unique survey.
+
+The `plotriverdensity()` function can display densities using line thickness, color, or both.  For additional plotting arguments including possible color ramps, see `?plotriverdensity`.
+
+Density plots are shown below for the first three flights of the fakefish dataset.
+
+```{r,fig.width=7.5,fig.height=3.5}
+data(Gulk, fakefish)
+fakefish_sub <- subset(fakefish, flight<=3)
+Gulk_dens <- riverdensity(seg=fakefish_sub$seg, vert=fakefish_sub$vert, rivers=Gulk, 
+  survey=fakefish_sub$flight.date, resolution=2000, bw=10000)
+
+par(mfrow=c(1,3))
+plotriverdensity(riverdensity=Gulk_dens, ramp="blue", dark=0.85, maxlwd=15)
+```
+
+
+
+**Summarizing up-river position, defined as distance from mouth, using `mouthdist()` for one observation and `mouthdistobs()` for a dataset**
+
+In some cases, a meaningful summary measure may be the up-river position of each observation.  Distance between an individual observation and the river mouth can be calculated using `mouthdist()`.  In the case of multiple observations of a set of individuals, a summary matrix can be calculated using `mouthdistobs()`, which returns a matrix of distances from the river mouth, with each row corresponding to a unique individual and each column corresponding to a unique survey.
+
+```{r}
+mouthdist(seg=fakefish$seg[1], vert=fakefish$vert[1], rivers=Gulk)
+x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight,
+    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+
+round(x)
+```
+
+
+**Plotting the summary matrix from `mouthdistobs()` or other distance sequence using `plotseq()`**
+
+The resulting matrix of up-river position returned from `mouthdistobs()`, or another distance sequence returned from `riverdistanceseq()` or `upstreamseq()`, can be plotted using `plotseq()`.  A few types of plots are available, with two shown below.  Additional `type=` arguments can be seen by calling `?plotseq`.  
+
+The user is cautioned to use any plots returned as descriptive tools only, as ANOVA-type inference would likely be inappropriate without accounting for repeated-measures and/or serial autocorrelation.
+
+```{r,fig.width=7.5,fig.height=5}
+x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
+    seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+
+par(mfrow=c(1,2))
+plotseq(seqobs=x)
+plotseq(seqobs=x, type="dotline")
+par(mfrow=c(1,1))
+```
+
+Depending on the study, `plotseq()` may be useful in plotting the upstream distance between observations of each individual, as calculated in `upstreamseq()`.  It is worth noting that the outputs from both `upstreamseq()` and `riverdistanceseq()` may have many empty cells, if individuals were missed on any flights.
+
+```{r,fig.width=5,fig.height=5}
+x <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg,
+                 vert=fakefish$vert, rivers=Gulk)
+round(x)
+plotseq(seqobs=x)
+```
+
+
+**Plotting STUUUUUFFFFFFF**
+
+figure out how to talk about `plotupstreammatobs()`
+
+```{r,fig.width=5,fig.height=9}
+plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+                   vert=fakefish$vert, rivers=Gulk)
+```
+
+
 
 Editing a river network object, or fixing a messy one
 ----------------------------------------------------------

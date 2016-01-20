@@ -531,6 +531,74 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
   return(outmat)
 }
 
+
+#' Plot Upstream Distance Between Observations of All Individuals
+#' @description Produces a matrix of boxplots, with plot \code{[i,j]} giving the
+#'   distribution of upstream distances from observation \code{i} to observation
+#'   \code{j}, for all individuals.  Each distance is calculated in \link{upstream}.
+#' @param ID A vector of unique identifiers for each fish.
+#' @param survey A vector of identifiers for each survey.  It is recommended to 
+#'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
+#' @param seg A vector of river locations (segment component).
+#' @param vert A vector of river locations (vertex component).
+#' @param rivers The river network object to use.
+#' @param ... Additional arguments for \link{upstream}.
+#' @seealso \link{upstream}, \link{upstreammatobs}
+#' @note Building routes from the river mouth to each river network segment may 
+#'   greatly reduce computation time (see \link{buildsegroutes}).
+#' @author Matt Tyers
+#' @examples
+#' data(Gulk, smallset)
+#' plotupstreammatobs(ID=smallset$id, survey=smallset$flight, seg=smallset$seg, 
+#'    vert=smallset$vert, rivers=Gulk)
+#'    
+#' data(fakefish)
+#' # plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+#' #   vert=fakefish$vert, rivers=Gulk)
+#' @export
+plotupstreammatobs <- function(ID,survey,seg,vert,rivers,...) {
+  mats <- list()
+  indivi <- 1
+  for(indiv in sort(unique(ID))) {
+    mats[[indivi]] <- upstreammatobs(indiv=indiv,ID=ID,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
+    indivi <- indivi+1
+  }
+  #return(mats)
+  maxall <- max(unlist(mats),na.rm=T)
+  minall <- min(unlist(mats),na.rm=T)
+  dims <- dim(mats[[1]])[1]
+  plot(NA,xlim=c(0,dims+.5),ylim=c(0,dims),xaxt='n',yaxt='n',xlab="",ylab="")
+  for(i in 1:(dims-1)) {
+    lines(rep(dims-i,2),c(i,dims))
+    lines(c(i,dims),rep(dims-i,2))
+    lines(c(i,dims),rep(dims-i+.55,2),lty=3)
+    text(dims,i+.55,labels="0",pos=4,cex=.6)
+  }
+  for(i in 1:dims) text(i-.5,dims-i+.5,sort(unique(survey))[i])
+  for(i in 1:(dims-1)) {
+    for(j in (i+1):dims) {
+      cell <- NA
+      for(k in 1:length(mats)) {
+        cell[k] <- mats[[k]][i,j]
+      }
+      box <- boxplot(cell,plot=F)
+      box5num <- (box$stats-minall)/(maxall-minall)*.7+.2
+      boxout <- (box$out-minall)/(maxall-minall)*.8+.1
+      #points(rep(j-.5,5),(dims-i+box5num))
+      rect(xleft=(j-.65),ybottom=(dims-i+box5num[2]),xright=(j-.35),ytop=(dims-i+box5num[4]),col="white")
+      lines((j-c(.575,.425)),rep((dims-i+box5num[1]),2))
+      lines((j-c(.575,.425)),rep((dims-i+box5num[5]),2))
+      lines(rep(j-.5,2),(dims-i+box5num[1:2]))
+      lines(rep(j-.5,2),(dims-i+box5num[4:5]))
+      lines((j-c(.35,.65)),(dims-i+rep(box5num[3],2)),lwd=2,lend=1)
+      points(rep(j-.5,length(boxout)),(dims-i+boxout))
+      text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
+    }
+  }
+}
+
+
+
 #' Upstream Distance Matrix
 #' @description Returns a matrix of upstream distance between every point and
 #'   every other point of given river locations (segment and vertex), or of a

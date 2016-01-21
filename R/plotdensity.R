@@ -95,7 +95,7 @@ riverdensity_old <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' # # Not run: this step take a few minutes
+#' # # Not run: this step takes a few minutes
 #' # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
 #' #   survey=fakefish$flight.date)
 #'   
@@ -205,7 +205,7 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #'   by the \code{pwr} argument.  Setting \code{pwr} to a value less than 1 
 #'   allows smaller values to be more visible on the plot.
 #' @param riverdensity A river density object created by \link{riverdensity}.
-#' @param whichplot A vector of plots to produce, if multiple plots are 
+#' @param whichplost A vector of plots to produce, if multiple plots are 
 #'   produced.  For example, specifying \code{whichplot=c(2,3,4)} will result in
 #'   only the second, third, and fourth plots of the sequence being produced. 
 #'   Accepting the default (\code{NULL}) will result in all plots being 
@@ -262,7 +262,7 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' # # Not run: this step take a few minutes
+#' # # Not run: this step takes a few minutes
 #' # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
 #' #   survey=fakefish$flight.date)
 #'   
@@ -410,7 +410,7 @@ plotriverdensity <- function(riverdensity,whichplots=NULL,points=TRUE,bycol=TRUE
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' # # Not run: this step take a few minutes
+#' # # Not run: this step takes a few minutes
 #' # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #' 
 #' # plotriverdensitypoints(riverdensity=Gulk_dens)

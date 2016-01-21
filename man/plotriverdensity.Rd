@@ -78,7 +78,7 @@ existing plot (\code{TRUE}).  Defaults to \code{FALSE}.}
 
 \item{...}{Additional plotting parameters.}
 
-\item{whichplot}{A vector of plots to produce, if multiple plots are
+\item{whichplost}{A vector of plots to produce, if multiple plots are
 produced.  For example, specifying \code{whichplot=c(2,3,4)} will result in
 only the second, third, and fourth plots of the sequence being produced.
 Accepting the default (\code{NULL}) will result in all plots being
@@ -101,7 +101,7 @@ Produces a kernel density plot from a kernel density object
 \examples{
 data(Gulk, fakefish)
 
-# # Not run: this step take a few minutes
+# # Not run: this step takes a few minutes
 # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 #   survey=fakefish$flight.date)
 

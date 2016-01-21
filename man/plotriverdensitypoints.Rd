@@ -18,7 +18,7 @@ Plots the points used to calculate a kernel density object
 \examples{
 data(Gulk, fakefish)
 
-# # Not run: this step take a few minutes
+# # Not run: this step takes a few minutes
 # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
 # plotriverdensitypoints(riverdensity=Gulk_dens)

@@ -533,9 +533,9 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 
 
 #' Plot Upstream Distance Between Observations of All Individuals
-#' @description Produces a matrix of boxplots, with plot \code{[i,j]} giving the
+#' @description Produces a matrix of plots (boxplots are default), with plot \code{[i,j]} giving the
 #'   distribution of upstream distances from observation \code{i} to observation
-#'   \code{j}, for all individuals.  Each distance is calculated in
+#'   \code{j}, for all individuals.  Each distance is calculated in 
 #'   \link{upstream}.
 #' @param ID A vector of unique identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to 
@@ -543,10 +543,14 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 #' @param seg A vector of river locations (segment component).
 #' @param vert A vector of river locations (vertex component).
 #' @param rivers The river network object to use.
-#' @param type If \code{type} is set to \code{"boxplot"}, boxplots will be
-#'   produced for each cell.  If \code{type} is set to \code{"confint"}, lines
-#'   denoting an approximate 95% confidence interval for the mean will be
-#'   produced instead.  Defaults to \code{"boxplot"}.
+#' @param type If \code{type} is set to \code{"boxplot"}, boxplots will be 
+#'   produced for each cell.  If \code{type} is set to \code{"confint"}, lines 
+#'   denoting an approximate 95 percent confidence interval for the mean will be 
+#'   produced instead.  If \code{type} is set to \code{"dotplot"}, a jittered
+#'   dotplot will be produced for each cell, which will be the most appropriate
+#'   if sample sizes are small.  Defaults to \code{"boxplot"}.
+#' @param showN Whether to display the sample size for each cell.  Defaults to
+#'   TRUE.
 #' @param ... Additional arguments for \link{upstream}.
 #' @seealso \link{upstream}, \link{upstreammatobs}
 #' @note Building routes from the river mouth to each river network segment may 
@@ -561,7 +565,7 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 #' # plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
 #' #   vert=fakefish$vert, rivers=Gulk)
 #' @export
-plotupstreammatobs <- function(ID,survey,seg,vert,rivers,type="boxplot",...) {
+plotupstreammatobs <- function(ID,survey,seg,vert,rivers,type="boxplot",showN=TRUE,...) {
   mats <- list()
   indivi <- 1
   for(indiv in sort(unique(ID))) {
@@ -596,9 +600,9 @@ plotupstreammatobs <- function(ID,survey,seg,vert,rivers,type="boxplot",...) {
         lines((j-c(.575,.425)),rep((dims-i+box5num[5]),2))
         lines(rep(j-.5,2),(dims-i+box5num[1:2]))
         lines(rep(j-.5,2),(dims-i+box5num[4:5]))
-        lines((j-c(.35,.65)),(dims-i+rep(box5num[3],2)),lwd=2,lend=1)
+        lines((j-c(.35,.65)),(dims-i+rep(box5num[3],2)),lwd=1,lend=1)
         points(rep(j-.5,length(boxout)),(dims-i+boxout))
-        text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
+        if(showN) text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
       }
     }
   }
@@ -634,7 +638,21 @@ plotupstreammatobs <- function(ID,survey,seg,vert,rivers,type="boxplot",...) {
             lines(rep(j-.5,2),dims-i+ciplot,lwd=3,lend=1)
           }
         }
-        text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
+        if(showN) text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
+      }
+    }
+  }
+  if(type=="dotplot") {
+    for(i in 1:(dims-1)) {
+      for(j in (i+1):dims) {
+        cell <- NA
+        for(k in 1:length(mats)) {
+          cell[k] <- mats[[k]][i,j]
+        }
+        cell1 <- (cell-minall)/(maxall-minall)*.7+.2
+        points(jitter(rep(j-.5,length(cell1)),amount=.1),(dims-i+cell1))
+        #points((rep(j-.5,length(cell1))),(dims-i+cell1))
+        if(showN) text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
       }
     }
   }

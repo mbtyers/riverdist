@@ -60,7 +60,7 @@ It is likely that calculation will be very slow.  Use of this function
 \examples{
 data(Gulk, fakefish)
 
-# # Not run: this step take a few minutes
+# # Not run: this step takes a few minutes
 # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 #   survey=fakefish$flight.date)
 

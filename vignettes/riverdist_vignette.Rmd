@@ -263,6 +263,8 @@ A method has been provided to display kernel density calculated from point data,
 
 The `plotriverdensity()` function can display densities using line thickness, color, or both.  For additional plotting arguments including possible color ramps, see `?plotriverdensity`.
 
+Densities for nine of the ten Fakefish surveys are shown below.
+
 ```{r,eval=FALSE}
 data(Gulk, fakefish)
 fakefish_density <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
@@ -272,7 +274,7 @@ plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=1
                  whichplots=c(1:8,10))   # showing only nine plots for clarity
 ```
 
-```{r,fig.width=7.5,fig.height=8.5,echo=FALSE}
+```{r,fig.width=7.5,fig.height=8.5,echo=FALSE, eval=FALSE}
 data(fakefish_density)
 par(mfrow=c(3,4))
 plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15)

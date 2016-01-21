@@ -4,7 +4,7 @@
 \alias{plotupstreammatobs}
 \title{Plot Upstream Distance Between Observations of All Individuals}
 \usage{
-plotupstreammatobs(ID, survey, seg, vert, rivers, ...)
+plotupstreammatobs(ID, survey, seg, vert, rivers, type = "boxplot", ...)
 }
 \arguments{
 \item{ID}{A vector of unique identifiers for each fish.}
@@ -18,12 +18,18 @@ use a numeric or date format (see \link{as.Date}) to preserve survey order.}
 
 \item{rivers}{The river network object to use.}
 
+\item{type}{If \code{type} is set to \code{"boxplot"}, boxplots will be
+produced for each cell.  If \code{type} is set to \code{"confint"}, lines
+denoting an approximate 95% confidence interval for the mean will be
+produced instead.  Defaults to \code{"boxplot"}.}
+
 \item{...}{Additional arguments for \link{upstream}.}
 }
 \description{
 Produces a matrix of boxplots, with plot \code{[i,j]} giving the
   distribution of upstream distances from observation \code{i} to observation
-  \code{j}, for all individuals.  Each distance is calculated in \link{upstream}.
+  \code{j}, for all individuals.  Each distance is calculated in
+  \link{upstream}.
 }
 \note{
 Building routes from the river mouth to each river network segment may

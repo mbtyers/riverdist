@@ -40,7 +40,7 @@ MyRivernetwork <- line2network(path=".", layer="MyShapefile", reproject=AKalbers
 
 **Displaying a river network using `plot()`**
 
-Basic plotting is provided using the `plot()` function.  See `help(plot.rivernetwork)` for additonal plotting arguments and graphical parameters.  Shown below is the Gulkana River network, included as a dataset.
+Basic plotting is provided using a method of the `plot()` function.  See `help(plot.rivernetwork)` for additonal plotting arguments and graphical parameters.  Shown below is the Gulkana River network, included as a dataset.
 
 ```{r,fig.width=5,fig.height=5}
 library(riverdist)
@@ -66,14 +66,15 @@ topologydots(rivers=Gulk)
 
 **Converting XY data to river locations using `xy2segvert()` and `pointshp2segvert()`**
 
-Once an appropriate river network has been obtained, point data can be read.  Function `xy2segvert()` converts XY data into river locations, by "snapping" each point to the closest segment and vertex.  Because of this, river locations can only be used in the context of the river network they belong to.  
+Once an appropriate river network has been obtained, point data can be read.  Function `xy2segvert()` converts XY data into river locations, by "snapping" each point to the closest segment and vertex.  Because of this, river locations can only be used in the context of the river network they belong to.  In addition to the river locations, the snapping distance for each observation is also returned.
 
 The `fakefish` dataset includes coordinates from a sequence of telemetry flights.
 
-```{r,fig.width=5,fig.height=5}
+```{r,fig.width=5,fig.height=3}
 data(fakefish)
 fakefish_riv <- xy2segvert(x=fakefish$x, y=fakefish$y, rivers=Gulk)
-head(fakefish_riv)  # a look at what it returned
+head(fakefish_riv)  # a look at the first few rows of the output
+hist(fakefish_riv$snapdist, main="snapping distance (m)")
 ```
 
 Spatial data can be read directly from a point shapefile using `pointshp2segvert()`, which returns the resulting river locations added to the data table from the point shapefile.
@@ -106,8 +107,8 @@ River network distance can be calculated directly with the `riverdistance()` fun
 ```{r,fig.width=5,fig.height=5}
 # starting location: segment 7, vertex 49
 # ending location: segment 14, vertex 121
-riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, map=TRUE)
 detectroute(start=7, end=14, rivers=Gulk)
+riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, map=TRUE)
 ```
 
 
@@ -157,7 +158,7 @@ A matrix of the river network distance from every observation to every other obs
 
 ```{r}
 logi1 <- (smallset$seg==2)
-obsID <- paste0("id",smallset$id,"-flight",smallset$flight)
+obsID <- paste0("id",smallset$id,"-flight",smallset$flight)  # constructing observation labels
 riverdistancemat(seg=smallset$seg, vert=smallset$vert, rivers=Gulk, logical=logi1, ID=obsID)
 ```
 
@@ -283,6 +284,51 @@ par(mfrow=c(1,3))
 plotriverdensity(riverdensity=Gulk_dens, ramp="blue", dark=0.85, maxlwd=15)
 ```
 
+```{r,eval=FALSE}
+data(Gulk, fakefish)
+fakefish_density <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
+  survey=fakefish$flight.date, resolution=2000, bw=10000)
+par(mfrow=c(3,4))
+plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15)
+```
+
+```{r,fig.width=7.5,fig.height=8.5,echo=FALSE}
+data(fakefish_density)
+par(mfrow=c(3,4))
+plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15)
+```
+
+A few possible plotting styles are shown below.
+
+```{r,fig.width=7.5,fig.height=6}
+data(fakefish_density)
+par(mfrow=c(2,3))
+plotriverdensity(riverdensity=fakefish_density, ramp="grey", dark=0.85, maxlwd=15, 
+                 whichplots=1)
+plotriverdensity(riverdensity=fakefish_density, bycol=FALSE, denscol="black", 
+                 linecol="grey", maxlwd=15, whichplots=1)
+plotriverdensity(riverdensity=fakefish_density, ramp="red", dark=0.85, maxlwd=15, 
+                 whichplots=1)
+plotriverdensity(riverdensity=fakefish_density, ramp="stoplight", dark=0.85, maxlwd=15, 
+                 whichplots=1)
+plotriverdensity(riverdensity=fakefish_density, ramp="stoplight", dark=0.85, maxlwd=15, 
+                 bylwd=FALSE, lwd=3, points=FALSE, whichplots=1)
+plotriverdensity(riverdensity=fakefish_density, ramp="heat", dark=0.85, maxlwd=15, 
+                 whichplots=1)
+```
+
+
+**An alternate use of `homerange()` to give the spatial data spread for each flight event**
+
+The `homerange()` function could also be used to give a measure of the spatial spread of observations for each flight event, by using the flight identifier instead of individual identifier in the `unique=` argument.
+
+```{r,fig.width=5,fig.height=4}
+x <- homerange(unique=fakefish$flight.date, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+x
+plot(x$range, type='b', xaxt='n', xlab="", ylab="range (m)", cex.axis=.6)
+axis(1,at=1:10,labels=sort(unique(fakefish$flight.date)), cex.axis=.6, las=3)
+```
+
 
 
 **Summarizing up-river position, defined as distance from mouth, using `mouthdist()` for one observation and `mouthdistobs()` for a dataset**
@@ -326,9 +372,9 @@ plotseq(seqobs=x)
 
 **Plotting STUUUUUFFFFFFF**
 
-figure out how to talk about `plotupstreammatobs()`
+The `plotupstreammatobs()` function is intended to summarize the outputs of `upstreammatobs()` for all individuals in a dataset.  The output is the upper triangle of a matrix of boxplots in which boxplot `[i,j]` represents the upstream distances traveled between observation `i` and observation `j`, for all individuals observed in those observations.  Each boxplot is overlayed with a horizontal line at an upstream distance of zero, for an illustration of up-river or down-river movement trend for that pairwise movement.
 
-```{r,fig.width=5,fig.height=9}
+```{r,fig.width=5,fig.height=10}
 plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
                    vert=fakefish$vert, rivers=Gulk)
 ```

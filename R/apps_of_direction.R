@@ -535,13 +535,18 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 #' Plot Upstream Distance Between Observations of All Individuals
 #' @description Produces a matrix of boxplots, with plot \code{[i,j]} giving the
 #'   distribution of upstream distances from observation \code{i} to observation
-#'   \code{j}, for all individuals.  Each distance is calculated in \link{upstream}.
+#'   \code{j}, for all individuals.  Each distance is calculated in
+#'   \link{upstream}.
 #' @param ID A vector of unique identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to 
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
 #' @param vert A vector of river locations (vertex component).
 #' @param rivers The river network object to use.
+#' @param type If \code{type} is set to \code{"boxplot"}, boxplots will be
+#'   produced for each cell.  If \code{type} is set to \code{"confint"}, lines
+#'   denoting an approximate 95% confidence interval for the mean will be
+#'   produced instead.  Defaults to \code{"boxplot"}.
 #' @param ... Additional arguments for \link{upstream}.
 #' @seealso \link{upstream}, \link{upstreammatobs}
 #' @note Building routes from the river mouth to each river network segment may 
@@ -556,7 +561,7 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 #' # plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
 #' #   vert=fakefish$vert, rivers=Gulk)
 #' @export
-plotupstreammatobs <- function(ID,survey,seg,vert,rivers,...) {
+plotupstreammatobs <- function(ID,survey,seg,vert,rivers,type="boxplot",...) {
   mats <- list()
   indivi <- 1
   for(indiv in sort(unique(ID))) {
@@ -575,24 +580,62 @@ plotupstreammatobs <- function(ID,survey,seg,vert,rivers,...) {
     text(dims,i+.55,labels="0",pos=4,cex=.6)
   }
   for(i in 1:dims) text(i-.5,dims-i+.5,sort(unique(survey))[i])
-  for(i in 1:(dims-1)) {
-    for(j in (i+1):dims) {
-      cell <- NA
-      for(k in 1:length(mats)) {
-        cell[k] <- mats[[k]][i,j]
+  if(type=="boxplot") {
+    for(i in 1:(dims-1)) {
+      for(j in (i+1):dims) {
+        cell <- NA
+        for(k in 1:length(mats)) {
+          cell[k] <- mats[[k]][i,j]
+        }
+        box <- boxplot(cell,plot=F)
+        box5num <- (box$stats-minall)/(maxall-minall)*.7+.2
+        boxout <- (box$out-minall)/(maxall-minall)*.7+.2
+        #points(rep(j-.5,5),(dims-i+box5num))
+        rect(xleft=(j-.65),ybottom=(dims-i+box5num[2]),xright=(j-.35),ytop=(dims-i+box5num[4]),col="white")
+        lines((j-c(.575,.425)),rep((dims-i+box5num[1]),2))
+        lines((j-c(.575,.425)),rep((dims-i+box5num[5]),2))
+        lines(rep(j-.5,2),(dims-i+box5num[1:2]))
+        lines(rep(j-.5,2),(dims-i+box5num[4:5]))
+        lines((j-c(.35,.65)),(dims-i+rep(box5num[3],2)),lwd=2,lend=1)
+        points(rep(j-.5,length(boxout)),(dims-i+boxout))
+        text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
       }
-      box <- boxplot(cell,plot=F)
-      box5num <- (box$stats-minall)/(maxall-minall)*.7+.2
-      boxout <- (box$out-minall)/(maxall-minall)*.8+.1
-      #points(rep(j-.5,5),(dims-i+box5num))
-      rect(xleft=(j-.65),ybottom=(dims-i+box5num[2]),xright=(j-.35),ytop=(dims-i+box5num[4]),col="white")
-      lines((j-c(.575,.425)),rep((dims-i+box5num[1]),2))
-      lines((j-c(.575,.425)),rep((dims-i+box5num[5]),2))
-      lines(rep(j-.5,2),(dims-i+box5num[1:2]))
-      lines(rep(j-.5,2),(dims-i+box5num[4:5]))
-      lines((j-c(.35,.65)),(dims-i+rep(box5num[3],2)),lwd=2,lend=1)
-      points(rep(j-.5,length(boxout)),(dims-i+boxout))
-      text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
+    }
+  }
+  if(type=="confint") {
+    cilist <- list()
+    ici <- 1
+    for(i in 1:(dims-1)) {
+      for(j in (i+1):dims) {
+        cell <- NA
+        for(k in 1:length(mats)) {
+          cell[k] <- mats[[k]][i,j]
+        }
+        if(length(cell[!is.na(cell)])>1) {
+          if(var(cell,na.rm=T)>0) {
+            cilist[[ici]] <- t.test(cell)$conf.int
+          }
+        }
+        ici <- ici+1
+      }
+    }
+    maxall <- max(unlist(cilist),na.rm=T)
+    minall <- min(unlist(cilist),na.rm=T)
+    for(i in 1:(dims-1)) {
+      for(j in (i+1):dims) {
+        cell <- NA
+        for(k in 1:length(mats)) {
+          cell[k] <- mats[[k]][i,j]
+        }
+        if(length(cell[!is.na(cell)])>1) {
+          if(var(cell,na.rm=T)>0) {
+            ci <- t.test(cell)$conf.int
+            ciplot <- (ci-minall)/(maxall-minall)*.7+.2
+            lines(rep(j-.5,2),dims-i+ciplot,lwd=3,lend=1)
+          }
+        }
+        text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
+      }
     }
   }
 }

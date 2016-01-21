@@ -208,7 +208,7 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if((length(unique)!=length(seg))|(length(seg)!=length(vert))) stop("Input vectors must be the same length.")
-  ID <- unique(unique)
+  ID <- sort(unique(unique))
   range <- rep(0,length(ID))
   
   for(i in 1:length(ID)) {

@@ -268,11 +268,11 @@ test_that("line2network",{
 }) 
 
 test_that("matobs", {
-  expect_equal(dim(riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+  expect_equal(dim(riverdistancematobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
                                        seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)),c(7,7))
-  expect_equal(dim(riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+  expect_equal(dim(riverdistancematobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
                                        seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=TRUE)),c(10,10))
-  expect_equal(sum(riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+  expect_equal(sum(riverdistancematobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
                                        seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE),na.rm=TRUE),2694810,tolerance=0.001)
 }) 
 

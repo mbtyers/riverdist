@@ -257,7 +257,7 @@ riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowcon
 #' @description Returns a matrix of travel direction between all observations of
 #'   one unique fish.
 #' @param indiv The unique identifier of the fish in question.
-#' @param ID A vector of identifiers for each fish.
+#' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
@@ -286,23 +286,23 @@ riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowcon
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdirectionmatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdirectionmatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
-riverdirectionmatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
+riverdirectionmatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
-  surveys_indiv <- sort(unique(survey[ID==indiv]))
-  # IDs <- order(unique(ID))
+  surveys_indiv <- sort(unique(survey[unique==indiv]))
+  # uniques <- order(unique(unique))
   
   outmat <- matrix(NA,nrow=length(surveys),ncol=length(surveys))
   for(ii in 1:length(surveys)) {
     for(jj in 1:length(surveys)) {
-      outmat[ii,jj] <- ifelse((length(seg[ID==indiv & survey==surveys[ii]])==0) | (length(seg[ID==indiv & survey==surveys[jj]])==0),NA,
-                              riverdirection(startseg=seg[ID==indiv & survey==surveys[ii]], endseg=seg[ID==indiv & survey==surveys[jj]],
-                                             startvert=vert[ID==indiv & survey==surveys[ii]], endvert=vert[ID==indiv & survey==surveys[jj]],
+      outmat[ii,jj] <- ifelse((length(seg[unique==indiv & survey==surveys[ii]])==0) | (length(seg[unique==indiv & survey==surveys[jj]])==0),NA,
+                              riverdirection(startseg=seg[unique==indiv & survey==surveys[ii]], endseg=seg[unique==indiv & survey==surveys[jj]],
+                                             startvert=vert[unique==indiv & survey==surveys[ii]], endvert=vert[unique==indiv & survey==surveys[jj]],
                                              rivers=rivers,flowconnected=flowconnected,stopiferror=stopiferror,algorithm=algorithm))
     }
   }
@@ -462,7 +462,7 @@ upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected
 #' @description Returns a matrix of upstream travel distance between all observations of
 #'   one unique fish.
 #' @param indiv The unique identifier of the fish in question.
-#' @param ID A vector of identifiers for each fish.
+#' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
@@ -493,23 +493,23 @@ upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' upstreammatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+#' upstreammatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' upstreammatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+#' upstreammatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
-upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
+upstreammatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
-  surveys_indiv <- sort(unique(survey[ID==indiv]))
-  # IDs <- order(unique(ID))
+  surveys_indiv <- sort(unique(survey[unique==indiv]))
+  # uniques <- order(unique(unique))
   
   outmat <- matrix(NA,nrow=length(surveys),ncol=length(surveys))
   for(ii in 1:length(surveys)) {
     for(jj in 1:length(surveys)) {
-      outmat[ii,jj] <- ifelse((length(seg[ID==indiv & survey==surveys[ii]])==0) | (length(seg[ID==indiv & survey==surveys[jj]])==0),NA,
-                              upstream(startseg=seg[ID==indiv & survey==surveys[ii]], endseg=seg[ID==indiv & survey==surveys[jj]],
-                                       startvert=vert[ID==indiv & survey==surveys[ii]], endvert=vert[ID==indiv & survey==surveys[jj]],
+      outmat[ii,jj] <- ifelse((length(seg[unique==indiv & survey==surveys[ii]])==0) | (length(seg[unique==indiv & survey==surveys[jj]])==0),NA,
+                              upstream(startseg=seg[unique==indiv & survey==surveys[ii]], endseg=seg[unique==indiv & survey==surveys[jj]],
+                                       startvert=vert[unique==indiv & survey==surveys[ii]], endvert=vert[unique==indiv & survey==surveys[jj]],
                                        rivers=rivers,flowconnected=flowconnected,net=net,stopiferror=stopiferror,algorithm=algorithm))
     }
   }
@@ -537,7 +537,7 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 #'   distribution of upstream distances from observation \code{i} to observation
 #'   \code{j}, for all individuals.  Each distance is calculated in 
 #'   \link{upstream}.
-#' @param ID A vector of unique identifiers for each fish.
+#' @param unique A vector of unique identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to 
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
@@ -558,18 +558,18 @@ upstreammatobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,flowconnect
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, smallset)
-#' plotupstreammatobs(ID=smallset$id, survey=smallset$flight, seg=smallset$seg, 
+#' plotupstreammatobs(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
 #'    vert=smallset$vert, rivers=Gulk)
 #'    
 #' data(fakefish)
-#' # plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+#' # plotupstreammatobs(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
 #' #   vert=fakefish$vert, rivers=Gulk)
 #' @export
-plotupstreammatobs <- function(ID,survey,seg,vert,rivers,type="boxplot",showN=TRUE,...) {
+plotupstreammatobs <- function(unique,survey,seg,vert,rivers,type="boxplot",showN=TRUE,...) {
   mats <- list()
   indivi <- 1
-  for(indiv in sort(unique(ID))) {
-    mats[[indivi]] <- upstreammatobs(indiv=indiv,ID=ID,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
+  for(indiv in sort(unique(unique))) {
+    mats[[indivi]] <- upstreammatobs(indiv=indiv,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
     indivi <- indivi+1
   }
   #return(mats)

@@ -130,7 +130,7 @@ River distance can also be calculated between all observations of a single indiv
 
 
 ```{r}
-riverdistancematobs(indiv=1, ID=smallset$id, survey=smallset$flight,
+riverdistancematobs(indiv=1, unique=smallset$id, survey=smallset$flight,
       seg=smallset$seg, vert=smallset$vert, rivers=Gulk, full=FALSE)
 ```
 
@@ -357,7 +357,7 @@ Alternately, if the `type=` argument is set to `"confint"`, each plot gives a li
 Again, a jittered dotplot may be produced by specifying `type="dotplot"`, which will be the most appropriate in the case of small sample sizes.  The default boxplot is shown below for the purpose of clarity, but a jittered dotplot would likely be a better choice in this instance.
 
 ```{r,fig.width=5,fig.height=10}
-plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+plotupstreammatobs(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
                    vert=fakefish$vert, rivers=Gulk)
 ```
 

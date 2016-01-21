@@ -4,13 +4,13 @@
 \alias{riverdirectionmatobs}
 \title{River Direction Matrix of All Observations of an Individual}
 \usage{
-riverdirectionmatobs(indiv, ID, survey, seg, vert, rivers, full = TRUE,
+riverdirectionmatobs(indiv, unique, survey, seg, vert, rivers, full = TRUE,
   flowconnected = FALSE, stopiferror = TRUE, algorithm = NULL)
 }
 \arguments{
 \item{indiv}{The unique identifier of the fish in question.}
 
-\item{ID}{A vector of identifiers for each fish.}
+\item{unique}{A vector of identifiers for each fish.}
 
 \item{survey}{A vector of identifiers for each survey.  It is recommended to
 use a numeric or date format (see \link{as.Date}) to preserve survey order.}
@@ -54,10 +54,10 @@ Building routes from the river mouth to each river network segment may
 }
 \examples{
 data(Gulk, fakefish)
-riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+riverdirectionmatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
-riverdirectionmatobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+riverdirectionmatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 }
 \author{

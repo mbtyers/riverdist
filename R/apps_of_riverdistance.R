@@ -63,7 +63,7 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 #' @description Returns a matrix of network distances between all observations
 #'   of one unique fish.
 #' @param indiv The unique identifier of the fish in question.
-#' @param ID A vector of identifiers for each fish.
+#' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
@@ -88,23 +88,23 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdistancematobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' riverdistancematobs(indiv=1, ID=fakefish$fish.id, survey=fakefish$flight,
+#' riverdistancematobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
-riverdistancematobs <- function(indiv,ID,survey,seg,vert,rivers,full=TRUE,stopiferror=TRUE,algorithm=NULL) {
+riverdistancematobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
-  surveys_indiv <- sort(unique(survey[ID==indiv]))
-  # IDs <- order(unique(ID))
+  surveys_indiv <- sort(unique(survey[unique==indiv]))
+  # uniques <- order(unique(unique))
   
   outmat <- matrix(NA,nrow=length(surveys),ncol=length(surveys))
   for(ii in 1:length(surveys)) {
     for(jj in 1:length(surveys)) {
-      outmat[ii,jj] <- ifelse((length(seg[ID==indiv & survey==surveys[ii]])==0) | (length(seg[ID==indiv & survey==surveys[jj]])==0),NA,
-                              riverdistance(startseg=seg[ID==indiv & survey==surveys[ii]], endseg=seg[ID==indiv & survey==surveys[jj]],
-                                            startvert=vert[ID==indiv & survey==surveys[ii]], endvert=vert[ID==indiv & survey==surveys[jj]],
+      outmat[ii,jj] <- ifelse((length(seg[unique==indiv & survey==surveys[ii]])==0) | (length(seg[unique==indiv & survey==surveys[jj]])==0),NA,
+                              riverdistance(startseg=seg[unique==indiv & survey==surveys[ii]], endseg=seg[unique==indiv & survey==surveys[jj]],
+                                            startvert=vert[unique==indiv & survey==surveys[ii]], endvert=vert[unique==indiv & survey==surveys[jj]],
                                             rivers=rivers,stopiferror=stopiferror,algorithm=algorithm))
     }
   }

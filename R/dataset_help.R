@@ -56,7 +56,7 @@ NULL
 #' \item \code{x}. X-coordinate of observation (Alaska Albers Equal Area). Note that the locations do not align with the river network object. 
 #' \item \code{y}. Y-coordinate of observation 
 #' \item \code{seg}. River segment (with x- and y-coordinates snapped to river network object) 
-#' \item \code{vert}. X-coordinate of observations 
+#' \item \code{vert}. River vertex
 #' \item \code{fish.id}. Numeric identifier for each fish (individual fish were observed more than once) 
 #' \item \code{flight}. Numeric identifier for each telemetry flight 
 #' \item \code{flight.date}. Date of each telemetry flight 
@@ -66,6 +66,27 @@ NULL
 #' @keywords datasets
 #' @name fakefish
 #' @usage data(fakefish)
+#' @format A data frame
+#' @seealso \link{Gulk}
+NULL
+
+#' Dataset: Smallset
+#' 
+#' A small set of observations of fakefish on the Gulkana River and its tributaries.
+#' 
+#' \itemize{ 
+#' \item \code{x}. X-coordinate of observation (Alaska Albers Equal Area). Note that the locations do not align with the river network object. 
+#' \item \code{y}. Y-coordinate of observation 
+#' \item \code{seg}. River segment 
+#' \item \code{vert}. River vertex
+#' \item \code{fish.id}. Numeric identifier for each fish (individual fish were observed more than once) 
+#' \item \code{flight}. Numeric identifier for each telemetry flight
+#' }
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name smallset
+#' @usage data(smallset)
 #' @format A data frame
 #' @seealso \link{Gulk}
 NULL
@@ -191,4 +212,17 @@ NULL
 #' @aliases rivernetwork-class
 #' @exportClass rivernetwork
 #' @author Matt Tyers
+NULL
+
+#' Dataset: Fakefish Density
+#' 
+#' An object created by \link{riverdensity}, describing the density of Fakefish points in the Gulkana River during ten surveys.
+#' 
+#' Intended for plotting using \link{plotriverdensity}.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name fakefish_density
+#' @usage data(fakefish_density)
+#' @format A river density object, see \link{riverdensity}, \link{plotriverdensity}
 NULL

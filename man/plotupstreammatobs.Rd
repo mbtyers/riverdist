@@ -4,11 +4,11 @@
 \alias{plotupstreammatobs}
 \title{Plot Upstream Distance Between Observations of All Individuals}
 \usage{
-plotupstreammatobs(ID, survey, seg, vert, rivers, type = "boxplot",
+plotupstreammatobs(unique, survey, seg, vert, rivers, type = "boxplot",
   showN = TRUE, ...)
 }
 \arguments{
-\item{ID}{A vector of unique identifiers for each fish.}
+\item{unique}{A vector of unique identifiers for each fish.}
 
 \item{survey}{A vector of identifiers for each survey.  It is recommended to
 use a numeric or date format (see \link{as.Date}) to preserve survey order.}
@@ -43,11 +43,11 @@ Building routes from the river mouth to each river network segment may
 }
 \examples{
 data(Gulk, smallset)
-plotupstreammatobs(ID=smallset$id, survey=smallset$flight, seg=smallset$seg,
+plotupstreammatobs(unique=smallset$id, survey=smallset$flight, seg=smallset$seg,
    vert=smallset$vert, rivers=Gulk)
 
 data(fakefish)
-# plotupstreammatobs(ID=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg,
+# plotupstreammatobs(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg,
 #   vert=fakefish$vert, rivers=Gulk)
 }
 \author{

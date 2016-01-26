@@ -45,7 +45,7 @@ A data frame of upstream distances (numeric), with rows defined by
 \description{
 Returns a matrix of distance with direction by unique fish
   between sequential surveys.  The mouth (lowest point) segment and vertex
-  must be specified (see \link{setmouth}).
+  must be specified (see \link{setmouth}).  A plotting method is provided for the output; see \link{plotseq}.
 }
 \note{
 Returns either net upstream distance (net=TRUE) or total distance
@@ -64,13 +64,15 @@ Gulk$mouth$mouth.vert <- 1
 upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg,
       vert=fakefish$vert, rivers=Gulk)
 
-upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
+seqobs <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
       vert=fakefish$vert, rivers=Gulk)
+seqobs
+plotseq(seqobs)
 }
 \author{
 Matt Tyers
 }
 \seealso{
-\link{upstream}
+\link{upstream}, \link{plotseq}
 }
 

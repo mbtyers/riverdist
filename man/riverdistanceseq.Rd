@@ -36,7 +36,7 @@ A data frame of distances (numeric), with rows defined by unique fish and column
 }
 \description{
 Returns a matrix of distances traveled by unique fish, between
-  sequential surveys.
+  sequential surveys.  A plotting method is also provided for the output; see \link{plotseq}
 }
 \note{
 Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
@@ -46,13 +46,15 @@ data(Gulk, fakefish)
 riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
-riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
+seqobs <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+seqobs
+plotseq(seqobs)
 }
 \author{
 Matt Tyers
 }
 \seealso{
-\link{riverdistance}
+\link{riverdistance}, \link{plotseq}
 }
 

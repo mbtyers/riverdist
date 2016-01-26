@@ -385,7 +385,7 @@ riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected
 #' Upstream Distance Between Sequential Observations
 #' @description Returns a matrix of distance with direction by unique fish
 #'   between sequential surveys.  The mouth (lowest point) segment and vertex
-#'   must be specified (see \link{setmouth}).
+#'   must be specified (see \link{setmouth}).  A plotting method is provided for the output; see \link{plotseq}.
 #' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
@@ -407,7 +407,7 @@ riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected
 #' @return A data frame of upstream distances (numeric), with rows defined by
 #'   unique fish and columns defined by observation increment (1 to 2, 2 to 3,
 #'   etc.)  See \link{upstream} for additional information.
-#' @seealso \link{upstream}
+#' @seealso \link{upstream}, \link{plotseq}
 #' @author Matt Tyers
 #' @note Returns either net upstream distance (net=TRUE) or total distance
 #'   (net=FALSE, default).  See \link{upstream}.
@@ -423,8 +423,10 @@ riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected
 #' upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg,
 #'       vert=fakefish$vert, rivers=Gulk)
 #'
-#' upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
+#' seqobs <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
 #'       vert=fakefish$vert, rivers=Gulk)
+#' seqobs
+#' plotseq(seqobs)
 #' @export
 upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
@@ -532,17 +534,65 @@ upstreammatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowcon
 }
 
 
-#' Plot Upstream Distance Between Observations of All Individuals
-#' @description Produces a matrix of plots (boxplots are default), with plot \code{[i,j]} giving the
-#'   distribution of upstream distances from observation \code{i} to observation
-#'   \code{j}, for all individuals.  Each distance is calculated in 
-#'   \link{upstream}.
+#' Generate List of Distance Matrix Between Observations, for All Individuals
+#' @description Returns a list of matrices, each giving the river distance, direction, or upstream travel distance between all observations of
+#'   one unique fish.  This function is principally intended for producing an object to plot in \link{plotmatobslist}.
 #' @param unique A vector of unique identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to 
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
 #' @param vert A vector of river locations (vertex component).
 #' @param rivers The river network object to use.
+#' @param indiv A vector of unique individuals to use.  Accepting the default (\code{NULL}) will result in a matrix being returned for all unique individuals.
+#' @param method Which general method to use.  Setting \code{method="distance"} will compute distance for each pair of observation, setting \code{method="direction"} will compute direction between each pair of observation, and setting \code{method="upstream"} will compute directional (upstream) distance between each pair of observation.  Defaults to \code{"upstream"}.
+#' @param flowconnected Optional parameter to pass to the distance or direction calculation.  Defaults to \code{FALSE}.
+#' @param net Optional parameter to pass to the distance or direction calculation.  Defaults to \code{FALSE}.
+#' @param stopiferror Optional parameter to pass to the distance or direction calculation.  Defaults to \code{TRUE}.
+#' @param algorithm Optional parameter to pass to the distance or direction calculation.  Defaults to \code{NULL}.
+#' @seealso \link{riverdistance}, \link{riverdirection}, \link{upstream}, \link{riverdistancematobs}, \link{riverdirectionmatobs}, \link{upstreammatobs}, \link{plotmatobslist}
+#' @note Building routes from the river mouth to each river network segment may 
+#'   greatly reduce computation time (see \link{buildsegroutes}).
+#' @return A list with each element corresponding to a unique fish.  Each list element is the output from either \link{riverdistancematobs}, \link{riverdirectionmatobs}, or \link{upstreammatobs}.
+#' @author Matt Tyers
+#' @examples
+#' data(Gulk, smallset)
+#' matobslist <- matobslist(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
+#'    vert=smallset$vert, rivers=Gulk)
+#' plotmatobslist(matobslist)
+#' plotmatobslist(matobslist,type="confint")
+#' plotmatobslist(matobslist,type="dotplot")
+#'    
+#' data(fakefish)
+#' # matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+#' #   vert=fakefish$vert, rivers=Gulk)
+#' # plotmatobslist(matobslist)
+#' @export
+matobslist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="upstream",flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
+  if(is.null(indiv)) indiv <- sort(unique(unique))
+  iindiv <- 1
+  mats <- list()
+  for(indivi in indiv) {
+    if(method=="upstream") {
+      mats[[iindiv]] <- upstreammatobs(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,flowconnected=flowconnected,net=net)
+    }
+    if(method=="direction") {
+      mats[[iindiv]] <- riverdirectionmatobs(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,flowconnected=flowconnected)
+    }
+    if(method=="distance") {
+      mats[[iindiv]] <- riverdistancematobs(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE)
+    }
+    iindiv <- iindiv+1
+  }
+  names(mats) <- indiv
+  return(mats)
+}
+
+
+#' Plot Upstream Distance Between Observations of All Individuals
+#' @description Produces a matrix of plots (boxplots are default), with plot \code{[i,j]} giving the
+#'   distribution of upstream distances from observation \code{i} to observation
+#'   \code{j}, for all individuals.  
+#' @param matobslist A list of distance matrices returned from \link{matobslist}.
 #' @param type If \code{type} is set to \code{"boxplot"}, boxplots will be 
 #'   produced for each cell.  If \code{type} is set to \code{"confint"}, lines 
 #'   denoting an approximate 95 percent confidence interval for the mean will be 
@@ -551,39 +601,44 @@ upstreammatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowcon
 #'   if sample sizes are small.  Defaults to \code{"boxplot"}.
 #' @param showN Whether to display the sample size for each cell.  Defaults to
 #'   TRUE.
-#' @param ... Additional arguments for \link{upstream}.
+#' @param ... Additional plotting arguments.
 #' @seealso \link{upstream}, \link{upstreammatobs}
 #' @note Building routes from the river mouth to each river network segment may 
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, smallset)
-#' plotupstreammatobs(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
+#' matobslist <- matobslist(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
 #'    vert=smallset$vert, rivers=Gulk)
+#' plotmatobslist(matobslist)
+#' plotmatobslist(matobslist,type="confint")
+#' plotmatobslist(matobslist,type="dotplot")
 #'    
 #' data(fakefish)
-#' # plotupstreammatobs(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+#' # matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
 #' #   vert=fakefish$vert, rivers=Gulk)
+#' # plotmatobslist(matobslist)
 #' @export
-plotupstreammatobs <- function(unique,survey,seg,vert,rivers,type="boxplot",showN=TRUE,...) {
-  mats <- list()
-  indivi <- 1
-  for(indiv in sort(unique(unique))) {
-    mats[[indivi]] <- upstreammatobs(indiv=indiv,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
-    indivi <- indivi+1
-  }
-  #return(mats)
+plotmatobslist <- function(matobslist,type="boxplot",showN=TRUE,...) {
+#   mats <- list()
+#   indivi <- 1
+#   for(indiv in sort(unique(unique))) {
+#     mats[[indivi]] <- upstreammatobs(indiv=indiv,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
+#     indivi <- indivi+1
+#   }
+  if(!is.numeric(matobslist[[1]][1])) stop("Plotting methods do not yet exist for direction") 
+  mats <- matobslist
   maxall <- max(unlist(mats),na.rm=T)
   minall <- min(unlist(mats),na.rm=T)
   dims <- dim(mats[[1]])[1]
-  plot(NA,xlim=c(0,dims+.5),ylim=c(0,dims),xaxt='n',yaxt='n',xlab="",ylab="")
+  plot(NA,xlim=c(0,dims+.5),ylim=c(0,dims),xaxt='n',yaxt='n',xlab="",ylab="",...=...)
   for(i in 1:(dims-1)) {
     lines(rep(dims-i,2),c(i,dims))
     lines(c(i,dims),rep(dims-i,2))
     lines(c(i,dims),rep(dims-i+.55,2),lty=3)
     text(dims,i+.55,labels="0",pos=4,cex=.6)
   }
-  for(i in 1:dims) text(i-.5,dims-i+.5,sort(unique(survey))[i])
+  for(i in 1:dims) text(i-.5,dims-i+.5,row.names(matobslist[[1]])[i],cex=.7)
   if(type=="boxplot") {
     for(i in 1:(dims-1)) {
       for(j in (i+1):dims) {
@@ -774,7 +829,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   (see \link{setmouth}).  Returns a matrix of distances, with a row for each 
 #'   unique individual and a column for each survey.
 #'   
-#'   Plotting a matrix returned from \code{mouthdistobs()} can be done using \link{plotseq}. 
+#'   A plotting method is provided for the output; see \link{plotseq}. 
 #' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
@@ -803,8 +858,10 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date, 
+#' seqobs <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date, 
 #'     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#' seqobs
+#' plotseq(seqobs)
 #' @export
 mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
@@ -836,7 +893,7 @@ mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=
 
 
 #' Plot Sequence of Observations
-#' @description Plots the sequence of observations of each individual (given as 
+#' @description Plots the sequence of observations or movements of each individual (given as 
 #'   segment and vertex).  This function is primarily intended for use with 
 #'   \link{mouthdistobs}, but will also work with \link{riverdistanceseq} and 
 #'   \link{upstreamseq}.

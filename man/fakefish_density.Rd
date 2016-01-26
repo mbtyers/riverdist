@@ -4,7 +4,7 @@
 \name{fakefish_density}
 \alias{fakefish_density}
 \title{Dataset: Fakefish Density}
-\format{A river density object, see \link{riverdensity}, \link{plotriverdensity}}
+\format{A river density object, see \link{riverdensity}, \link{plotriverdensity}, \link{riverdensity-class}}
 \usage{
 data(fakefish_density)
 }

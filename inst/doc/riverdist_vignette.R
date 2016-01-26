@@ -108,21 +108,21 @@ Sys.time()- tstart
 
 ## ----eval=FALSE----------------------------------------------------------
 #  data(Gulk, fakefish)
-#  fakefish_density <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
+#  fakefish_density <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 #    survey=fakefish$flight.date, resolution=2000, bw=10000)
 #  par(mfrow=c(3,3))
-#  plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
+#  plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
 #                   whichplots=c(1:8,10))   # showing only nine plots for clarity
 
 ## ----fig.width=7.5,fig.height=8.5,echo=FALSE, eval=FALSE-----------------
 #  data(fakefish_density)
 #  par(mfrow=c(3,4))
-#  plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15)
+#  plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15)
 
 ## ----fig.width=7.5,fig.height=10,echo=FALSE------------------------------
 data(fakefish_density)
 par(mfrow=c(3,3))
-plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
+plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
                  whichplots=c(1:8,10))
 
 ## ----fig.width=5,fig.height=4--------------------------------------------
@@ -158,8 +158,9 @@ plotseq(seqobs=x, type="dotplot")
 abline(h=0, lty=3)
 
 ## ----fig.width=5,fig.height=10-------------------------------------------
-plotupstreammatobs(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
-                   vert=fakefish$vert, rivers=Gulk)
+matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+                         vert=fakefish$vert, rivers=Gulk)
+plotmatobslist(matobslist)
 
 ## ----eval=FALSE----------------------------------------------------------
 #  data(abstreams0)  # a messy river network

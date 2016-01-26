@@ -174,6 +174,20 @@ NULL
 #' @format A river network object, see \link{rivernetwork}
 NULL
 
+
+#' Dataset: Fakefish Density
+#' 
+#' An object created by \link{riverdensity}, describing the density of Fakefish points in the Gulkana River during ten surveys.
+#' 
+#' Intended for plotting using \link{plotriverdensity}.
+#' 
+#' @docType data
+#' @keywords datasets
+#' @name fakefish_density
+#' @usage data(fakefish_density)
+#' @format A river density object, see \link{riverdensity}, \link{plotriverdensity}, \link{riverdensity-class}
+NULL
+
 #' The "rivernetwork" Class
 #'
 #' A class that holds spatial coordinates for river networks, as well as network topology and attributes.
@@ -214,15 +228,25 @@ NULL
 #' @author Matt Tyers
 NULL
 
-#' Dataset: Fakefish Density
-#' 
-#' An object created by \link{riverdensity}, describing the density of Fakefish points in the Gulkana River during ten surveys.
-#' 
-#' Intended for plotting using \link{plotriverdensity}.
-#' 
-#' @docType data
-#' @keywords datasets
-#' @name fakefish_density
-#' @usage data(fakefish_density)
-#' @format A river density object, see \link{riverdensity}, \link{plotriverdensity}
+#' The "riverdensity" Class
+#'
+#' A class that holds density information computed from point data along a river network.
+#'
+#' Created by \link{makeriverdensity} from point data and a river network.  Contains all information for plotting in \link{plot.riverdensity}.
+#'
+#'@section Elements:
+#'  \describe{
+#'    \item{\code{densities}:}{Object of class \code{"list"}. Each list element corresponds to a unique value of survey.  Each element is itself of class \code{"list"}, with each element corresponding to a segment from the associated river network.  Each element is a vector of class \code{"numeric"}, with values equal to the scaled densities calculated at the river network vertices stored in \code{$densverts} of the associated river network segment.}
+#'    \item{\code{endptverts}:}{List of vectors of class \code{"numeric"}.  Each list element is a vector of the vertices of the endpoints of the subsegments considered for density calculation.  Each list element corresponds to a river segment from the associated river network.}
+#'    \item{\code{densverts}:}{List of vectors of class \code{"numeric"}.  Each element is a vector of the vertices of the points of the subsegments considered for density calculation, that were used for density calculation.  Each list element corresponds to a river segment from the associated river network.}
+#'    \item{\code{pointsegs}:}{Vector of class \code{"numeric"}.  Defined as the segment numbers of the point data used for density calculation.}
+#'    \item{\code{pointverts}:}{Vector of class \code{"numeric"}.  Defined as the vertex numbers of the point data used for density calculation.}
+#'    \item{\code{survey}:}{Vector of class \code{"numeric"} or class \code{"character"}.  Defined as the survey identifiers associated with the point data used for density calculation.}
+#'    \item{\code{rivers}:}{Object of class \code{"rivernetwork"} ; see \link{rivernetwork-class}}.
+#'   }
+#' @name riverdensity
+#' @rdname riverdensity
+#' @aliases riverdensity-class
+#' @exportClass riverdensity
+#' @author Matt Tyers
 NULL

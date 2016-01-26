@@ -1,61 +1,6 @@
-riverdensity_old <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,resolution=NULL) {
-  if(is.null(resolution)) resolution <- sum(rivers$lengths)/500
-  if(is.null(bw)) bw <- 10*resolution     # make this smarter
-  if(is.null(survey)) survey <- 0
-  densverts <- list()
-  endptverts <- list()
-  for(segi in 1:length(rivers$lines)) {
-    segilength <- dim(rivers$lines[[segi]])[1]
-    runsum <- 0
-    endptlengths <- c(seq(from=0,to=rivers$lengths[segi],by=resolution),rivers$lengths[segi])
-    denslengths <- seq(from=(min(resolution,rivers$lengths[segi])/2),to=rivers$lengths[segi],by=resolution)
-    if(length(endptlengths)-length(denslengths)==2) {
-      denslengths[length(denslengths)+1] <- rivers$lengths[segi]  # this is a hack but shouldn't be too important
-    }
-    endptlengthsi <- 1
-    denslengthsi <- 1
-    densverts[[segi]] <- endptverts[[segi]] <- NA
-    for(verti in 2:segilength) {
-      runsum <- runsum+pdist(rivers$lines[[segi]][verti,],rivers$lines[[segi]][(verti-1),])
-      if(runsum >= endptlengths[endptlengthsi]) {
-        endptverts[[segi]][endptlengthsi] <- verti
-        endptlengthsi <- endptlengthsi+1
-      }
-      if(denslengthsi <= length(denslengths)) {
-        if(runsum >= denslengths[denslengthsi]) {
-          densverts[[segi]][denslengthsi] <- verti
-          denslengthsi <- denslengthsi+1
-        }
-      }
-    }
-  }
-  
-  densities <- list()
-  
-  isurvey <- 1
-  for(surveyi in sort(unique(survey))) {
-    densities[[isurvey]] <- list()
-    for(segi in 1:length(rivers$lines)) {
-      print(segi)
-      segilength <- dim(rivers$lines[[segi]])[1]
-      tofromi <- riverdistancetofrom(seg1=rep(segi,length(densverts[[segi]])),vert1=densverts[[segi]],seg2=seg[survey==surveyi],vert2=vert[survey==surveyi],rivers=rivers)
-      if(kernel=="gaussian") {
-        densitiesi <- dnorm(x=tofromi,mean=0,sd=bw)
-        densitiesi[densitiesi<dnorm(x=2*bw,mean=0,sd=bw)] <- 0
-      }
-      if(kernel=="rect") densitiesi <- (tofromi<bw)
-      densities[[isurvey]][[segi]] <- unname(rowSums(densitiesi))
-    }
-    isurvey <- isurvey+1
-  }
-  
-  out <- list(densities=densities, endptverts=endptverts, densverts=densverts, pointsegs=seg, pointverts=vert, survey=survey, rivers=rivers)
-  return(out)
-}
-
 #' Calculate Kernel Density Using River Distance
 #' @description Uses spatial point data (segment and vertex) to calculates a 
-#'   kernel density object to use in \link{plotriverdensity}. Scaled kernel 
+#'   kernel density object to use in the output class plotting method,\link{plot.riverdensity}. Scaled kernel 
 #'   density is calculated at approximately regularly-spaced locations, with 
 #'   spacing specified by the user.
 #'   
@@ -64,7 +9,7 @@ riverdensity_old <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #'   plot for each.
 #'   
 #'   The purpose of this function is to generate a kernel density object to plot
-#'   using \link{plotriverdensity}.
+#'   using plot(), see \link{plot.riverdensity}.
 #' @note It is likely that calculation will be very slow.  Use of this function 
 #'   with a river network for which segment routes has not yet been calculated 
 #'   is not recommended.
@@ -89,20 +34,20 @@ riverdensity_old <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #'   kernel density calculation.  Accepting the default (\code{NULL}) will
 #'   result in the function determining a value to use, based on the total
 #'   length of the river network.
-#' @return A river density object.
-#' @seealso \link{plotriverdensity}, \link{plotriverdensitypoints}
+#' @return A river density object, see \link{riverdensity-class}.
+#' @seealso \link{plot.riverdensity}, \link{plotriverdensitypoints}
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
 #' 
 #' # # Not run: this step takes a few minutes
-#' # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
+#' # Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
 #' #   survey=fakefish$flight.date)
 #'   
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
-#' # plotriverdensity(riverdensity=Gulk_dens)
+#' # plot(x=Gulk_dens)
 #' @export
-riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,resolution=NULL) {
+makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,resolution=NULL) {
   if(is.null(resolution)) resolution <- sum(rivers$lengths)/500
   if(is.null(bw)) bw <- 10*resolution     
   if(is.null(survey)) survey <- 0
@@ -187,13 +132,14 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
   }
   
   out <- list(densities=densities, endptverts=endptverts, densverts=densverts, pointsegs=seg, pointverts=vert, survey=survey, rivers=rivers)
+  class(out) <- "riverdensity"
   return(out)
 }
 
 
 #' Plot Kernel Density Using River Distance
 #' @description Produces a kernel density plot from a kernel density object 
-#'   created by \link{riverdensity}.
+#'   created by \link{makeriverdensity}.
 #'   
 #'   If the kernel density object includes densities from multiple surveys, a 
 #'   new plot will be created for each survey.
@@ -204,8 +150,8 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #'   according to the form (density/maxdensity)^pwr, with the value of pwr set 
 #'   by the \code{pwr} argument.  Setting \code{pwr} to a value less than 1 
 #'   allows smaller values to be more visible on the plot.
-#' @param riverdensity A river density object created by \link{riverdensity}.
-#' @param whichplost A vector of plots to produce, if multiple plots are 
+#' @param x A river density object created by \link{makeriverdensity}.
+#' @param whichplots A vector of plots to produce, if multiple plots are 
 #'   produced.  For example, specifying \code{whichplot=c(2,3,4)} will result in
 #'   only the second, third, and fourth plots of the sequence being produced. 
 #'   Accepting the default (\code{NULL}) will result in all plots being 
@@ -257,28 +203,31 @@ riverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,r
 #' @param add Whether to produce a new plot (\code{FALSE}), or add to an 
 #'   existing plot (\code{TRUE}).  Defaults to \code{FALSE}.
 #' @param ... Additional plotting parameters.
-#' @seealso \link{riverdensity}, \link{plotriverdensitypoints}
+#' @seealso \link{makeriverdensity}, \link{plotriverdensitypoints}
+#' @method plot riverdensity
+#' @aliases plotriverdensity
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
 #' 
 #' # # Not run: this step takes a few minutes
-#' # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
+#' # Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
 #' #   survey=fakefish$flight.date)
 #'   
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
-#' # plotriverdensity(riverdensity=Gulk_dens)
+#' # plot(x=Gulk_dens)
 #' @export
-plotriverdensity <- function(riverdensity,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,...) {
+plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,...) {
+  if(class(x)!="riverdensity") stop("Argument x must be an object returned from makeriverdensity().")
   if(dark>1 | dark<0) dark <-1
   if(alpha>1 | alpha<0) alpha <-1
-  densities <- riverdensity$densities
-  endptverts <- riverdensity$endptverts
-  densverts <- riverdensity$densverts
-  seg <- riverdensity$pointsegs
-  vert <- riverdensity$pointverts
-  survey <- riverdensity$survey
-  rivers <- riverdensity$rivers
+  densities <- x$densities
+  endptverts <- x$endptverts
+  densverts <- x$densverts
+  seg <- x$pointsegs
+  vert <- x$pointverts
+  survey <- x$survey
+  rivers <- x$rivers
   if(length(main)==1) main <- rep(main,length(unique(survey)))
   if(is.null(main) & length(unique(survey))>1) main <- sort(unique(as.character(survey)))
   
@@ -393,32 +342,32 @@ plotriverdensity <- function(riverdensity,whichplots=NULL,points=TRUE,bycol=TRUE
   }
 }
 # 
-# gulk1 <- riverdensity(seg=fakefish$seg[fakefish$flight==1],vert=fakefish$vert[fakefish$flight==1],rivers=Gulk)
-# gulk2 <- riverdensity(seg=fakefish$seg[fakefish$flight==2],vert=fakefish$vert[fakefish$flight==2],rivers=Gulk)
+# gulk1 <- makeriverdensity(seg=fakefish$seg[fakefish$flight==1],vert=fakefish$vert[fakefish$flight==1],rivers=Gulk)
+# gulk2 <- makeriverdensity(seg=fakefish$seg[fakefish$flight==2],vert=fakefish$vert[fakefish$flight==2],rivers=Gulk)
 # par(mfrow=c(1,1))
-# plotriverdensity(gulk1,ramp="red",alpha=.5)
-# plotriverdensity(gulk2,ramp="green",add=T,alpha=.5)
+# plot(x=gulk1,ramp="red",alpha=.5)
+# plot(x=gulk2,ramp="green",add=T,alpha=.5)
 
 #' Plot Points Used for Kernel Density
 #' @description Plots the points used to calculate a kernel density object 
-#'   in \link{riverdensity}.
+#'   in \link{makeriverdensity}.
 #'   
 #'   This function is intended as a visual check that a sufficient resolution was used.
-#' @param riverdensity A river density object created by \link{riverdensity}.
-#' @seealso \link{riverdensity}, \link{plotriverdensity}
+#' @param riverdensity A river density object created by \link{makeriverdensity}.
+#' @seealso \link{makeriverdensity}, \link{plot.riverdensity}
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
 #' 
 #' # # Not run: this step takes a few minutes
-#' # Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#' # Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #' 
 #' # plotriverdensitypoints(riverdensity=Gulk_dens)
 #' @export
 plotriverdensitypoints <- function(riverdensity) {
   lines <- riverdensity$rivers$lines
   verts <- riverdensity$densverts
-  plot(riverdensity$rivers,segmentnum=FALSE,scale=FALSE)
+  plot(x=riverdensity$rivers,segmentnum=FALSE,scale=FALSE)
   for(segi in 1:length(verts)) {
     riverpoints(seg=rep(segi,length(verts[[segi]])),vert=verts[[segi]],rivers=riverdensity$rivers)
   }
@@ -428,7 +377,7 @@ plotriverdensitypoints <- function(riverdensity) {
 # par(mfrow=c(2,5))
 
 # a <- Sys.time()
-# Gulkdens <- riverdensity(seg=fakefish$seg,vert=fakefish$vert,survey=fakefish$flight.date,rivers=Gulk,resolution=1000,kernel="gaussian",bw=5000)
+# Gulkdens <- makeriverdensity(seg=fakefish$seg,vert=fakefish$vert,survey=fakefish$flight.date,rivers=Gulk,resolution=1000,kernel="gaussian",bw=5000)
 # time1 <- Sys.time()-a
 # a <- Sys.time()
 # Gulkdens2 <- riverdensity2(seg=fakefish$seg,vert=fakefish$vert,survey=fakefish$flight.date,rivers=Gulk,resolution=1000,kernel="gaussian",bw=5000)
@@ -466,15 +415,15 @@ plotriverdensitypoints <- function(riverdensity) {
 # max(dists)
 # 
 # par(mfrow=c(4,5))
-# plotriverdensity(Gulkdens,maxlwd=15,denscol=1,linecol="grey",lwd=1,bycol=T,bylwd=T,points=T,ramp="blue",pwr=.5)
-# plotriverdensity(Gulkdens2,maxlwd=15,denscol=1,linecol="grey",lwd=1,bycol=T,bylwd=T,points=T,ramp="blue",pwr=.5)
+# plot(x=Gulkdens,maxlwd=15,denscol=1,linecol="grey",lwd=1,bycol=T,bylwd=T,points=T,ramp="blue",pwr=.5)
+# plot(x=Gulkdens2,maxlwd=15,denscol=1,linecol="grey",lwd=1,bycol=T,bylwd=T,points=T,ramp="blue",pwr=.5)
 
 # for(datei in sort(unique(as.character(fakefish$flight.date)))) {
 #   plotdensity(seg=fakefish$seg[fakefish$flight.date==datei],vert=fakefish$vert[fakefish$flight.date==datei],rivers=Gulk,resolution=2000,main=datei,kernel="gaussian")
 #   riverpoints(seg=fakefish$seg[fakefish$flight.date==datei],vert=fakefish$vert[fakefish$flight.date==datei],rivers=Gulk,pch=15,col=3)
 # }
 # for(datei in sort(unique(as.character(fakefish$flight.date)))) {
-#   plot(Gulk)
+#   plot(x=Gulk)
 #   riverpoints(seg=fakefish$seg[fakefish$flight.date==datei],vert=fakefish$vert[fakefish$flight.date==datei],rivers=Gulk,pch=15,col=2)
 # }
 # par(mfrow=c(1,1))

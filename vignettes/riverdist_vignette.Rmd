@@ -259,31 +259,31 @@ Beyond individuals: summarizing or plotting at the dataset level
 
 **Calculating and plotting kernel density using `riverdensity()` and `plotriverdensity()`**
 
-A method has been provided to display kernel density calculated from point data, using river network distance.  The `riverdensity()` function calculates scaled kernel density at approximately regularly-spaced river network locations, with the linear resolution specified by the optional `resolution=` argument.  A gaussian (normal) kernel is used by default, but a rectangular (simple density) kernel can be used as well.  The `survey=` argument may also be used with a vector of survey identifiers corresponding to the point data.  If the `survey=` argument is used, `riverdensity()` will calculate separate densities for each unique survey, and `plotriverdensity()` will produce a separate plot for each unique survey.
+A method has been provided to display kernel density calculated from point data, using river network distance.  The `makeriverdensity()` function calculates scaled kernel density at approximately regularly-spaced river network locations, with the linear resolution specified by the optional `resolution=` argument.  A gaussian (normal) kernel is used by default, but a rectangular (simple density) kernel can be used as well.  The `survey=` argument may also be used with a vector of survey identifiers corresponding to the point data.  If the `survey=` argument is used, `makeriverdensity()` will calculate separate densities for each unique survey, and a method of `plot()` will produce a separate plot for each unique survey.
 
-The `plotriverdensity()` function can display densities using line thickness, color, or both.  For additional plotting arguments including possible color ramps, see `?plotriverdensity`.
+The `plot()` function method can display densities using line thickness, color, or both.  For additional plotting arguments including possible color ramps, see `?plot.riverdensity`.
 
 Densities for nine of the ten Fakefish surveys are shown below.
 
 ```{r,eval=FALSE}
 data(Gulk, fakefish)
-fakefish_density <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
+fakefish_density <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
   survey=fakefish$flight.date, resolution=2000, bw=10000)
 par(mfrow=c(3,3))
-plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
+plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
                  whichplots=c(1:8,10))   # showing only nine plots for clarity
 ```
 
 ```{r,fig.width=7.5,fig.height=8.5,echo=FALSE, eval=FALSE}
 data(fakefish_density)
 par(mfrow=c(3,4))
-plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15)
+plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15)
 ```
 
 ```{r,fig.width=7.5,fig.height=10,echo=FALSE}
 data(fakefish_density)
 par(mfrow=c(3,3))
-plotriverdensity(riverdensity=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
+plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
                  whichplots=c(1:8,10))
 ```
 
@@ -316,7 +316,7 @@ round(x)
 ```
 
 
-**Plotting the summary matrix from `mouthdistobs()` or other distance sequence using `plotseq()`**
+**A plotting method for the summary matrix from `mouthdistobs()` or other distance sequence using `plot()`**
 
 The resulting matrix of up-river position returned from `mouthdistobs()`, or another distance sequence returned from `riverdistanceseq()` or `upstreamseq()`, can be plotted using `plotseq()`.  A few types of plots are available, with two shown below.  Additional `type=` arguments can be seen by calling `?plotseq`.  
 
@@ -350,17 +350,18 @@ abline(h=0, lty=3)
 ```
 
 
-**Plotting all upstream movements using `plotupstreammatobs()`**
+**Plotting all upstream movements using `matobslist()` and `plotmatobslist()`**
 
-In a more generalized application, the `plotupstreammatobs()` function plots the upstream distances for all individuals, between each pair of observation events.  Functionally, this is a summary of the outputs of `upstreammatobs()`, but for all individuals in a dataset.  The output is the upper triangle of a matrix of boxplots in which boxplot `[i,j]` represents the upstream distances traveled between observation `i` and observation `j`, for all individuals observed in those observations.  Each boxplot is overlayed with a horizontal line at an upstream distance of zero, for an illustration of up-river or down-river movement trend for that pairwise movement.  It is worth noting that all sequential pairings of events (first to second, second to third, etc.) fall on the lower edge of the triangle, and this sequence of plots is the same as those given by `plotseq()` in the previous example.  
+In a more generalized application, the `matobslist()` function calculates the distances or upstream distances, between each pair of observation events, for all individuals.  Functionally, this is a summary of the outputs of `riverdistancematobs()` or `upstreammatobs()`, but for all individuals in a dataset.  The output from `matobslist()` can then be plotted using `plotmatobslist()`, providing a one-plot summary of all movements within a dataset.  It is recommended to use the default `method="upstream"` in `matobslist()`, which calculates directional (upstream) distances, which will result in a more informative plot.
 
-Alternately, if the `type=` argument is set to `"confint"`, each plot gives a line showing the extent of an approximate 95% confidence interval for the mean upstream distance traveled.  Inference should be made with caution, as sample sizes are likely to be small, and no attempt has been made at using a family-wise confidence level.  However, plotting confidence intervals may be further illustrative of trend.
+The output plot is the upper triangle of a matrix of plots, in which plot `[i,j]` represents the upstream distances traveled between observation `i` and observation `j`, for all individuals observed in those observations.  Each plot is overlayed with a horizontal line at an upstream distance of zero, for an illustration of up-river or down-river movement trend for that pairwise movement.  It is worth noting that all sequential pairings of events (first to second, second to third, etc.) fall on the lower edge of the triangle, and this sequence of plots is the same as those given by `plotseq()` in the previous example.  
 
-Again, a jittered dotplot may be produced by specifying `type="dotplot"`, which will be the most appropriate in the case of small sample sizes.  The default boxplot is shown below for the purpose of clarity, but a jittered dotplot would likely be a better choice in this instance.
+Three types of plots can be produced using the `type=` argument.  The default boxplot type (`type="boxplot"`) is shown below.  Alternately, if the `type=` argument is set to `"confint"`, each plot gives a line showing the extent of an approximate 95% confidence interval for the mean upstream distance traveled.  Inference should be made with caution, as sample sizes are likely to be small, and no attempt has been made at using a family-wise confidence level.  However, plotting confidence intervals may be further illustrative of trend.  A jittered dotplot may be produced by specifying `type="dotplot"`, which will be the most appropriate in the case of small sample sizes.  The default boxplot is shown below for the purpose of clarity, but a jittered dotplot would likely be a better choice in this instance.
 
 ```{r,fig.width=5,fig.height=10}
-plotupstreammatobs(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
-                   vert=fakefish$vert, rivers=Gulk)
+matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+                         vert=fakefish$vert, rivers=Gulk)
+plotmatobslist(matobslist)
 ```
 
 

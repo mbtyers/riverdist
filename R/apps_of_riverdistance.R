@@ -1,6 +1,6 @@
 #' River Distance Between Sequential Observations
 #' @description Returns a matrix of distances traveled by unique fish, between
-#'   sequential surveys.
+#'   sequential surveys.  A plotting method is also provided for the output; see \link{plotseq}
 #' @param unique A vector of identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment component).
@@ -17,7 +17,7 @@
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return A data frame of distances (numeric), with rows defined by unique fish and columns defined by observation increment (1 to 2, 2 to 3, etc.)
-#' @seealso \link{riverdistance}
+#' @seealso \link{riverdistance}, \link{plotseq}
 #' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -25,8 +25,10 @@
 #' riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
+#' seqobs <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#' seqobs
+#' plotseq(seqobs)
 #' @export
 riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")

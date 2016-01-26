@@ -41,7 +41,7 @@ or in the form \code{"YYYY-MM-DD"} or \code{"YYYY/MM/DD"}.}
 \item{...}{Additional plotting parameters}
 }
 \description{
-Plots the sequence of observations of each individual (given as
+Plots the sequence of observations or movements of each individual (given as
   segment and vertex).  This function is primarily intended for use with
   \link{mouthdistobs}, but will also work with \link{riverdistanceseq} and
   \link{upstreamseq}.

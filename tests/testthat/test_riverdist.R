@@ -49,10 +49,10 @@ test_that("dissolve",{
 
 hr <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk)
 test_that("homerange",{
-  expect_equal(hr[14,1],19)
-  expect_equal(hr[14,2],151397,tolerance=0.001)
-  expect_equal(hr[9,1],2)
-  expect_equal(hr[9,2],94833.3,tolerance=0.001)
+  expect_equal(hr[14,1],15)
+  expect_equal(hr[14,2],149433.3,tolerance=0.001)
+  expect_equal(hr[9,1],10)
+  expect_equal(hr[9,2],101682.7,tolerance=0.001)
   expect_equal(names(hr),c("ID","range"))
   expect_error(homerange(unique=1:10,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk))
 })
@@ -277,7 +277,7 @@ test_that("matobs", {
 }) 
 
 fakefish_sub <- subset(fakefish,vert<40)
-fakesubdens <- riverdensity(seg=fakefish_sub$seg,vert=fakefish_sub$vert,survey=fakefish_sub$flight.date,rivers=Gulk)
+fakesubdens <- makeriverdensity(seg=fakefish_sub$seg,vert=fakefish_sub$vert,survey=fakefish_sub$flight.date,rivers=Gulk)
 test_that("riverdensity", {
   expect_equal(length(fakesubdens$densities),7)
   expect_equal(length(fakesubdens$densities[[1]]),14)

@@ -7,11 +7,11 @@
 plotriverdensitypoints(riverdensity)
 }
 \arguments{
-\item{riverdensity}{A river density object created by \link{riverdensity}.}
+\item{riverdensity}{A river density object created by \link{makeriverdensity}.}
 }
 \description{
 Plots the points used to calculate a kernel density object
-  in \link{riverdensity}.
+  in \link{makeriverdensity}.
 
   This function is intended as a visual check that a sufficient resolution was used.
 }
@@ -19,7 +19,7 @@ Plots the points used to calculate a kernel density object
 data(Gulk, fakefish)
 
 # # Not run: this step takes a few minutes
-# Gulk_dens <- riverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+# Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
 # plotriverdensitypoints(riverdensity=Gulk_dens)
 }
@@ -27,6 +27,6 @@ data(Gulk, fakefish)
 Matt Tyers
 }
 \seealso{
-\link{riverdensity}, \link{plotriverdensity}
+\link{makeriverdensity}, \link{plot.riverdensity}
 }
 

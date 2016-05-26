@@ -1,5 +1,5 @@
 #' Calculate Kernel Density Using River Distance
-#' @description Uses spatial point data (segment and vertex) to calculates a 
+#' @description Uses spatial point data (segment and vertex) to calculate a 
 #'   kernel density object to use in the output class plotting method,\link{plot.riverdensity}. Scaled kernel 
 #'   density is calculated at approximately regularly-spaced locations, with 
 #'   spacing specified by the user.
@@ -37,6 +37,9 @@
 #' @return A river density object, see \link{riverdensity-class}.
 #' @seealso \link{plot.riverdensity}, \link{plotriverdensitypoints}
 #' @author Matt Tyers
+#' @importFrom utils txtProgressBar
+#' @importFrom utils setTxtProgressBar
+#' @importFrom stats dnorm
 #' @examples
 #' data(Gulk, fakefish)
 #' 
@@ -207,6 +210,11 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' @method plot riverdensity
 #' @aliases plotriverdensity
 #' @author Matt Tyers
+#' @importFrom grDevices grey
+#' @importFrom grDevices rainbow
+#' @importFrom grDevices heat.colors
+#' @importFrom graphics rect
+#' @importFrom grDevices adjustcolor
 #' @examples
 #' data(Gulk, fakefish)
 #' 

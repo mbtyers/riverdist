@@ -195,6 +195,8 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 #'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
+#' @param main Plot title, if \code{map} is set to \code{TRUE}.  If unspecified, the unique ID will be used for the title.
+#' @param ... Additional plotting arguments, if \code{map} is set to \code{TRUE}.
 #' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -207,7 +209,7 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 #' @importFrom graphics plot
 #' @importFrom graphics lines
 #' @export
-homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
+homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,...) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if((length(unique)!=length(seg))|(length(seg)!=length(vert))) stop("Input vectors must be the same length.")
   ID <- sort(unique(unique))
@@ -215,7 +217,8 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL) {
   
   for(i in 1:length(ID)) {
     if(map==T) {
-      plot(x=rivers,main=ID[i],color=F,segmentnum=F)
+      if(is.null(main)) main <- ID[i]
+      plot(x=rivers,main=main,color=F,segmentnum=F,...=...)
     }
     
     n.entries <- length(unique[unique==ID[i]])

@@ -47,6 +47,7 @@ removeduplicates <- function(rivers) {
 #' @return A new river network object with duplicated segments removed, see
 #'   \link{rivernetwork}
 #' @seealso line2network
+#' @importFrom graphics hist
 #' @author Matt Tyers
 #' @examples
 #' data(abstreams0,Koyukuk0,Kenai1)

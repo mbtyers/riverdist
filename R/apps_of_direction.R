@@ -606,6 +606,9 @@ matobslist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="upstream
 #' @note Building routes from the river mouth to each river network segment may 
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
+#' @importFrom graphics rect
+#' @importFrom stats var
+#' @importFrom stats t.test
 #' @examples
 #' data(Gulk, smallset)
 #' matobslist <- matobslist(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
@@ -627,6 +630,7 @@ plotmatobslist <- function(matobslist,type="boxplot",showN=TRUE,...) {
 #     indivi <- indivi+1
 #   }
   if(!is.numeric(matobslist[[1]][1])) stop("Plotting methods do not yet exist for direction") 
+  if(!any(type==c("boxplot","confint","dotplot"))) stop("Invalid plot type")
   mats <- matobslist
   maxall <- max(unlist(mats),na.rm=T)
   minall <- min(unlist(mats),na.rm=T)
@@ -947,7 +951,7 @@ plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,l
   if(surveysareDates) xplot <- as.Date(names(seqobs))
   if(!surveysareDates) xplot <- 1:(dim(seqobs)[2])
   if(is.numeric(seqobs[1,1])) {
-    plot(NA,xlim=c(xplot[1],xplot[length(xplot)]),ylim=c(min(seqobs,na.rm=T),max(seqobs,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,...=...)
+    plot(NA,xlim=c(xplot[1],xplot[length(xplot)]),ylim=c(min(seqobs,na.rm=T),max(seqobs,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,main=main,...=...)
     if(!is.null(lowerbound)&!is.null(upperbound)) {
       if(boundtype=="negative") {
         polygon(x=c(xplot[1],xplot,xplot[length(xplot)]),y=c(par("usr")[3],lowerbound,par("usr")[3]),col="grey90",border=NA)
@@ -972,7 +976,7 @@ plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,l
       }
     }
     for(i in 1:(dim(seqobs)[2])) {
-      if(type=="boxplot" | type=="boxline") boxplot(seqobs[,i],at=xplot[i],add=T,yaxt='n',col=NA)
+      if((type=="boxplot" | type=="boxline") & !all(is.na(seqobs[,i]))) boxplot(seqobs[,i],at=xplot[i],add=T,yaxt='n',col=NA)
       if(type=="dotplot") points(jitter(rep(xplot[i],(dim(seqobs)[1])),amount=.1),seqobs[,i])
       if(type=="dotline") points(rep(xplot[i],(dim(seqobs)[1])),seqobs[,i])
     }

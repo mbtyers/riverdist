@@ -40,7 +40,7 @@ length of the river network.}
 A river density object, see \link{riverdensity-class}.
 }
 \description{
-Uses spatial point data (segment and vertex) to calculates a
+Uses spatial point data (segment and vertex) to calculate a
   kernel density object to use in the output class plotting method,\link{plot.riverdensity}. Scaled kernel
   density is calculated at approximately regularly-spaced locations, with
   spacing specified by the user.

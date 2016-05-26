@@ -131,6 +131,11 @@ x
 plot(x$range, type='b', xaxt='n', xlab="", ylab="range (m)", cex.axis=.6)
 axis(1,at=1:10,labels=sort(unique(fakefish$flight.date)), cex.axis=.6, las=3)
 
+## ----fig.width=7.5,fig.height=7.5----------------------------------------
+par(mfrow=c(3,3))
+kfunc(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight.date,
+     maxdist=200000, whichplots=c(1:8,10))   # showing only nine plots for clarity
+
 ## ------------------------------------------------------------------------
 mouthdist(seg=fakefish$seg[1], vert=fakefish$vert[1], rivers=Gulk)
 x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight,

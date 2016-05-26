@@ -7,10 +7,33 @@ vignette: >
   \usepackage[utf8](inputenc)
 ---
 
+[Package overview](#Package overview)
+
+[Limitations, notes, and caveats](#Limitations, notes, and caveats)
+
+[Importing and displaying river network data](#Importing and displaying river network data)
+
+[Basic distance calculation in a non-messy river network](#Basic distance calculation in a non-messy river network)
+
+[Incorporating flow direction](#Incorporating flow direction)
+
+[Allowing different route-detection algorithms: a possible time-saver](#Allowing different route-detection algorithms: a possible time-saver)
+
+[Beyond individuals: summarizing or plotting at the dataset level](#Beyond individuals: summarizing or plotting at the dataset level)
+
+[Editing a river network object, or fixing a messy one](#Editing a river network object, or fixing a messy one)
+
+[Dealing with braided channels](#Dealing with braided channels)
+
+
+<a name="Package overview"></a>
+
 Package overview
 ---------------------------------------
 The 'riverdist' package is intended as a free and readily-available resource for distance calculation along a river network.  This package was written with fisheries research in mind, but could be applied to other fields.  The 'riverdist' package builds upon the functionality of the 'sp' and 'rgdal' packages, which provide the utility of reading GIS shapefiles into the R environment.  What 'riverdist' adds is the ability to treat a linear feature as a connected network, and to calculate travel routes and travel distances along that network.
 
+
+<a name="Limitations, notes, and caveats"></a>
 
 Limitations, notes, and caveats
 --------------------------------------------
@@ -19,8 +42,24 @@ Care must be exercised in the presence of braided channels, in which multiple ro
 Another important note is that only projected data can be used, both for river networks and for point data.  The 'riverdist' environment in R does not share the ability of GIS software to project-on-the-fly, and treats all coordinates on a linear (rectangular) scale.  Therefore, the projection of all data must also be the same.
 
 
+<a name="Importing and displaying river network data"></a>
+
 Importing and displaying river network data
 -------------------------------------------
+
+[Importing a river network](#Importing a river network)
+
+[Displaying a river network](#Displaying a river network)
+
+[Checking connectedness](#Checking connectedness)
+
+[Converting XY data to river locations](#Converting XY data to river locations)
+
+[Displaying point data in river locations](#Displaying point data in river locations)
+
+
+
+<a name="Importing a river network"></a>
 
 **Importing a river network using `line2network()`**
 
@@ -37,6 +76,8 @@ AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154
 MyRivernetwork <- line2network(path=".", layer="MyShapefile", reproject=AKalbers)
 ```
 
+
+<a name="Displaying a river network"></a>
 
 **Displaying a river network using `plot()`**
 
@@ -55,6 +96,8 @@ abstreams_fixed <- cleanup(abstreams0)
 ```
 
 
+<a name="Checking connectedness"></a>
+
 **Checking connectedness using `topologydots()`**
 
 For route and distance calculation to work, the topologies must be correct, with all the right segments being treated as connected.  The `topologydots()` function can check for this, and plots connected segment endpoints as green, and non-connected endpoints as red.  This is shown below, and all appears good.
@@ -63,6 +106,8 @@ For route and distance calculation to work, the topologies must be correct, with
 topologydots(rivers=Gulk)
 ```
 
+
+<a name="Converting XY data to river locations"></a>
 
 **Converting XY data to river locations using `xy2segvert()` and `pointshp2segvert()`**
 
@@ -84,6 +129,8 @@ segvert_from_shp <- pointshp2segvert(path=".", layer="MyPointShapefile", rivers=
 ```
 
 
+<a name="Displaying point data in river locations"></a>
+
 **Displaying point data in river locations using `riverpoints()`**
 
 The `riverpoints()` function works essentially like `points()` to overlay point data on an existing plot, but using river locations (segment and vertex).  The `zoomtoseg()` function produces a plot zoomed to the specified segment number, or vector of segment numbers.
@@ -97,8 +144,24 @@ riverpoints(seg=fakefish_riv$seg, vert=fakefish_riv$vert, rivers=Gulk, pch=15, c
 ```
 
 
+<a name="Basic distance calculation in a non-messy river network"></a>
+
 Basic distance calculation in a non-messy river network
 -------------------------------------------------
+
+[Computing network distance](#Computing network distance)
+
+[Computing network distances between sequential observations of individuals](#Computing network distances between sequential observations of individuals)
+
+[Computing a matrix of network distances between all observations of an individual](#Computing a matrix of network distances between all observations of an individual)
+
+[Computing minimum observed home range for individuals](#Computing minimum observed home range for individuals)
+
+[Computing a matrix of network distances between all observations](#Computing a matrix of network distances between all observations)
+
+[Computing a matrix of network distances between all observations of two different datasets](#Computing a matrix of network distances between all observations of two different datasets)
+
+<a name="Computing network distance"></a>
 
 **Computing network distance using `riverdistance()`**
 
@@ -112,6 +175,8 @@ riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, map
 ```
 
 
+<a name="Computing network distances between sequential observations of individuals"></a>
+
 **Computing network distances between sequential observations of individuals using `riverdistanceseq()`**
 
 River distance can be calculated manually between any two connected locations on a river network.  However, a few common summary analyses were automated and are included in 'riverdist'.  First, the `riverdistanceseq()` function returns a matrix of the distances between sequential observations for a set of individuals observed multiple times.  In the example below, three fish were observed (or not) during 5 telemetry flights.  The dataset is shown first, then the output from `riverdistanceseq()`.  Fish number 1 traveled 83.87 km between flights 3 and 4, and was not observed during flight 2.
@@ -123,6 +188,8 @@ riverdistanceseq(unique=smallset$id, survey=smallset$flight, seg=smallset$seg,
                    vert=smallset$vert, rivers=Gulk)
 ```
 
+
+<a name="Computing a matrix of network distances between all observations of an individual"></a>
 
 **Computing a matrix of network distances between all observations of an individual using `riverdistancematobs()`**
 
@@ -136,6 +203,8 @@ riverdistancematobs(indiv=1, unique=smallset$id, survey=smallset$flight,
 
 
 
+<a name="Computing minimum observed home range for individuals"></a>
+
 **Computing minimum observed home range for individuals using `homerange()`**
 
 The minimum observed (linear) home range for each individual can be calculated using `homerange()`.  Maps can be produced if desired, by specifying `map=TRUE`.
@@ -146,6 +215,8 @@ par(mfrow=c(1,3))
 homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk, map=TRUE)
 ```
 
+
+<a name="Computing a matrix of network distances between all observations"></a>
 
 **Computing a matrix of network distances between all observations using `riverdistancemat()`**
 
@@ -159,6 +230,8 @@ obsID <- paste0("id",smallset$id,"-flight",smallset$flight)  # constructing obse
 riverdistancemat(seg=smallset$seg, vert=smallset$vert, rivers=Gulk, logical=logi1, ID=obsID)
 ```
 
+
+<a name="Computing a matrix of network distances between all observations of two different datasets"></a>
 
 **Computing a matrix of network distances between all observations of two different datasets using `riverdistancetofrom()`**
 
@@ -181,8 +254,18 @@ riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, seg2=smallset$se
 
 
 
+<a name="Incorporating flow direction"></a>
+
 Incorporating flow direction
 -------------------------------------
+
+[Defining flow direction of a river network](#Defining flow direction of a river network)
+
+[Calculating flow direction and directional network distance](#Calculating flow direction and directional network distance)
+
+[Automations of flow direction and directional network distance](#Automations of flow direction and directional network distance)
+
+<a name="Defining flow direction of a river network"></a>
 
 **Defining flow direction of a river network using `setmouth()`**
 
@@ -193,6 +276,8 @@ showends(seg=1,rivers=Gulk)
 Gulk1 <- setmouth(seg=1, vert=1, rivers=Gulk)
 ```
 
+
+<a name="Calculating flow direction and directional network distance"></a>
 
 **Calculating flow direction using `riverdirection()` and directional network distance using `upstream()`**
 
@@ -214,11 +299,15 @@ upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowcon
 ```
 
 
+<a name="Automations of flow direction and directional network distance"></a>
+
 **Automations of flow direction and directional network distance**
 
 River direction and upstream distance are also applied in functions `riverdirectionseq()` and `upstreamseq()` which work like `riverdistanceseq()`, `riverdirectionmatobs()` and `upstreammatobs()` which work like `riverdistancematobs()`, `riverdirectionmat()` and `upstreammat()` which work like `riverdistancemat()`, and `riverdirectiontofrom` and `upstreamtofrom` which work like `riverdistancetofrom`.  The `upstreamseq()`, `upstreammatobs()`, and `upstreammat()` use the additional `net=` argument, and all river direction and upstream distance functions use the additional `flowconnected=` argument.
 
 
+
+<a name="Allowing different route-detection algorithms: a possible time-saver"></a>
 
 Allowing different route-detection algorithms: a possible time-saver
 -----------------------------------------------------
@@ -254,8 +343,24 @@ Sys.time()- tstart
 In this case, building segment routes takes about as much time as calculating a single distance, a little less than a second.  Calculating a single distance after building segment routes takes about a hundredth of a second, thus dramatically saving time if multiple distances were to be computed, such as in a large matrix of distances, or multiple analyses.
 
 
+<a name="Beyond individuals: summarizing or plotting at the dataset level"></a>
+
 Beyond individuals: summarizing or plotting at the dataset level
 ----------------------------------------
+
+[Calculating and plotting kernel density](#Calculating and plotting kernel density)
+
+[Spatial data spread for each flight event](#Spatial data spread for each flight event)
+
+[Plotting clustering or dispersal using K-functions](#Plotting clustering or dispersal using K-functions)
+
+[Summarizing up-river position](#Summarizing up-river position)
+
+[Plotting a summary matrix or distance sequence](#Plotting a summary matrix or distance sequence)
+
+[Plotting all upstream movements](#Plotting all upstream movements)
+
+<a name="Calculating and plotting kernel density"></a>
 
 **Calculating and plotting kernel density using `riverdensity()` and `plotriverdensity()`**
 
@@ -288,6 +393,8 @@ plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
 ```
 
 
+<a name="Spatial data spread for each flight event"></a>
+
 **An alternate use of `homerange()` to give the spatial data spread for each flight event**
 
 The `homerange()` function could also be used to give a measure of the spatial spread of observations for each flight event, by using the flight identifier instead of individual identifier in the `unique=` argument.
@@ -303,6 +410,26 @@ axis(1,at=1:10,labels=sort(unique(fakefish$flight.date)), cex.axis=.6, las=3)
 
 
 
+<a name="Plotting clustering or dispersal using K-functions"></a>
+
+**Plotting clustering or dispersal using K-functions, with `kfunc()`**
+
+K-functions, defined here as the average proportion of additional individuals located within a given distance of each individual, can be a useful tool for investigating evidence of clustering or dispersal.  Calling `kfunc()` and specifying the flight indentifier will result in a sequence of plots, each displaying the K-function associated with each survey.
+
+Unless otherwise specified, each plot will be overlayed with a confidence envelope, calculated by resampling all within-survey distances, thus creating a null distribution under the assumption that clustering is independent of survey.  Thus, a K-function above the envelope at a small distance range can be seen as evidence that locations were more clustered than expected for that survey; conversely, a K-function below the envelope at a small distance range can be seen as evidence that locations were more dispersed than expected for that survey.
+
+The plots below show relatively high amounts of clustering for the 2015-04-01 and 2015-09-20 surveys.  The 2015-07-07 and especially 2015-08-11 surveys show possible clustering at small distances and very strong dispersal at medium distances, which can be corroborated with the density maps shown above..
+
+```{r,fig.width=7.5,fig.height=7.5}
+par(mfrow=c(3,3))
+kfunc(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight.date,
+     maxdist=200000, whichplots=c(1:8,10))   # showing only nine plots for clarity
+```
+
+
+
+<a name="Summarizing up-river position"></a>
+
 **Summarizing up-river position, defined as distance from mouth, using `mouthdist()` for one observation and `mouthdistobs()` for a dataset**
 
 In some cases, a meaningful summary measure may be the up-river position of each observation.  Distance between an individual observation and the river mouth can be calculated using `mouthdist()`.  In the case of multiple observations of a set of individuals, a summary matrix can be calculated using `mouthdistobs()`, which returns a matrix of distances from the river mouth, with each row corresponding to a unique individual and each column corresponding to a unique survey.
@@ -316,7 +443,9 @@ round(x)
 ```
 
 
-**A plotting method for the summary matrix from `mouthdistobs()` or other distance sequence using `plot()`**
+<a name="Plotting a summary matrix or distance sequence"></a>
+
+**Plotting the summary matrix from `mouthdistobs()` or other distance sequence using `plotseq()`**
 
 The resulting matrix of up-river position returned from `mouthdistobs()`, or another distance sequence returned from `riverdistanceseq()` or `upstreamseq()`, can be plotted using `plotseq()`.  A few types of plots are available, with two shown below.  Additional `type=` arguments can be seen by calling `?plotseq`.  
 
@@ -350,6 +479,8 @@ abline(h=0, lty=3)
 ```
 
 
+<a name="Plotting all upstream movements"></a>
+
 **Plotting all upstream movements using `matobslist()` and `plotmatobslist()`**
 
 In a more generalized application, the `matobslist()` function calculates the distances or upstream distances, between each pair of observation events, for all individuals.  Functionally, this is a summary of the outputs of `riverdistancematobs()` or `upstreammatobs()`, but for all individuals in a dataset.  The output from `matobslist()` can then be plotted using `plotmatobslist()`, providing a one-plot summary of all movements within a dataset.  It is recommended to use the default `method="upstream"` in `matobslist()`, which calculates directional (upstream) distances, which will result in a more informative plot.
@@ -366,10 +497,31 @@ plotmatobslist(matobslist)
 
 
 
+<a name="Editing a river network object, or fixing a messy one"></a>
+
 Editing a river network object, or fixing a messy one
 ----------------------------------------------------------
+
+[All-purpose river network cleanup](#All-purpose river network cleanup)
+
+[Issue: the river network contains unneeded or unconnected segments](#Issue: the river network contains unneeded or unconnected segments)
+
+[Issue: the river network contains sequential "runs" of segments that do not otherwise branch](#Issue: the river network contains sequential runs of segments that do not otherwise branch)
+
+[Issue: the river network segments do not break where they should](#Issue: the river network segments do not break where they should)
+
+[Issue: segments that should connect do not](#Issue: segments that should connect do not)
+
+[Issue: the river network contains segments that are smaller than the connectivity tolerance](#Issue: the river network contains segments that are smaller than the connectivity tolerance)
+
+[Issue: A long straight-line section of the river network does not contain vertices between endpoints](#Issue: A long straight-line section of the river network does not contain vertices between endpoints)
+
+
+
 Ideally, the shapefile used to define a river network object should be refined in GIS *before* importing into R.  That being said, there are sure to be instances in which it is advantageous or necessary to make changes to the river network object within R.
 
+
+<a name="All-purpose river network cleanup"></a>
 
 **All-purpose river network cleanup using `cleanup()`**
 
@@ -382,6 +534,8 @@ data(abstreams0)  # a messy river network
 abstreams_fixed <- cleanup(abstreams0)  # fixing many problems
 ```
 
+
+<a name="Issue: the river network contains unneeded or unconnected segments"></a>
 
 **Issue: the river network contains unneeded or unconnected segments - fixes using `trimriver()`, `trimtopoints()`, and `removeunconnected()`**
 
@@ -438,6 +592,8 @@ plot(x=Koy_subset_trim, main="unconnected segments removed")
 ```
 
 
+<a name="Issue: the river network contains sequential runs of segments that do not otherwise branch"></a>
+
 **Issue: the river network contains sequential "runs" of segments that do not otherwise branch - a fix using `dissolve()`**
 
 Using an unnecessarily complex river network can greatly increase processing time.  Runs of segments can be combined using `dissolve()`, which works much like a spatial dissolve within GIS.
@@ -455,6 +611,8 @@ plot(x=Kenai2_sub_dissolve, main="dissolved")
 ```
 
 
+<a name="Issue: the river network segments do not break where they should"></a>
+
 **Issue: the river network segments do not break where they should - a fix using `splitsegments()`**
 
 This issue is problematic, as it directly affects how connectivity is detected within the river network.  Without appropriate connectivity, routes and distances cannot be calculated.  To address this issue, `splitsegments()` automatically breaks segments where another segment endpoint is detected.
@@ -471,6 +629,8 @@ topologydots(rivers=Koyukuk1, main="original")
 topologydots(rivers=Koyukuk1.split, main="split")
 ```
 
+
+<a name="Issue: segments that should connect do not"></a>
 
 **Issue: segments that should connect do not - a fix using `connectsegs()`**
 
@@ -490,6 +650,8 @@ topologydots(Koyukuk0.1, add=TRUE)
 ```
 
 
+<a name="Issue: the river network contains segments that are smaller than the connectivity tolerance"></a>
+
 **Issue: the river network contains segments that are smaller than the connectivity tolerance - a fix using `removemicrosegs()`**
 
 This is an issue that may be difficult to recognize, and may cause mysterious problems with network topology, sometimes preventing route calculation.  These "microsegments" can be removed using `removemicrosegs()`.
@@ -499,6 +661,8 @@ data(abstreams1)
 abstreams2 <- removemicrosegs(abstreams1)
 ```
 
+
+<a name="Issue: A long straight-line section of the river network does not contain vertices between endpoints"></a>
 
 **Issue: A long straight-line section of the river network does not contain vertices between endpoints - a fix using `addverts()`**
 
@@ -519,9 +683,17 @@ points(Kenai3split$lines[[71]])
 ```
 
 
+<a name="Dealing with braided channels"></a>
+
 Dealing with braided channels
 --------------------------------
 Most of the utility of the 'riverdist' package was designed assuming a truly dendritic river network, in which there is no braiding of channels and only one path exists between one river location and another.  If this is not the case and a braided network is used, the user is **strongly cautioned** that the distances reported may be inaccurate.  In the event of braiding, the shortest route between two locations is returned, but the possibility exists that this may not be the route desired.
+
+[Checking for braiding](#Checking for braiding)
+
+[Investigating multiple routes](#Investigating multiple routes)
+
+<a name="Checking for braiding"></a>
 
 **Checking for braiding using `checkbraided()`**
 
@@ -546,6 +718,8 @@ plot(x=Kenai3.subset)
 checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset)
 checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset)
 ```
+
+<a name="Investigating multiple routes"></a>
 
 **Investigating multiple routes using `riverdistancelist()`**
 

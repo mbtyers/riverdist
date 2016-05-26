@@ -4,7 +4,8 @@
 \alias{homerange}
 \title{Home Range}
 \usage{
-homerange(unique, seg, vert, rivers, map = FALSE, algorithm = NULL)
+homerange(unique, seg, vert, rivers, map = FALSE, algorithm = NULL,
+  main = NULL, ...)
 }
 \arguments{
 \item{unique}{A vector of unique identifiers for each fish.}
@@ -22,6 +23,10 @@ of observed locations and calculated home range for each fish.}
 \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 default), the function will automatically make a selection.  See
 \link{detectroute} for more details.}
+
+\item{main}{Plot title, if \code{map} is set to \code{TRUE}.  If unspecified, the unique ID will be used for the title.}
+
+\item{...}{Additional plotting arguments, if \code{map} is set to \code{TRUE}.}
 }
 \value{
 A data frame with two columns: \code{$ID} is a list of unique fish

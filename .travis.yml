@@ -5,7 +5,7 @@ warnings_are_errors: true
 sudo: required
     
 before_install:
--sudo apt-get install r-cran-rgdal
+- sudo apt-get install r-cran-rgdal
 
 #- sudo apt-get install libhdf5-7 
 #- sudo apt-get install libhdf5-dev 

@@ -7,9 +7,9 @@ sudo: required
 before_install:
 #- sudo apt-get install r-cran-rgdal
 
-sudo apt-get install aptitude # install aptitude as an alternative to apt-get
-sudo aptitude install libgdal-dev # install the package (you may have to respond to queries here)
-sudo aptitude install libproj-dev # install the proj.4 projection library
+- sudo apt-get install aptitude # install aptitude as an alternative to apt-get
+- sudo aptitude install libgdal-dev # install the package (you may have to respond to queries here)
+- sudo aptitude install libproj-dev # install the proj.4 projection library
 
 #- sudo apt-get install libhdf5-7 
 #- sudo apt-get install libhdf5-dev 

@@ -25,10 +25,10 @@
 #' riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' seqobs <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
+#' seqbysurvey <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-#' seqobs
-#' plotseq(seqobs)
+#' seqbysurvey
+#' plotseq(seqbysurvey)
 #' @export
 riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
@@ -90,13 +90,13 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' riverdistancematobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
+#' riverdistancematbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' riverdistancematobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
+#' riverdistancematbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
-riverdistancematobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,stopiferror=TRUE,algorithm=NULL) {
+riverdistancematbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
   surveys_indiv <- sort(unique(survey[unique==indiv]))
   # uniques <- order(unique(unique))

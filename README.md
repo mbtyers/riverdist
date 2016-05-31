@@ -19,17 +19,17 @@ The 'riverdist' package is intended as a free and readily-available resource for
 Several automated analyses are built in.  In most cases, there is a direction or directional distance equivalent.
 
 * `homerange()` returns the minimum observed home range for each individual in a data set.
-* `riverdistanceseq()` and `riverdistanceseqobs()` return different forms of matrices of pairwise network distances between observations of each individual in a dataset.
+* `riverdistanceseq()` and `riverdistanceseqbysurvey()` return different forms of matrices of pairwise network distances between observations of each individual in a dataset.
 * `riverdistancemat()` returns a matrix of network distances between all observations in a dataset.
 * `riverdistancetofrom()` returns a matrix of network distances between two datasets.
-* `mouthdistobs()` returns a matrix of distances between each observation and the mouth of the river network, with rows corresponding to unique individual, and columns corresponding to unique survey.
+* `mouthdistbysurvey()` returns a matrix of distances between each observation and the mouth of the river network, with rows corresponding to unique individual, and columns corresponding to unique survey.
 
 Summaries and plots are also available at the dataset level, in addition to individuals, which is likely to be much more useful to analysis.
 
 * `makeriverdensity()` calculates a kernel density object which can be plotted with `plot()` to create a kernel density map.  Depending on the usage of `makeriverdensity()`, this may be a sequence of maps.
 * `kfunc()` provides plotting of empirical k-functions for each survey event, giving evidence of clustering or dispersal behavior.
-* `plotseq()` produces a plot of a distance sequence such as that returned from `mouthdistobs()` providing plots of overall distance or upriver position for each survey event.
-* `matobslist()` produces a list of matrices of distances or upstream distances between all survey events, for each individual.  This can be plotted using `plotmatobslist()`, creating a summary plot for all individuals.
+* `plotseq()` produces a plot of a distance sequence such as that returned from `mouthdistbysurvey()` providing plots of overall distance or upriver position for each survey event.
+* `matbysurveylist()` produces a list of matrices of distances or upstream distances between all survey events, for each individual.  This can be plotted using `plotmatbysurveylist()`, creating a summary plot for all individuals.
 
 ### Installation
 

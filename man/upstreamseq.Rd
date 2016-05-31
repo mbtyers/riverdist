@@ -64,10 +64,10 @@ Gulk$mouth$mouth.vert <- 1
 upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg,
       vert=fakefish$vert, rivers=Gulk)
 
-seqobs <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
+seqbysurvey <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
       vert=fakefish$vert, rivers=Gulk)
-seqobs
-plotseq(seqobs)
+seqbysurvey
+plotseq(seqbysurvey)
 }
 \author{
 Matt Tyers

@@ -286,13 +286,13 @@ riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowcon
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' riverdirectionmatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
+#' riverdirectionmatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' riverdirectionmatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
+#' riverdirectionmatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
-riverdirectionmatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
+riverdirectionmatbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
   surveys_indiv <- sort(unique(survey[unique==indiv]))
   # uniques <- order(unique(unique))
@@ -423,10 +423,10 @@ riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected
 #' upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg,
 #'       vert=fakefish$vert, rivers=Gulk)
 #'
-#' seqobs <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
+#' seqbysurvey <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
 #'       vert=fakefish$vert, rivers=Gulk)
-#' seqobs
-#' plotseq(seqobs)
+#' seqbysurvey
+#' plotseq(seqbysurvey)
 #' @export
 upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
@@ -495,13 +495,13 @@ upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
-#' upstreammatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
+#' upstreammatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'      
-#' upstreammatobs(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
+#' upstreammatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 #'       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 #' @export
-upstreammatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
+upstreammatbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
   surveys_indiv <- sort(unique(survey[unique==indiv]))
   # uniques <- order(unique(unique))
@@ -536,7 +536,7 @@ upstreammatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowcon
 
 #' Generate List of Distance Matrix Between Observations, for All Individuals
 #' @description Returns a list of matrices, each giving the river distance, direction, or upstream travel distance between all observations of
-#'   one unique fish.  This function is principally intended for producing an object to plot in \link{plotmatobslist}.
+#'   one unique fish.  This function is principally intended for producing an object to plot in \link{plotmatbysurveylist}.
 #' @param unique A vector of unique identifiers for each fish.
 #' @param survey A vector of identifiers for each survey.  It is recommended to 
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
@@ -549,37 +549,37 @@ upstreammatobs <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowcon
 #' @param net Optional parameter to pass to the distance or direction calculation.  Defaults to \code{FALSE}.
 #' @param stopiferror Optional parameter to pass to the distance or direction calculation.  Defaults to \code{TRUE}.
 #' @param algorithm Optional parameter to pass to the distance or direction calculation.  Defaults to \code{NULL}.
-#' @seealso \link{riverdistance}, \link{riverdirection}, \link{upstream}, \link{riverdistancematobs}, \link{riverdirectionmatobs}, \link{upstreammatobs}, \link{plotmatobslist}
+#' @seealso \link{riverdistance}, \link{riverdirection}, \link{upstream}, \link{riverdistancematbysurvey}, \link{riverdirectionmatbysurvey}, \link{upstreammatbysurvey}, \link{plotmatbysurveylist}
 #' @note Building routes from the river mouth to each river network segment may 
 #'   greatly reduce computation time (see \link{buildsegroutes}).
-#' @return A list with each element corresponding to a unique fish.  Each list element is the output from either \link{riverdistancematobs}, \link{riverdirectionmatobs}, or \link{upstreammatobs}.
+#' @return A list with each element corresponding to a unique fish.  Each list element is the output from either \link{riverdistancematbysurvey}, \link{riverdirectionmatbysurvey}, or \link{upstreammatbysurvey}.
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, smallset)
-#' matobslist <- matobslist(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
+#' matbysurveylist <- matbysurveylist(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
 #'    vert=smallset$vert, rivers=Gulk)
-#' plotmatobslist(matobslist)
-#' plotmatobslist(matobslist,type="confint")
-#' plotmatobslist(matobslist,type="dotplot")
+#' plotmatbysurveylist(matbysurveylist)
+#' plotmatbysurveylist(matbysurveylist,type="confint")
+#' plotmatbysurveylist(matbysurveylist,type="dotplot")
 #'    
 #' data(fakefish)
-#' # matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
-#' #   vert=fakefish$vert, rivers=Gulk)
-#' # plotmatobslist(matobslist)
+#' # matbysurveylist <- matbysurveylist(unique=fakefish$fish.id, survey=fakefish$flight, 
+#' #   seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#' # plotmatbysurveylist(matbysurveylist)
 #' @export
-matobslist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="upstream",flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
+matbysurveylist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="upstream",flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
   if(is.null(indiv)) indiv <- sort(unique(unique))
   iindiv <- 1
   mats <- list()
   for(indivi in indiv) {
     if(method=="upstream") {
-      mats[[iindiv]] <- upstreammatobs(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,flowconnected=flowconnected,net=net)
+      mats[[iindiv]] <- upstreammatbysurvey(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,flowconnected=flowconnected,net=net)
     }
     if(method=="direction") {
-      mats[[iindiv]] <- riverdirectionmatobs(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,flowconnected=flowconnected)
+      mats[[iindiv]] <- riverdirectionmatbysurvey(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,flowconnected=flowconnected)
     }
     if(method=="distance") {
-      mats[[iindiv]] <- riverdistancematobs(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE)
+      mats[[iindiv]] <- riverdistancematbysurvey(indiv=indivi,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE)
     }
     iindiv <- iindiv+1
   }
@@ -592,7 +592,7 @@ matobslist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="upstream
 #' @description Produces a matrix of plots (boxplots are default), with plot \code{[i,j]} giving the
 #'   distribution of upstream distances from observation \code{i} to observation
 #'   \code{j}, for all individuals.  
-#' @param matobslist A list of distance matrices returned from \link{matobslist}.
+#' @param matbysurveylist A list of distance matrices returned from \link{matbysurveylist}.
 #' @param type If \code{type} is set to \code{"boxplot"}, boxplots will be 
 #'   produced for each cell.  If \code{type} is set to \code{"confint"}, lines 
 #'   denoting an approximate 95 percent confidence interval for the mean will be 
@@ -602,7 +602,7 @@ matobslist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="upstream
 #' @param showN Whether to display the sample size for each cell.  Defaults to
 #'   TRUE.
 #' @param ... Additional plotting arguments.
-#' @seealso \link{upstream}, \link{upstreammatobs}
+#' @seealso \link{upstream}, \link{upstreammatbysurvey}
 #' @note Building routes from the river mouth to each river network segment may 
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
@@ -611,27 +611,27 @@ matobslist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="upstream
 #' @importFrom stats t.test
 #' @examples
 #' data(Gulk, smallset)
-#' matobslist <- matobslist(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
+#' matbysurveylist <- matbysurveylist(unique=smallset$id, survey=smallset$flight, seg=smallset$seg, 
 #'    vert=smallset$vert, rivers=Gulk)
-#' plotmatobslist(matobslist)
-#' plotmatobslist(matobslist,type="confint")
-#' plotmatobslist(matobslist,type="dotplot")
+#' plotmatbysurveylist(matbysurveylist)
+#' plotmatbysurveylist(matbysurveylist,type="confint")
+#' plotmatbysurveylist(matbysurveylist,type="dotplot")
 #'    
 #' data(fakefish)
-#' # matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
-#' #   vert=fakefish$vert, rivers=Gulk)
-#' # plotmatobslist(matobslist)
+#' # matbysurveylist <- matbysurveylist(unique=fakefish$fish.id, survey=fakefish$flight, 
+#' #   seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#' # plotmatbysurveylist(matbysurveylist)
 #' @export
-plotmatobslist <- function(matobslist,type="boxplot",showN=TRUE,...) {
+plotmatbysurveylist <- function(matbysurveylist,type="boxplot",showN=TRUE,...) {
 #   mats <- list()
 #   indivi <- 1
 #   for(indiv in sort(unique(unique))) {
-#     mats[[indivi]] <- upstreammatobs(indiv=indiv,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
+#     mats[[indivi]] <- upstreammatbysurvey(indiv=indiv,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
 #     indivi <- indivi+1
 #   }
-  if(!is.numeric(matobslist[[1]][1])) stop("Plotting methods do not yet exist for direction") 
+  if(!is.numeric(matbysurveylist[[1]][1])) stop("Plotting methods do not yet exist for direction") 
   if(!any(type==c("boxplot","confint","dotplot"))) stop("Invalid plot type")
-  mats <- matobslist
+  mats <- matbysurveylist
   maxall <- max(unlist(mats),na.rm=T)
   minall <- min(unlist(mats),na.rm=T)
   dims <- dim(mats[[1]])[1]
@@ -642,7 +642,7 @@ plotmatobslist <- function(matobslist,type="boxplot",showN=TRUE,...) {
     lines(c(i,dims),rep(dims-i+.55,2),lty=3)
     text(dims,i+.55,labels="0",pos=4,cex=.6)
   }
-  for(i in 1:dims) text(i-.5,dims-i+.5,row.names(matobslist[[1]])[i],cex=.7)
+  for(i in 1:dims) text(i-.5,dims-i+.5,row.names(matbysurveylist[[1]])[i],cex=.7)
   if(type=="boxplot") {
     for(i in 1:(dims-1)) {
       for(j in (i+1):dims) {
@@ -841,7 +841,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' @param vert A vectpr pf rover coordinates (vertex)
 #' @param rivers The river network object to use
 #' @param logical A boolean vector that can be used for subsetting - if used, 
-#'   \code{mouthdistobs()} will only return distances in which a specified
+#'   \code{mouthdistbysurvey()} will only return distances in which a specified
 #'   condition is met.
 #' @param stopiferror Whether or not to exit with an error if a route cannot be 
 #'   found.  If this is set to \code{FALSE} and a route cannot be found, the 
@@ -862,12 +862,12 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' seqobs <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date, 
+#' seqbysurvey <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight.date, 
 #'     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-#' seqobs
-#' plotseq(seqobs)
+#' seqbysurvey
+#' plotseq(seqbysurvey)
 #' @export
-mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
+mouthdistbysurvey <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
@@ -899,9 +899,9 @@ mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=
 #' Plot Sequence of Observations
 #' @description Plots the sequence of observations or movements of each individual (given as 
 #'   segment and vertex).  This function is primarily intended for use with 
-#'   \link{mouthdistobs}, but will also work with \link{riverdistanceseq} and 
+#'   \link{mouthdistbysurvey}, but will also work with \link{riverdistanceseq} and 
 #'   \link{upstreamseq}.
-#' @param seqobs A matrix returned from \link{mouthdistobs}, 
+#' @param seqbysurvey A matrix returned from \link{mouthdistbysurvey}, 
 #'   \link{riverdistanceseq}, or \link{upstreamseq}.
 #' @param type The type of plot to generate.  Options are 
 #'   \code{"boxplot"},\code{"dotplot"},\code{"boxline"},or \code{"dotline"}. 
@@ -917,7 +917,7 @@ mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=
 #' @param surveysareDates If surveys are in Date format (see \link{as.Date}), a
 #'   value of \code{TRUE} allows the x-coordinates points to be spaced apart
 #'   according to date, not equidistantly.  Defaults to \code{FALSE}.  Any formatting of 
-#'   the survey variable must be done within the original call to \link{mouthdistobs}, 
+#'   the survey variable must be done within the original call to \link{mouthdistbysurvey}, 
 #'   \link{riverdistanceseq}, or \link{upstreamseq}.  Dates must already be formatted as dates,
 #'   or in the form \code{"YYYY-MM-DD"} or \code{"YYYY/MM/DD"}.
 #' @param ... Additional plotting parameters
@@ -932,26 +932,26 @@ mouthdistobs <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date, 
+#' x <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight.date, 
 #'     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #'     
-#' plotseq(seqobs=x)
-#' plotseq(seqobs=x, type="boxline")
-#' plotseq(seqobs=x, type="dotplot")
-#' plotseq(seqobs=x, type="dotline")
+#' plotseq(seqbysurvey=x)
+#' plotseq(seqbysurvey=x, type="boxline")
+#' plotseq(seqbysurvey=x, type="dotplot")
+#' plotseq(seqbysurvey=x, type="dotline")
 #' 
-#' plotseq(seqobs=x, type="dotline", surveysareDates=TRUE)
+#' plotseq(seqbysurvey=x, type="dotline", surveysareDates=TRUE)
 #' 
 #' from_upstreamseq <- upstreamseq(unique=fakefish$fish.id, 
 #'    survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, 
 #'    rivers=Gulk)
-#' plotseq(seqobs=from_upstreamseq)
+#' plotseq(seqbysurvey=from_upstreamseq)
 #' @export
-plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,lowerbound=NULL,upperbound=NULL,boundtype="negative",surveysareDates=F,...) {
-  if(surveysareDates) xplot <- as.Date(names(seqobs))
-  if(!surveysareDates) xplot <- 1:(dim(seqobs)[2])
-  if(is.numeric(seqobs[1,1])) {
-    plot(NA,xlim=c(xplot[1],xplot[length(xplot)]),ylim=c(min(seqobs,na.rm=T),max(seqobs,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,main=main,...=...)
+plotseq <- function(seqbysurvey,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,lowerbound=NULL,upperbound=NULL,boundtype="negative",surveysareDates=F,...) {
+  if(surveysareDates) xplot <- as.Date(names(seqbysurvey))
+  if(!surveysareDates) xplot <- 1:(dim(seqbysurvey)[2])
+  if(is.numeric(seqbysurvey[1,1])) {
+    plot(NA,xlim=c(xplot[1],xplot[length(xplot)]),ylim=c(min(seqbysurvey,na.rm=T),max(seqbysurvey,na.rm=T)),xaxt='n',xlab=xlab,ylab=ylab,main=main,...=...)
     if(!is.null(lowerbound)&!is.null(upperbound)) {
       if(boundtype=="negative") {
         polygon(x=c(xplot[1],xplot,xplot[length(xplot)]),y=c(par("usr")[3],lowerbound,par("usr")[3]),col="grey90",border=NA)
@@ -970,25 +970,25 @@ plotseq <- function(seqobs,type="boxplot",xlab="",ylab="",main="",cex.axisX=.8,l
       }
     }
     if(type=="dotline" | type=="boxline") {
-      for(i in 1:(dim(seqobs)[1])) {
-        lines(xplot[!is.na(seqobs[i,])],seqobs[i,][!is.na(seqobs[i,])],col="grey60",lty=3)
-        lines(xplot,seqobs[i,],col="grey30")
+      for(i in 1:(dim(seqbysurvey)[1])) {
+        lines(xplot[!is.na(seqbysurvey[i,])],seqbysurvey[i,][!is.na(seqbysurvey[i,])],col="grey60",lty=3)
+        lines(xplot,seqbysurvey[i,],col="grey30")
       }
     }
-    for(i in 1:(dim(seqobs)[2])) {
-      if((type=="boxplot" | type=="boxline") & !all(is.na(seqobs[,i]))) boxplot(seqobs[,i],at=xplot[i],add=T,yaxt='n',col=NA)
-      if(type=="dotplot") points(jitter(rep(xplot[i],(dim(seqobs)[1])),amount=.1),seqobs[,i])
-      if(type=="dotline") points(rep(xplot[i],(dim(seqobs)[1])),seqobs[,i])
+    for(i in 1:(dim(seqbysurvey)[2])) {
+      if((type=="boxplot" | type=="boxline") & !all(is.na(seqbysurvey[,i]))) boxplot(seqbysurvey[,i],at=xplot[i],add=T,yaxt='n',col=NA)
+      if(type=="dotplot") points(jitter(rep(xplot[i],(dim(seqbysurvey)[1])),amount=.1),seqbysurvey[,i])
+      if(type=="dotline") points(rep(xplot[i],(dim(seqbysurvey)[1])),seqbysurvey[,i])
     }
-    axis(side=1,at=xplot,labels=names(seqobs),cex.axis=cex.axisX,las=2)
+    axis(side=1,at=xplot,labels=names(seqbysurvey),cex.axis=cex.axisX,las=2)
   }
-  if(is.character(seqobs[1,1])|is.factor(seqobs[1,1])) {
+  if(is.character(seqbysurvey[1,1])|is.factor(seqbysurvey[1,1])) {
     stop("Plotting methods do not yet exist for matrices returned from riverdirectionseq().")
 #     colname <- NULL
 #     contents <- NULL
-#     for(i in 1:(dim(seqobs)[2])) {
-#       colname <- c(colname,rep(names(seqobs)[i],(dim(seqobs)[1])))
-#       contents <- c(contents,seqobs[,i])
+#     for(i in 1:(dim(seqbysurvey)[2])) {
+#       colname <- c(colname,rep(names(seqbysurvey)[i],(dim(seqbysurvey)[1])))
+#       contents <- c(contents,seqbysurvey[,i])
 #     }
 #     contents <- as.character(contents)
 #     contents[contents=="down"] <- "3 down"

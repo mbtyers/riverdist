@@ -46,7 +46,7 @@ riverdistanceseq(unique=smallset$id, survey=smallset$flight, seg=smallset$seg,
                    vert=smallset$vert, rivers=Gulk)
 
 ## ------------------------------------------------------------------------
-riverdistancematobs(indiv=1, unique=smallset$id, survey=smallset$flight,
+riverdistancematbysurvey(indiv=1, unique=smallset$id, survey=smallset$flight,
       seg=smallset$seg, vert=smallset$vert, rivers=Gulk, full=FALSE)
 
 ## ----fig.width=7,fig.height=3.5------------------------------------------
@@ -138,18 +138,18 @@ kfunc(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight.
 
 ## ------------------------------------------------------------------------
 mouthdist(seg=fakefish$seg[1], vert=fakefish$vert[1], rivers=Gulk)
-x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight,
+x <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight,
     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
 round(x)
 
 ## ----fig.width=7.5,fig.height=5------------------------------------------
-x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
+x <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight.date,
     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
 par(mfrow=c(1,2))
-plotseq(seqobs=x)
-plotseq(seqobs=x, type="dotline")
+plotseq(seqbysurvey=x)
+plotseq(seqbysurvey=x, type="dotline")
 par(mfrow=c(1,1))
 
 ## ----fig.width=7.5,fig.height=5------------------------------------------
@@ -157,15 +157,15 @@ x <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$s
                  vert=fakefish$vert, rivers=Gulk)
 round(x)
 par(mfrow=c(1,2))
-plotseq(seqobs=x)
+plotseq(seqbysurvey=x)
 
-plotseq(seqobs=x, type="dotplot")
+plotseq(seqbysurvey=x, type="dotplot")
 abline(h=0, lty=3)
 
 ## ----fig.width=5,fig.height=10-------------------------------------------
-matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+matbysurveylist <- matbysurveylist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
                          vert=fakefish$vert, rivers=Gulk)
-plotmatobslist(matobslist)
+plotmatbysurveylist(matbysurveylist)
 
 ## ----eval=FALSE----------------------------------------------------------
 #  data(abstreams0)  # a messy river network

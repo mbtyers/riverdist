@@ -191,13 +191,13 @@ riverdistanceseq(unique=smallset$id, survey=smallset$flight, seg=smallset$seg,
 
 <a name="Computing a matrix of network distances between all observations of an individual"></a>
 
-**Computing a matrix of network distances between all observations of an individual using `riverdistancematobs()`**
+**Computing a matrix of network distances between all observations of an individual using `riverdistancematbysurvey()`**
 
 River distance can also be calculated between all observations of a single individual.  In the output matrix shown below for individual 1, the element with row identifier `1` and column identifier `3` represents the river distance from the location observed in survey 1 to the location observed in survey 3, calculated as 83.6 km.  An important note is that the distances reported are net distance between locations, and are not intended to be cumulative.  Specifying `full=TRUE` reports an output matrix that includes all observations, with values of `NA` if the individual was not observed.  This allows the output matrices for multiple individuals to have the same rows and columns, thus being directly comparable.
 
 
 ```{r}
-riverdistancematobs(indiv=1, unique=smallset$id, survey=smallset$flight,
+riverdistancematbysurvey(indiv=1, unique=smallset$id, survey=smallset$flight,
       seg=smallset$seg, vert=smallset$vert, rivers=Gulk, full=FALSE)
 ```
 
@@ -303,7 +303,7 @@ upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowcon
 
 **Automations of flow direction and directional network distance**
 
-River direction and upstream distance are also applied in functions `riverdirectionseq()` and `upstreamseq()` which work like `riverdistanceseq()`, `riverdirectionmatobs()` and `upstreammatobs()` which work like `riverdistancematobs()`, `riverdirectionmat()` and `upstreammat()` which work like `riverdistancemat()`, and `riverdirectiontofrom` and `upstreamtofrom` which work like `riverdistancetofrom`.  The `upstreamseq()`, `upstreammatobs()`, and `upstreammat()` use the additional `net=` argument, and all river direction and upstream distance functions use the additional `flowconnected=` argument.
+River direction and upstream distance are also applied in functions `riverdirectionseq()` and `upstreamseq()` which work like `riverdistanceseq()`, `riverdirectionmatbysurvey()` and `upstreammatbysurvey()` which work like `riverdistancematbysurvey()`, `riverdirectionmat()` and `upstreammat()` which work like `riverdistancemat()`, and `riverdirectiontofrom` and `upstreamtofrom` which work like `riverdistancetofrom`.  The `upstreamseq()`, `upstreammatbysurvey()`, and `upstreammat()` use the additional `net=` argument, and all river direction and upstream distance functions use the additional `flowconnected=` argument.
 
 
 
@@ -430,13 +430,13 @@ kfunc(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight.
 
 <a name="Summarizing up-river position"></a>
 
-**Summarizing up-river position, defined as distance from mouth, using `mouthdist()` for one observation and `mouthdistobs()` for a dataset**
+**Summarizing up-river position, defined as distance from mouth, using `mouthdist()` for one observation and `mouthdistbysurvey()` for a dataset**
 
-In some cases, a meaningful summary measure may be the up-river position of each observation.  Distance between an individual observation and the river mouth can be calculated using `mouthdist()`.  In the case of multiple observations of a set of individuals, a summary matrix can be calculated using `mouthdistobs()`, which returns a matrix of distances from the river mouth, with each row corresponding to a unique individual and each column corresponding to a unique survey.
+In some cases, a meaningful summary measure may be the up-river position of each observation.  Distance between an individual observation and the river mouth can be calculated using `mouthdist()`.  In the case of multiple observations of a set of individuals, a summary matrix can be calculated using `mouthdistbysurvey()`, which returns a matrix of distances from the river mouth, with each row corresponding to a unique individual and each column corresponding to a unique survey.
 
 ```{r}
 mouthdist(seg=fakefish$seg[1], vert=fakefish$vert[1], rivers=Gulk)
-x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight,
+x <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight,
     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
 round(x)
@@ -445,21 +445,21 @@ round(x)
 
 <a name="Plotting a summary matrix or distance sequence"></a>
 
-**Plotting the summary matrix from `mouthdistobs()` or other distance sequence using `plotseq()`**
+**Plotting the summary matrix from `mouthdistbysurvey()` or other distance sequence using `plotseq()`**
 
-The resulting matrix of up-river position returned from `mouthdistobs()`, or another distance sequence returned from `riverdistanceseq()` or `upstreamseq()`, can be plotted using `plotseq()`.  A few types of plots are available, with two shown below.  Additional `type=` arguments can be seen by calling `?plotseq`.  
+The resulting matrix of up-river position returned from `mouthdistbysurvey()`, or another distance sequence returned from `riverdistanceseq()` or `upstreamseq()`, can be plotted using `plotseq()`.  A few types of plots are available, with two shown below.  Additional `type=` arguments can be seen by calling `?plotseq`.  
 
 The user is cautioned to use any plots returned as descriptive tools only, as ANOVA-type inference would likely be inappropriate without accounting for repeated-measures and/or serial autocorrelation.
 
 In the example below, the plot shows evidence of the instrumented fish beginning the sampling period near the river mouth, then migrating upriver, and finally ending the sampling period near the mouth.
 
 ```{r,fig.width=7.5,fig.height=5}
-x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date,
+x <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight.date,
     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
 par(mfrow=c(1,2))
-plotseq(seqobs=x)
-plotseq(seqobs=x, type="dotline")
+plotseq(seqbysurvey=x)
+plotseq(seqbysurvey=x, type="dotline")
 par(mfrow=c(1,1))
 ```
 
@@ -472,27 +472,27 @@ x <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$s
                  vert=fakefish$vert, rivers=Gulk)
 round(x)
 par(mfrow=c(1,2))
-plotseq(seqobs=x)
+plotseq(seqbysurvey=x)
 
-plotseq(seqobs=x, type="dotplot")
+plotseq(seqbysurvey=x, type="dotplot")
 abline(h=0, lty=3)
 ```
 
 
 <a name="Plotting all upstream movements"></a>
 
-**Plotting all upstream movements using `matobslist()` and `plotmatobslist()`**
+**Plotting all upstream movements using `matbysurveylist()` and `plotmatbysurveylist()`**
 
-In a more generalized application, the `matobslist()` function calculates the distances or upstream distances, between each pair of observation events, for all individuals.  Functionally, this is a summary of the outputs of `riverdistancematobs()` or `upstreammatobs()`, but for all individuals in a dataset.  The output from `matobslist()` can then be plotted using `plotmatobslist()`, providing a one-plot summary of all movements within a dataset.  It is recommended to use the default `method="upstream"` in `matobslist()`, which calculates directional (upstream) distances, which will result in a more informative plot.
+In a more generalized application, the `matbysurveylist()` function calculates the distances or upstream distances, between each pair of observation events, for all individuals.  Functionally, this is a summary of the outputs of `riverdistancematbysurvey()` or `upstreammatbysurvey()`, but for all individuals in a dataset.  The output from `matbysurveylist()` can then be plotted using `plotmatbysurveylist()`, providing a one-plot summary of all movements within a dataset.  It is recommended to use the default `method="upstream"` in `matbysurveylist()`, which calculates directional (upstream) distances, which will result in a more informative plot.
 
 The output plot is the upper triangle of a matrix of plots, in which plot `[i,j]` represents the upstream distances traveled between observation `i` and observation `j`, for all individuals observed in those observations.  Each plot is overlayed with a horizontal line at an upstream distance of zero, for an illustration of up-river or down-river movement trend for that pairwise movement.  It is worth noting that all sequential pairings of events (first to second, second to third, etc.) fall on the lower edge of the triangle, and this sequence of plots is the same as those given by `plotseq()` in the previous example.  
 
 Three types of plots can be produced using the `type=` argument.  The default boxplot type (`type="boxplot"`) is shown below.  Alternately, if the `type=` argument is set to `"confint"`, each plot gives a line showing the extent of an approximate 95% confidence interval for the mean upstream distance traveled.  Inference should be made with caution, as sample sizes are likely to be small, and no attempt has been made at using a family-wise confidence level.  However, plotting confidence intervals may be further illustrative of trend.  A jittered dotplot may be produced by specifying `type="dotplot"`, which will be the most appropriate in the case of small sample sizes.  The default boxplot is shown below for the purpose of clarity, but a jittered dotplot would likely be a better choice in this instance.
 
 ```{r,fig.width=5,fig.height=10}
-matobslist <- matobslist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
+matbysurveylist <- matbysurveylist(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, 
                          vert=fakefish$vert, rivers=Gulk)
-plotmatobslist(matobslist)
+plotmatbysurveylist(matbysurveylist)
 ```
 
 

@@ -4,12 +4,12 @@
 \alias{plotseq}
 \title{Plot Sequence of Observations}
 \usage{
-plotseq(seqobs, type = "boxplot", xlab = "", ylab = "", main = "",
+plotseq(seqbysurvey, type = "boxplot", xlab = "", ylab = "", main = "",
   cex.axisX = 0.8, lowerbound = NULL, upperbound = NULL,
   boundtype = "negative", surveysareDates = F, ...)
 }
 \arguments{
-\item{seqobs}{A matrix returned from \link{mouthdistobs}, 
+\item{seqbysurvey}{A matrix returned from \link{mouthdistbysurvey}, 
 \link{riverdistanceseq}, or \link{upstreamseq}.}
 
 \item{type}{The type of plot to generate.  Options are 
@@ -34,7 +34,7 @@ Defaults to \code{"boxplot"}.}
 \item{surveysareDates}{If surveys are in Date format (see \link{as.Date}), a
 value of \code{TRUE} allows the x-coordinates points to be spaced apart
 according to date, not equidistantly.  Defaults to \code{FALSE}.  Any formatting of 
-the survey variable must be done within the original call to \link{mouthdistobs}, 
+the survey variable must be done within the original call to \link{mouthdistbysurvey}, 
 \link{riverdistanceseq}, or \link{upstreamseq}.  Dates must already be formatted as dates,
 or in the form \code{"YYYY-MM-DD"} or \code{"YYYY/MM/DD"}.}
 
@@ -43,7 +43,7 @@ or in the form \code{"YYYY-MM-DD"} or \code{"YYYY/MM/DD"}.}
 \description{
 Plots the sequence of observations or movements of each individual (given as 
   segment and vertex).  This function is primarily intended for use with 
-  \link{mouthdistobs}, but will also work with \link{riverdistanceseq} and 
+  \link{mouthdistbysurvey}, but will also work with \link{riverdistanceseq} and 
   \link{upstreamseq}.
 }
 \note{
@@ -55,20 +55,20 @@ Plots are intended as descriptive only.  Any ANOVA-like inference that
 \examples{
 data(Gulk, fakefish)
 
-x <- mouthdistobs(unique=fakefish$fish.id, survey=fakefish$flight.date, 
+x <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight.date, 
     seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
     
-plotseq(seqobs=x)
-plotseq(seqobs=x, type="boxline")
-plotseq(seqobs=x, type="dotplot")
-plotseq(seqobs=x, type="dotline")
+plotseq(seqbysurvey=x)
+plotseq(seqbysurvey=x, type="boxline")
+plotseq(seqbysurvey=x, type="dotplot")
+plotseq(seqbysurvey=x, type="dotline")
 
-plotseq(seqobs=x, type="dotline", surveysareDates=TRUE)
+plotseq(seqbysurvey=x, type="dotline", surveysareDates=TRUE)
 
 from_upstreamseq <- upstreamseq(unique=fakefish$fish.id, 
    survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, 
    rivers=Gulk)
-plotseq(seqobs=from_upstreamseq)
+plotseq(seqbysurvey=from_upstreamseq)
 }
 \author{
 Matt Tyers

@@ -46,10 +46,10 @@ data(Gulk, fakefish)
 riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
      
-seqobs <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
+seqbysurvey <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
-seqobs
-plotseq(seqobs)
+seqbysurvey
+plotseq(seqbysurvey)
 }
 \author{
 Matt Tyers

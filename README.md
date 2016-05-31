@@ -43,6 +43,4 @@ The 'riverdist' package is currently available on Github, and can be installed i
 
 A major dependency of the 'riverdist' package is the 'rgdal' package, which allows importing shapefiles.  For installation on a non-windows machine, please refer to the SystemRequirements given at https://cran.r-project.org/web/packages/rgdal/index.html
 
-'riverdist' passes R CMD check on both Windows 7 and OS X 10.10.3, but package testing using Travis-CI still gives a Build-Error.  This is not a 'riverdist' issue and does not affect the performance of 'riverdist' within R.  This is solely a testing issue, and is due to the fact that I have not yet been able to configure my .travis.yml file such that the libraries 'rgdal' needs are loaded.
-
-[![Travis-CI Build Status](https://travis-ci.org/mbtyers/riverdist.svg?branch=master)](https://travis-ci.org/mbtyers/riverdist)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/riverdist)](http://cran.r-project.org/web/packages/riverdist)

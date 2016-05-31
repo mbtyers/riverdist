@@ -123,7 +123,7 @@
 #' @param rivers The river network object to use
 #' @param lwd Line width used for plotting.  Defaults to 2.
 #' @param envelope Whether to construct and display a 95 percent confidence 
-#'   envelope (see note.)  Defaults to \code{TRUE}.
+#'   envelope (see note.)  Defaults to \code{TRUE} if \code{survey} is specified, and is automatically \code{FALSE} otherwise.
 #' @param envreps Number of bootstrap replicates to use for envelope 
 #'   calculation.  Defaults to 1000.
 #' @param envcol Color to use for envelope plotting.  Defaults to 
@@ -147,7 +147,7 @@
 #'   within each survey, for all surveys.  This results in a confidence envelope
 #'   under the assumption that spacing is independent of survey; therefore a
 #'   survey K-function outside the envelope provides evidence of clustering or 
-#'   dispersal in that survey that is outside the typical range.
+#'   dispersal in that survey that is outside the typical range.  An envelope is not available if only one survey is plotted.
 #'   
 #'   A K-function above the envelope for a given distance range provides
 #'   evidence of a greater number of individuals than expected at that distance
@@ -181,6 +181,7 @@
 #' @export
 kfunc <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,envcol="grey80",envborder=NA,maxdist=NULL,xlab="Distance",ylab="% within",showN=TRUE,whichplots=NULL,...) {
   if(is.null(survey)) survey <- " "
+  if(length(unique(survey))==1) envelope <- F
   if(is.null(whichplots)) whichplots <- 1:length(unique(survey))
   dmats <- list()
   i <- 1
@@ -270,3 +271,90 @@ kfunc <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,e
 # par(mfrow=c(4,5))
 # kfunc3(seg=bb_pts2$seg,vert=bb_pts2$vert,rivers=kusko,survey=bb_pts2$Date,scale=T,envelope=T,envreps=1000)
 # Sys.time()-a
+
+kfunctest <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,envcol="grey80",envborder=NA,maxdist=NULL,xlab="Distance",ylab="% within",showN=TRUE,whichplots=NULL,...) {
+  if(is.null(survey)) survey <- " "
+  if(is.null(whichplots)) whichplots <- 1:length(unique(survey))
+  dmats <- list()
+  i <- 1
+  for(surveyi in sort(unique(survey))) {
+    dmats[[i]] <- riverdistancemat(seg=seg[survey==surveyi],vert=vert[survey==surveyi],rivers=rivers)
+    i <- i+1
+  }
+  maxes <- NA
+  for(i in 1:length(unique(survey))) maxes[i] <- max(unlist(dmats[[i]]))
+  maxdist1 <- ifelse(is.null(maxdist),min(maxes),maxdist)
+  kdists <- seq(from=0,to=maxdist1,l=100)
+  kdistavg <- list()
+  i <- 1
+  for(surveyi in sort(unique(survey))) {
+    kdistavg[[i]] <- NA*kdists
+    for(j in 1:length(kdists)) {
+      kdistavg[[i]][j] <- (sum(dmats[[i]]<kdists[j])-(dim(dmats[[i]])[1]))/(dim(dmats[[i]])[1])*100/(dim(dmats[[i]])[1]-1)
+      # if(scale) kdistavg[[i]][j] <- 100*kdistavg[[i]][j]/(dim(dmats[[i]])[1]-1)
+    }
+    i <- i+1
+  }
+  
+  kdistavgavg <- NA*kdists
+  dmatall <- NULL
+  dim1 <- 0
+  for(i in 1:length(kdistavg)) {
+    dim1 <- dim1+dim(dmats[[i]])[1]
+    dmatall <- c(dmatall,dmats[[i]][upper.tri(dmats[[i]],diag=F)])
+  }
+  dim2 <- dim1-length(kdistavg)
+  for(j in 1:length(kdists)) {
+    kdistavgavg[j] <- 100*(sum(dmatall<kdists[j]))/(length(dmatall))
+  }
+  if(envelope) {
+    kdistavgavgboot <- matrix(NA,nrow=envreps,ncol=length(kdists))
+    #     for(k in 1:envreps) {
+    #       dmatallboot <- sample(dmatall,length(dmatall),replace=T)
+    #       for(j in 1:length(kdists)) {
+    #         kdistavgavgboot[k,j] <- 100*(sum(dmatallboot<kdists[j]))/(length(dmatallboot))
+    #       }
+    #     }
+  }
+  kdistavgbootlower <- kdistavgbootupper <- NA*kdists
+  #   for(j in 1:length(kdists)) {
+  #     kdistavgbootlower[j] <- quantile(kdistavgavgboot[,j],0.025)
+  #     kdistavgbootupper[j] <- quantile(kdistavgavgboot[,j],0.975)
+  #   }
+  
+  testout <- list()
+  for(i in whichplots) {
+    pmain <- ifelse(showN,paste0(sort(unique(survey))[i]," (n=",length(seg[survey==sort(unique(survey))[i]]),")"),sort(unique(survey))[i])
+    # plot(kdists,kdistavg[[i]],col=1,lwd=lwd,xlim=c(0,1.1*max(kdists)),ylim=c(0,max(unlist(kdistavg))),xlab=xlab,ylab=ylab,type='l',main=pmain)
+    testout[[i]] <- list()
+    if(envelope) {
+      ######
+      for(k in 1:envreps) {
+        dmatallboot <- sample(dmatall,sum(upper.tri(dmats[[i]])),replace=T)
+        for(j in 1:length(kdists)) {
+          kdistavgavgboot[k,j] <- 100*(sum(dmatallboot<kdists[j]))/(length(dmatallboot))
+        }
+      }
+      #       dmatallboot <- matrix(sample(dmatall,(envreps*sum(upper.tri(dmats[[i]]))),replace=T),nrow=envreps,ncol=sum(upper.tri(dmats[[i]])))
+      #       for(j in 1:length(kdists)) {
+      #         kdistavgavgboot[,j] <- 100*rowMeans(dmatallboot<kdists[j])
+      #       }
+      for(j in 1:length(kdists)) {
+        kdistavgbootlower[j] <- quantile(kdistavgavgboot[,j],0.025)
+        kdistavgbootupper[j] <- quantile(kdistavgavgboot[,j],0.975)
+      }
+      ######
+      # polygon(c(kdists,kdists[length(kdists):1]),c(kdistavgbootlower,kdistavgbootupper[length(kdists):1]),col=envcol,border=envborder)
+      # lines(kdists,kdistavg[[i]],col=1,lwd=lwd)
+      testout[[i]]$kdistavgbootlower <- kdistavgbootlower
+      testout[[i]]$kdistavgbootupper <- kdistavgbootupper
+      testout[[i]]$kdistavg <- kdistavg[[i]]
+    }
+    # lines(kdists,kdistavgavg,lty=2)
+    testout[[i]]$kdistavgavg <- kdistavgavg
+  }
+  return(testout)
+}
+# asdf<-kfunctest(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight,envreps=100, maxdist=200000)
+# sum(asdf[[1]][1:4])
+# lapply(lapply(asdf[[1]],sum),sum)

@@ -17,9 +17,9 @@ vignette: >
 
 [Incorporating flow direction](#Incorporating flow direction)
 
-[Allowing different route-detection algorithms: a possible time-saver](#Allowing different route-detection algorithms: a possible time-saver)
+[Allowing different route-detection algorithms: a possible time-saver](#Allowing different route-detection algorithms a possible time-saver)
 
-[Beyond individuals: summarizing or plotting at the dataset level](#Beyond individuals: summarizing or plotting at the dataset level)
+[Beyond individuals: summarizing or plotting at the dataset level](#Beyond individuals summarizing or plotting at the dataset level)
 
 [Editing a river network object, or fixing a messy one](#Editing a river network object, or fixing a messy one)
 
@@ -307,7 +307,7 @@ River direction and upstream distance are also applied in functions `riverdirect
 
 
 
-<a name="Allowing different route-detection algorithms: a possible time-saver"></a>
+<a name="Allowing different route-detection algorithms a possible time-saver"></a>
 
 Allowing different route-detection algorithms: a possible time-saver
 -----------------------------------------------------
@@ -343,7 +343,7 @@ Sys.time()- tstart
 In this case, building segment routes takes about as much time as calculating a single distance, a little less than a second.  Calculating a single distance after building segment routes takes about a hundredth of a second, thus dramatically saving time if multiple distances were to be computed, such as in a large matrix of distances, or multiple analyses.
 
 
-<a name="Beyond individuals: summarizing or plotting at the dataset level"></a>
+<a name="Beyond individuals summarizing or plotting at the dataset level"></a>
 
 Beyond individuals: summarizing or plotting at the dataset level
 ----------------------------------------

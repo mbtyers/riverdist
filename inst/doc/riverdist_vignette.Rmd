@@ -504,17 +504,17 @@ Editing a river network object, or fixing a messy one
 
 [All-purpose river network cleanup](#All-purpose river network cleanup)
 
-[Issue: the river network contains unneeded or unconnected segments](#Issue: the river network contains unneeded or unconnected segments)
+[Issue: the river network contains unneeded or unconnected segments](#Issue the river network contains unneeded or unconnected segments)
 
-[Issue: the river network contains sequential "runs" of segments that do not otherwise branch](#Issue: the river network contains sequential runs of segments that do not otherwise branch)
+[Issue: the river network contains sequential "runs" of segments that do not otherwise branch](#Issue the river network contains sequential runs of segments that do not otherwise branch)
 
-[Issue: the river network segments do not break where they should](#Issue: the river network segments do not break where they should)
+[Issue: the river network segments do not break where they should](#Issue the river network segments do not break where they should)
 
-[Issue: segments that should connect do not](#Issue: segments that should connect do not)
+[Issue: segments that should connect do not](#Issue segments that should connect do not)
 
-[Issue: the river network contains segments that are smaller than the connectivity tolerance](#Issue: the river network contains segments that are smaller than the connectivity tolerance)
+[Issue: the river network contains segments that are smaller than the connectivity tolerance](#Issue the river network contains segments that are smaller than the connectivity tolerance)
 
-[Issue: A long straight-line section of the river network does not contain vertices between endpoints](#Issue: A long straight-line section of the river network does not contain vertices between endpoints)
+[Issue: A long straight-line section of the river network does not contain vertices between endpoints](#Issue A long straight-line section of the river network does not contain vertices between endpoints)
 
 
 
@@ -535,7 +535,7 @@ abstreams_fixed <- cleanup(abstreams0)  # fixing many problems
 ```
 
 
-<a name="Issue: the river network contains unneeded or unconnected segments"></a>
+<a name="Issue the river network contains unneeded or unconnected segments"></a>
 
 **Issue: the river network contains unneeded or unconnected segments - fixes using `trimriver()`, `trimtopoints()`, and `removeunconnected()`**
 
@@ -592,7 +592,7 @@ plot(x=Koy_subset_trim, main="unconnected segments removed")
 ```
 
 
-<a name="Issue: the river network contains sequential runs of segments that do not otherwise branch"></a>
+<a name="Issue the river network contains sequential runs of segments that do not otherwise branch"></a>
 
 **Issue: the river network contains sequential "runs" of segments that do not otherwise branch - a fix using `dissolve()`**
 
@@ -611,7 +611,7 @@ plot(x=Kenai2_sub_dissolve, main="dissolved")
 ```
 
 
-<a name="Issue: the river network segments do not break where they should"></a>
+<a name="Issue the river network segments do not break where they should"></a>
 
 **Issue: the river network segments do not break where they should - a fix using `splitsegments()`**
 
@@ -630,7 +630,7 @@ topologydots(rivers=Koyukuk1.split, main="split")
 ```
 
 
-<a name="Issue: segments that should connect do not"></a>
+<a name="Issue segments that should connect do not"></a>
 
 **Issue: segments that should connect do not - a fix using `connectsegs()`**
 
@@ -650,7 +650,7 @@ topologydots(Koyukuk0.1, add=TRUE)
 ```
 
 
-<a name="Issue: the river network contains segments that are smaller than the connectivity tolerance"></a>
+<a name="Issue the river network contains segments that are smaller than the connectivity tolerance"></a>
 
 **Issue: the river network contains segments that are smaller than the connectivity tolerance - a fix using `removemicrosegs()`**
 
@@ -662,7 +662,7 @@ abstreams2 <- removemicrosegs(abstreams1)
 ```
 
 
-<a name="Issue: A long straight-line section of the river network does not contain vertices between endpoints"></a>
+<a name="Issue A long straight-line section of the river network does not contain vertices between endpoints"></a>
 
 **Issue: A long straight-line section of the river network does not contain vertices between endpoints - a fix using `addverts()`**
 

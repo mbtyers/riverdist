@@ -12,7 +12,7 @@ Reads river network shapefiles and computes network distances.  Also included ar
 \tabular{ll}{
 Package: \tab riverdist\cr
 Type: \tab Package\cr
-Version: \tab 0.11\cr
+Version: \tab 0.11.0\cr
 Date: \tab 2016-06-01\cr
 License: \tab GPL-2\cr
 }

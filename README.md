@@ -42,5 +42,3 @@ The 'riverdist' package is currently available on Github, and can be installed i
 ### Issues
 
 A major dependency of the 'riverdist' package is the 'rgdal' package, which allows importing shapefiles.  For installation on a non-windows machine, please refer to the SystemRequirements given at https://cran.r-project.org/web/packages/rgdal/index.html
-
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/riverdist)](http://cran.r-project.org/web/packages/riverdist)

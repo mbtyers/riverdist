@@ -290,5 +290,5 @@ test_that("addverts", {
 asdf<-kfunctest(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight,envreps=1000, maxdist=200000)
 test_that("kfunc", {
   expect_equal(length(asdf),10,tolerance=0.001)
-  expect_equal(lapply(asdf[[1]],sum)[[1]] + lapply(asdf[[1]],sum)[[2]] + lapply(asdf[[1]],sum)[[3]] + lapply(asdf[[1]],sum)[[4]], 30686.61, tolerance=500)
+  expect_equal(lapply(asdf[[1]],sum)[[3]] + lapply(asdf[[1]],sum)[[4]], 16122.44, tolerance=10)
 })

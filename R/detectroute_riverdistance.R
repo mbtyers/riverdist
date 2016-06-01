@@ -326,7 +326,6 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
   rivers1 <- rivers
   rivers1$connections <- rivers$connections[order, order]
   rivers1$lines <- rivers$lines[order]
-  # rivers1$segroutes <- rivers$segroutes[order]
   rivers1$lengths <- rivers$lengths[order]
   if(verbose) plot(x=rivers1,main="segments used for building routes")
   if(verbose) print("building routes for end segments...")

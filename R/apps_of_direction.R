@@ -295,7 +295,6 @@ riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowcon
 riverdirectionmatbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
   surveys_indiv <- sort(unique(survey[unique==indiv]))
-  # uniques <- order(unique(unique))
   
   outmat <- matrix(NA,nrow=length(surveys),ncol=length(surveys))
   for(ii in 1:length(surveys)) {
@@ -504,7 +503,6 @@ upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected
 upstreammatbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
   surveys_indiv <- sort(unique(survey[unique==indiv]))
-  # uniques <- order(unique(unique))
   
   outmat <- matrix(NA,nrow=length(surveys),ncol=length(surveys))
   for(ii in 1:length(surveys)) {
@@ -623,12 +621,6 @@ matbysurveylist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="ups
 #' # plotmatbysurveylist(matbysurveylist)
 #' @export
 plotmatbysurveylist <- function(matbysurveylist,type="boxplot",showN=TRUE,...) {
-#   mats <- list()
-#   indivi <- 1
-#   for(indiv in sort(unique(unique))) {
-#     mats[[indivi]] <- upstreammatbysurvey(indiv=indiv,unique=unique,survey=survey,seg=seg,vert=vert,rivers=rivers,full=TRUE,...=...)
-#     indivi <- indivi+1
-#   }
   if(!is.numeric(matbysurveylist[[1]][1])) stop("Plotting methods do not yet exist for direction") 
   if(!any(type==c("boxplot","confint","dotplot"))) stop("Invalid plot type")
   mats <- matbysurveylist
@@ -653,7 +645,6 @@ plotmatbysurveylist <- function(matbysurveylist,type="boxplot",showN=TRUE,...) {
         box <- boxplot(cell,plot=F)
         box5num <- (box$stats-minall)/(maxall-minall)*.7+.2
         boxout <- (box$out-minall)/(maxall-minall)*.7+.2
-        #points(rep(j-.5,5),(dims-i+box5num))
         rect(xleft=(j-.65),ybottom=(dims-i+box5num[2]),xright=(j-.35),ytop=(dims-i+box5num[4]),col="white")
         lines((j-c(.575,.425)),rep((dims-i+box5num[1]),2))
         lines((j-c(.575,.425)),rep((dims-i+box5num[5]),2))
@@ -710,7 +701,6 @@ plotmatbysurveylist <- function(matbysurveylist,type="boxplot",showN=TRUE,...) {
         }
         cell1 <- (cell-minall)/(maxall-minall)*.7+.2
         points(jitter(rep(j-.5,length(cell1)),amount=.1),(dims-i+cell1))
-        #points((rep(j-.5,length(cell1))),(dims-i+cell1))
         if(showN) text(j-.5,dims-i+.1,paste0("n = ",length(cell[!is.na(cell)])),cex=.6)
       }
     }

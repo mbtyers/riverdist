@@ -137,8 +137,6 @@ splitsegments <- function(rivers,tolerance=NULL) {
       }
     }
   }
-  # rivers$mouth$mouth.seg <- NA
-  # rivers$mouth$mouth.vert <- NA
   
   Id <- 0
   rivers$sp@data <- data.frame(Id)

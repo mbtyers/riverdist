@@ -314,7 +314,7 @@ cleanup <- function(rivers) {
       if(accept!="Y" & accept!="y") plot(rivers5)
       if(is.na(rivers5$mouth$mouth.seg)) {
         mouthset <- FALSE
-        while(!mouthset) {    #### here's where i did it
+        while(!mouthset) {    
           mouthseg <- as.numeric(readline(prompt="Please identify new segment number of river mouth: "))
           if(mouthseg>0 & mouthseg<=length(rivers5$lines)) {
             showends(seg=as.numeric(mouthseg),rivers=rivers5)
@@ -424,25 +424,15 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
     dists[3] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][1,])
     dists[4] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][l2,])
     if(min(dists)==dists[1]) {
-      # for(i in l1:1) {
-      #   rivers$lines[[connect]][i+1,]<-rivers$lines[[connect]][i,]
-      # }
-      # rivers$lines[[connect]][1,] <- rivers$lines[[connectto]][1,]
       rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][1,],rivers$lines[[connect]])
     }
     if(min(dists)==dists[2]) {
-      # for(i in l1:1) {
-      #   rivers$lines[[connect]][i+1,]<-rivers$lines[[connect]][i,]
-      # }
-      # rivers$lines[[connect]][1,] <- rivers$lines[[connectto]][l2,]
       rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][l2,],rivers$lines[[connect]])
     }
     if(min(dists)==dists[3]) {
-      # rivers$lines[[connect]][l1+1,] <- rivers$lines[[connectto]][1,]
       rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][1,])
     }
     if(min(dists)==dists[4]) {
-      # rivers$lines[[connect]][l1+1,] <- rivers$lines[[connectto]][l2,]
       rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][l2,])
     }
     
@@ -529,14 +519,12 @@ removemicrosegs <- function(rivers) {
     displacement[i] <- pdist(rivers$lines[[i]][1,],rivers$lines[[i]][dim.i,])
   }
   problems <- (1:length(rivers$lines))[displacement<=rivers$tolerance]
-  # print(problems)
   for(j in problems) {
     connectedto <- whoconnected(seg=j,rivers=rivers)
     for(jj in connectedto) {
       for(jjj in connectedto) {
         if(jj!=jjj & !any(whoconnected(seg=jj,rivers=rivers)==jjj)) {
           rivers <- connectsegs(connect=jj,connectto=jjj,rivers=rivers)
-          # print(c(jj,jjj))
         }
       }
     }
@@ -567,12 +555,11 @@ removemicrosegs <- function(rivers) {
 #' points(Kenai3split$lines[[71]])   # vertices after adding
 #' @export
 addverts <- function(rivers,mindist=500) {
-# this function needs a better name
-  
+
   lines <- rivers$lines 
   rivers1 <- rivers
   for(segi in 1:length(lines)) {
-    seginew <- NULL #matrix(data=lines[[segi]][1,],nrow=1,ncol=2)
+    seginew <- NULL 
     if(dim(lines[[segi]])[1] > 1) {
       for(verti in 2:(dim(lines[[segi]])[1])) {
         if(pdist(lines[[segi]][verti,],lines[[segi]][(verti-1),]) > mindist) {

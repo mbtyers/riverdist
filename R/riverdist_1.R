@@ -77,7 +77,6 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   if(length(sp@lines) > 1) {
     sp_line <- NA
     sp_seg <- NA
-    #length <- length(sp@lines)
     lines <- list()
     j<-1
     for(i in 1:length(sp@lines)) {
@@ -251,7 +250,6 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
     }
   }
   plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,...=...)
-  #plot(c(xmin,xmax),c(ymin,ymax),col="white",main=main,xlab="",ylab="",cex.axis=.6,asp=1,xlim=xlim,ylim=ylim)
   midptx <- midpty <- NA
   for(j in 1:length) {
     if(!color) lines(lines[[j]],col=1,lty=j,lwd=lwd)
@@ -270,7 +268,6 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
     xtext <- ifelse(length(xplot)>0,xplot[middle],NA)
     ytext <- ifelse(length(yplot)>0,yplot[middle],NA)
     if(segmentnum) text(x=xtext,y=ytext,labels=j,pos=direction,cex=cex,col=ifelse(color,linecolor,1))
-    # if(segmentnum) text(midptx[j],midpty[j],j,cex=cex)
   }
   if(scale) {
     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
@@ -776,14 +773,8 @@ removeunconnected <- function(rivers) {
   rivers1$lines <- rivers$lines[order]
   origin1 <-which(order==origin)
   
-  #plot(rivers1)
   
   for(i in 1:length(rivers1$lines)) {
-    # catch <- try(detectroute(end=origin1,start=i,rivers=rivers1))
-    # if(class(catch)=="try-error") {
-    #   takeout[k] <- i
-    #   k <- k+1
-    # }
     if(is.na(detectroute(end=origin1,start=i,rivers=rivers1,stopiferror=FALSE,algorithm="sequential")[1])) {
       takeout[k] <- i
       k <- k+1

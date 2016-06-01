@@ -86,8 +86,8 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
   
   densities <- list()
   
-  del <- 3*bw  # maybe make this smarter or more appropriate
-  # del <- 10*resolution  # maybe make this smarter or more appropriate
+  del <- 3*bw  
+  
   delind <- floor(del/resolution)
   
   isurvey <- 1
@@ -95,7 +95,6 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
   for(surveyi in sort(unique(survey))) {
     densities[[isurvey]] <- list()
     for(segi in 1:length(rivers$lines)) {
-      #print(segi)
       segilength <- dim(rivers$lines[[segi]])[1]
       whichcoarse <- seq(from=1,to=length(densverts[[segi]]),by=delind)
       if(whichcoarse[length(whichcoarse)] != length(densverts[[segi]])) {
@@ -128,7 +127,6 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
       densitiesii[!densvertsTF] <- 0
       densities[[isurvey]][[segi]] <- densitiesii
       prop_done <- ((isurvey-1)/length(unique(survey))) + (segi/length(rivers$lines)/length(unique(survey)))
-      # cat(paste(" .."),percent_done,"% ")
       if(interactive()) setTxtProgressBar(pb=pb, value=prop_done)
     }
     isurvey <- isurvey+1
@@ -251,7 +249,6 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
       if(max(lines[[j]][,1])>xmax) xmax <- max(lines[[j]][,1])
       if(min(lines[[j]][,2])<ymin) ymin <- min(lines[[j]][,2])
       if(max(lines[[j]][,2])>ymax) ymax <- max(lines[[j]][,2])
-      # print(c(j,xmin,xmax,ymin,ymax))
     }
   }
     
@@ -278,16 +275,12 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
   
   for(surveyi in whichplotsurvey) {
     isurvey <- whichplots[iisurvey]
-    # if(showN) mainforplot <- c(main[isurvey],paste("n =",length(seg[survey==surveyi])))
     if(showN) mainforplot <- paste0(main[isurvey],"  (n=",length(seg[survey==surveyi]),")")
     if(!showN) mainforplot <- main[isurvey]
     if(!add) plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,main=mainforplot)#,...=...)
     
     for(segi in 1:length(rivers$lines)) {
-      #cols <- grey(densities[[isurvey]][[segi]]/max(unlist(densities)))
       quants <- (densities[[isurvey]][[segi]]/max(unlist(densities)))^pwr
-      #if(!scalebyN) quants <- (max(nsize)/nsize[isurvey]*densities[[isurvey]][[segi]]/max(unlist(densities)))^pwr
-      #if(!scalebyN) quants <- (densities[[isurvey]][[segi]]/max(unlist(densities[[isurvey]])))^pwr
       if(bycol) {
         if(ramp=="grey" | ramp=="gray") {
           cols <- grey((1-quants)*.8)
@@ -338,7 +331,6 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
       if(dark<1) denscol <- adjustcolor(denscol,red.f=dark,green.f=dark,blue.f=dark)
       
       for(vertsi in 1:(length(endptverts[[segi]])-1)) {
-        #lines(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],lwd=3,col=cols[vertsi])
         lines(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],lwd=lwd,col=linecol,lend=1)
         if(densities[[isurvey]][[segi]][vertsi] > 0) {
           lines(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],lwd=lwds[vertsi],col=cols[vertsi],lend=1)
@@ -380,58 +372,3 @@ plotriverdensitypoints <- function(riverdensity) {
     riverpoints(seg=rep(segi,length(verts[[segi]])),vert=verts[[segi]],rivers=riverdensity$rivers)
   }
 }
-
-
-# par(mfrow=c(2,5))
-
-# a <- Sys.time()
-# Gulkdens <- makeriverdensity(seg=fakefish$seg,vert=fakefish$vert,survey=fakefish$flight.date,rivers=Gulk,resolution=1000,kernel="gaussian",bw=5000)
-# time1 <- Sys.time()-a
-# a <- Sys.time()
-# Gulkdens2 <- riverdensity2(seg=fakefish$seg,vert=fakefish$vert,survey=fakefish$flight.date,rivers=Gulk,resolution=1000,kernel="gaussian",bw=5000)
-# time2 <- Sys.time()-a
-# time1
-# time2
-# for(i in 1:10) print(all.equal(Gulkdens$densities[[i]],Gulkdens2$densities[[i]]))
-# Gulkdens$densities[[8]]
-# Gulkdens2$densities[[8]]
-# for(i in 1:14) {
-#   print(i)
-#   print(Gulkdens$densities[[8]][[i]]==Gulkdens2$densities[[8]][[i]])
-# }
-# 
-# dists <- NA
-# k <- 1
-# for(i in 1:length(Gulk$lines)) {
-#   for(j in 2:(dim(Gulk$lines[[i]])[1])) {
-#     dists[k] <- pdist(Gulk$lines[[i]][j,],Gulk$lines[[i]][j-1,])
-#     k <- k+1
-#   }
-# }
-# hist(dists)
-# max(dists)
-# 
-# dists <- NA
-# k <- 1
-# for(i in 1:length(Kenai3$lines)) {
-#   for(j in 2:(dim(Kenai3$lines[[i]])[1])) {
-#     dists[k] <- pdist(Kenai3$lines[[i]][j,],Kenai3$lines[[i]][j-1,])
-#     k <- k+1
-#   }
-# }
-# hist(dists)
-# max(dists)
-# 
-# par(mfrow=c(4,5))
-# plot(x=Gulkdens,maxlwd=15,denscol=1,linecol="grey",lwd=1,bycol=T,bylwd=T,points=T,ramp="blue",pwr=.5)
-# plot(x=Gulkdens2,maxlwd=15,denscol=1,linecol="grey",lwd=1,bycol=T,bylwd=T,points=T,ramp="blue",pwr=.5)
-
-# for(datei in sort(unique(as.character(fakefish$flight.date)))) {
-#   plotdensity(seg=fakefish$seg[fakefish$flight.date==datei],vert=fakefish$vert[fakefish$flight.date==datei],rivers=Gulk,resolution=2000,main=datei,kernel="gaussian")
-#   riverpoints(seg=fakefish$seg[fakefish$flight.date==datei],vert=fakefish$vert[fakefish$flight.date==datei],rivers=Gulk,pch=15,col=3)
-# }
-# for(datei in sort(unique(as.character(fakefish$flight.date)))) {
-#   plot(x=Gulk)
-#   riverpoints(seg=fakefish$seg[fakefish$flight.date==datei],vert=fakefish$vert[fakefish$flight.date==datei],rivers=Gulk,pch=15,col=2)
-# }
-# par(mfrow=c(1,1))

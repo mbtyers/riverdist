@@ -99,7 +99,6 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 riverdistancematbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,stopiferror=TRUE,algorithm=NULL) {
   surveys <- sort(unique(survey))
   surveys_indiv <- sort(unique(survey[unique==indiv]))
-  # uniques <- order(unique(unique))
   
   outmat <- matrix(NA,nrow=length(surveys),ncol=length(surveys))
   for(ii in 1:length(surveys)) {

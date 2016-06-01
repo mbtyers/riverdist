@@ -30,9 +30,7 @@ Kenai3.subset <- trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3
 test_that("checkbraided",{
   expect_false(checkbraidedTF(rivers=Gulk, toreturn="logical"))
   expect_true(checkbraidedTF(rivers=Kenai3.1, toreturn="logical"))
-  #expect_that(checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset),prints_text("No braiding detected between segments."))
-  #expect_that(checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset),prints_text("Braiding detected between segments.  Distance measurements may be inaccurate."))
-})
+  })
 
 data(abstreams)
 test_that("detectroute",{

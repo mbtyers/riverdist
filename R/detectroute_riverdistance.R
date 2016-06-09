@@ -441,19 +441,23 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
     # distance on the partial segment the beginning is on
     if(connections[path[1],path[2]]<=2) {
       if(startvert!=1) { 
-        for(j in 1:(startvert-1)) {
-          route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])
-          if(map==T) lines(lines[[path[1]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
-        }
+        # for(j in 1:(startvert-1)) {
+        #   route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])
+        #   if(map==T) lines(lines[[path[1]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
+        # }
+        route.dist <- route.dist + pdisttot(lines[[path[1]]][1:startvert,])
+        if(map==T) lines(lines[[path[1]]][1:startvert,],lwd=3,col=4)
       }
     }
     if(connections[path[1],path[2]]>=3) {
       linelength <- dim(lines[[path[1]]])[1]
       if(linelength!=startvert) {
-        for(j in startvert:(linelength-1)) {
-          route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])
-          if(map==T) lines(lines[[path[1]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
-        }
+        # for(j in startvert:(linelength-1)) {
+        #   route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])
+        #   if(map==T) lines(lines[[path[1]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
+        # }
+        route.dist <- route.dist + pdisttot(lines[[path[1]]][linelength:startvert,])
+        if(map==T) lines(lines[[path[1]]][linelength:startvert,],lwd=3,col=4)
       }
     }
     # distance on the full segments between the beginning and end segments
@@ -464,19 +468,23 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
     #distance on the partial segment the end is on
     if(connections[path[length(path)-1],path[length(path)]]==1 | connections[path[length(path)-1],path[length(path)]]==3) {
       if(endvert!=1) { 
-        for(j in 1:(endvert-1)) {
-          route.dist <- route.dist+pdist(lines[[path[length(path)]]][j,],lines[[path[length(path)]]][(j+1),])
-          if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[length(path)]]][c(j,j+1),2],lwd=3,col=4)
-        }
+        # for(j in 1:(endvert-1)) {
+        #   route.dist <- route.dist+pdist(lines[[path[length(path)]]][j,],lines[[path[length(path)]]][(j+1),])
+        #   if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[length(path)]]][c(j,j+1),2],lwd=3,col=4)
+        # }
+        route.dist <- route.dist + pdisttot(lines[[path[length(path)]]][1:endvert,])
+        if(map==T) lines(lines[[path[length(path)]]][1:endvert,],lwd=3,col=4)
       }
     }
     if(connections[path[length(path)-1],path[length(path)]]==2 | connections[path[length(path)-1],path[length(path)]]==4) {
       linelength <- dim(lines[[path[length(path)]]])[1]
       if(linelength!=endvert) {
-        for(j in endvert:(linelength-1)) {
-          route.dist <- route.dist+pdist(lines[[path[length(path)]]][j,],lines[[path[length(path)]]][(j+1),])
-          if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[length(path)]]][c(j,j+1),2],lwd=3,col=4)
-        }
+        # for(j in endvert:(linelength-1)) {
+        #   route.dist <- route.dist+pdist(lines[[path[length(path)]]][j,],lines[[path[length(path)]]][(j+1),])
+        #   if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[length(path)]]][c(j,j+1),2],lwd=3,col=4)
+        # }
+        route.dist <- route.dist + pdisttot(lines[[path[length(path)]]][linelength:endvert,])
+        if(map==T) lines(lines[[path[length(path)]]][linelength:endvert,],lwd=3,col=4)
       }
     }
   }
@@ -485,11 +493,14 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
     min <- min(startvert,endvert)
     max <- max(startvert,endvert)
     if(min!=max) {
-      for(j in min:(max-1)) {
-        route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])    
-        if(map==T) lines(lines[[path[1]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
-      }
+      # for(j in min:(max-1)) {
+      #   route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])    
+      #   if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
+      # }
+      route.dist <- route.dist + pdisttot(lines[[path[1]]][min:max,])
+      if(map==T) lines(lines[[path[1]]][min:max])
     }
   }
+  
   return(route.dist)
 }

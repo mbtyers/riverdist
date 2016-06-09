@@ -15,6 +15,24 @@ pdist <- function(p1,p2) {
   return(dist)
 }
 
+#' Total Pythagorean Distance
+#' @description Total Pythagorean distance of a sequence of points.  Called internally.
+#' @param xy A matrix of X-Y coordinates of the sequence of points.
+#' @return Distance (numeric)
+#' @author Matt Tyers
+#' @examples
+#' points <- matrix(c(1:10), nrow=5, ncol=2, byrow=FALSE)
+#' 
+#' pdisttot(xy=points)
+#' @export
+pdisttot <- function(xy) {
+  n <- dim(xy)[1]
+  if(n==2) dist <- pdist(xy[1,],xy[2,])
+  if(n>2) dist <- sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))
+  return(sum(dist))
+}
+
+
 #' Create a River Network Object from a Shapefile
 #' @description Uses \link[rgdal]{readOGR} in package 'rgdal' to read a river 
 #'   shapefile, and establishes connectivity of segment endpoints based on 
@@ -134,12 +152,13 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   # making a vector of total segment lengths
   lengths <- rep(NA,length)
   for(i in 1:length) {
-    sum<-0
-    linelength <- dim(lines[[i]])[1]
-    for(j in 1:(linelength-1)) {
-      sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
-    }
-    lengths[i]<-sum
+    # sum<-0
+    # linelength <- dim(lines[[i]])[1]
+    # for(j in 1:(linelength-1)) {
+    #   sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
+    # }
+    # lengths[i]<-sum
+    lengths[i] <- pdisttot(lines[[i]])
   }
   
   names <- rep(NA,length)

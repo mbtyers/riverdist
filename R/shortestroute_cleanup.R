@@ -159,14 +159,26 @@ cleanup <- function(rivers) {
   
   cat('\n',"Checking if splitting segments is needed...",'\n')
   
+  pdist2 <- function(p1,p2mat) {
+    dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
+    return(dist)
+  }
+  
   riv.i <- 1
   done <- F
   needed <- F
   while(!done) {
     if(n.top(riv.i,rivers3$connections)==0) {
       for(riv.j in 1:length(rivers3$lines)) {
-        for(vert.j in 1:(dim(rivers3$lines[[riv.j]])[1])) {
-          if(riv.i!=riv.j & pdist(rivers3$lines[[riv.i]][1,],rivers3$lines[[riv.j]][vert.j,]) < rivers3$tolerance) {
+        # for(vert.j in 1:(dim(rivers3$lines[[riv.j]])[1])) {
+        #   if(riv.i!=riv.j & pdist(rivers3$lines[[riv.i]][1,],rivers3$lines[[riv.j]][vert.j,]) < rivers3$tolerance) {
+        #     needed <- T
+        #     done <- T
+        #   }
+        # }
+        if(riv.i!=riv.j) {
+          distanceses <- pdist2(rivers3$lines[[riv.i]][1,],rivers3$lines[[riv.j]])
+          if(any(distanceses<rivers3$tolerance)) {
             needed <- T
             done <- T
           }
@@ -175,8 +187,15 @@ cleanup <- function(rivers) {
     }
     if(n.bot(riv.i,rivers3$connections)==0) {
       for(riv.j in 1:length(rivers3$lines)) {
-        for(vert.j in 1:(dim(rivers3$lines[[riv.j]])[1])) {
-          if(riv.i!=riv.j & pdist(rivers3$lines[[riv.i]][dim(rivers3$lines[[riv.i]])[1],],rivers3$lines[[riv.j]][vert.j,]) < rivers3$tolerance) {
+        # for(vert.j in 1:(dim(rivers3$lines[[riv.j]])[1])) {
+        #   if(riv.i!=riv.j & pdist(rivers3$lines[[riv.i]][dim(rivers3$lines[[riv.i]])[1],],rivers3$lines[[riv.j]][vert.j,]) < rivers3$tolerance) {
+        #     needed <- T
+        #     done <- T
+        #   }
+        # }
+        if(riv.i!=riv.j) {
+          distanceses <- pdist2(rivers3$lines[[riv.i]][dim(rivers3$lines[[riv.i]])[1],],rivers3$lines[[riv.j]])
+          if(any(distanceses<rivers3$tolerance)) {
             needed <- T
             done <- T
           }

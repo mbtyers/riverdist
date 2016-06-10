@@ -27,6 +27,7 @@ pdist <- function(p1,p2) {
 #' @export
 pdisttot <- function(xy) {
   n <- dim(xy)[1]
+  if(n==1) dist <- 0
   if(n==2) dist <- pdist(xy[1,],xy[2,])
   if(n>2) dist <- sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))
   return(sum(dist))

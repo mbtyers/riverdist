@@ -34,30 +34,58 @@ splitsegments <- function(rivers,tolerance=NULL) {
     mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
   }
   
+  pdist2 <- function(p1,p2mat) {
+    dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
+    return(dist)
+  }
+  
   # first identifying where breaks should go
   breaks <- list()
-  for(riv.i in 1:length(lines)) {
-    breaks.i <- 0
-    breaks[[riv.i]] <- NA
-    for(seg.i in 1:dim(lines[[riv.i]])[1]) {
-      for(riv.j in 1:length(lines)) {
-        if((pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][1,])<tolerance | 
-            pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][dim(lines[[riv.j]])[1],])<tolerance) & riv.i!=riv.j) {
-          breaks.i <- breaks.i+1
-          breaks[[riv.i]][breaks.i] <- seg.i
-        }
+  # for(riv.i in 1:length(lines)) {     # ----------- for each segment (riv.i)
+  #   breaks.i <- 0
+  #   breaks[[riv.i]] <- NA
+  #   for(seg.i in 1:dim(lines[[riv.i]])[1]) {     # ----------- for each vertex (seg.i) in segment "riv.i"
+  #     for(riv.j in 1:length(lines)) {       # ----------- for each segment (riv.j)
+  #       if((pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][1,])<tolerance |
+  #           pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][dim(lines[[riv.j]])[1],])<tolerance) & riv.i!=riv.j) {
+  #         breaks.i <- breaks.i+1
+  #         breaks[[riv.i]][breaks.i] <- seg.i
+  #       }
+  #     }  
+  #   }
+  #   if(breaks.i>1) {
+  #     for(i in 2:breaks.i) {
+  #       if(abs(breaks[[riv.i]][i]-breaks[[riv.i]][i-1])<=1) breaks[[riv.i]][i-1]<-0  # eliminating sequential runs
+  #       if(breaks[[riv.i]][i] <= i) breaks[[riv.i]][i] <- 0
+  #     }
+  #   }
+  #   breaks[[riv.i]][breaks[[riv.i]]==1] <- 0
+  #   breaks[[riv.i]][breaks[[riv.i]]==dim(lines[[riv.i]])[1]] <- 0
+  #   breaks[[riv.i]] <- breaks[[riv.i]][breaks[[riv.i]]>0]
+  #   if(length(breaks[[riv.i]])==0) breaks[[riv.i]] <- NA
+  # }
+  
+  for(segi in 1:length(lines)) {
+    segibreaks <- NULL
+    for(segj in 1:length(lines)) {
+      distanceses1 <- pdist2(lines[[segj]][1,], lines[[segi]])
+      distanceses2 <- pdist2(lines[[segj]][dim(lines[[segj]])[1],], lines[[segi]])
+      newbreaks <- which(distanceses1<tolerance | distanceses2<tolerance)
+      # breaks[[segi]] <- c(breaks[[segi]],newbreaks)
+      segibreaks <- c(segibreaks,newbreaks)
+    }
+    # breaks[[segi]] <- sort(unique(breaks[[segi]]))
+    breaks[[segi]] <- sort(unique(segibreaks))
+    if(length(breaks[[segi]]>1)) {
+      for(ibreaks in 2:length(breaks[[segi]])) {
+        if(abs(breaks[[segi]][ibreaks]-breaks[[segi]][ibreaks-1])<=1) breaks[[segi]][ibreaks-1] <- 0 # eliminating sequential runs
+        if(breaks[[segi]][ibreaks] <= ibreaks) breaks[[segi]][ibreaks] <- 0
       }
     }
-    if(breaks.i>1) {
-      for(i in 2:breaks.i) {
-        if(abs(breaks[[riv.i]][i]-breaks[[riv.i]][i-1])<=1) breaks[[riv.i]][i-1]<-0  # eliminating sequential runs
-        if(breaks[[riv.i]][i] <= i) breaks[[riv.i]][i] <- 0
-      }
-    }
-    breaks[[riv.i]][breaks[[riv.i]]==1] <- 0
-    breaks[[riv.i]][breaks[[riv.i]]==dim(lines[[riv.i]])[1]] <- 0
-    breaks[[riv.i]] <- breaks[[riv.i]][breaks[[riv.i]]>0]
-    if(length(breaks[[riv.i]])==0) breaks[[riv.i]] <- NA
+    breaks[[segi]][breaks[[segi]]==1] <- 0
+    breaks[[segi]][breaks[[segi]]==dim(lines[[segi]])[1]] <- 0
+    breaks[[segi]] <- breaks[[segi]][breaks[[segi]]>0]
+    if(length(breaks[[segi]])==0) breaks[[segi]] <- NA
   }
   
   # then breaking them into new segments

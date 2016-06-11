@@ -40,30 +40,37 @@
 #' @export
 detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  connections <- rivers$connections
-  length <- length(rivers$lines)
+  # connections <- rivers$connections
+  # length <- length(rivers$lines)
   
+  if(start==end) return(start)
+  
+  # if I can make the algorithm a part of the rivers object, i can eliminate all this -----------
   if(is.null(algorithm)) {
     if(length(rivers$segroutes)>0) algorithm <- "segroutes"
     if(!is.na(rivers$braided)) {
-      if(rivers$braided) algorithm <- "Dijkstra" 
+      if(rivers$braided) algorithm <- "Dijkstra"
     }
     if(is.na(rivers$braided)) {
-      algorithm <- "Dijkstra" 
+      algorithm <- "Dijkstra"
     }
     if(is.null(algorithm)) algorithm <- "sequential"
   }
-  if(algorithm=="segroutes" & (length(rivers$segroutes)==0)) {
+  if(algorithm=="segroutes" & is.null(rivers$segroutes)) { #(length(rivers$segroutes)==0)) {
     if(!is.na(rivers$braided)) {
       algorithm <- ifelse(rivers$braided,"Dijkstra","sequential")
     }
     if(is.na(rivers$braided)) {
-      algorithm <- "Dijkstra" 
+      algorithm <- "Dijkstra"
     }
   }
+  # ------------------
+  
+  # if(is.null(algorithm) & !rivers$sequenced) algorithm <- "segroutes"
+
   if(!any(algorithm==c("sequential","Dijkstra","segroutes"))) stop("Invalid algorithm specified.")
   if(verbose) cat("Using",algorithm,"algorithm...",'\n')
-  
+
   if(max(c(start,end),na.rm=T)>length(rivers$lines) | min(c(start,end),na.rm=T)<1) {
     stop("Invalid segments specified.")
   }
@@ -77,18 +84,27 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
       route <- segroutes[[end]][which(segroutes[[end]]==start):which(segroutes[[end]]==end)]
     }
     if(all(segroutes[[end]]!=start) & all(segroutes[[start]]!=end)) {
-      junct.end <- NA
-      k <- 1
-      while(is.na(junct.end)) {
-        if(segroutes[[start]][k] != segroutes[[end]][k]) {
-          junct.start <- segroutes[[start]][k]
-          junct.end <- segroutes[[end]][k]
-        }
-        k <- k+1
-      }
-      part1 <- segroutes[[start]][which(segroutes[[start]]==start):which(segroutes[[start]]==junct.start)]
-      part2 <- segroutes[[end]][which(segroutes[[end]]==junct.end):which(segroutes[[end]]==end)]
-      route <- c(part1,part2)
+      # junct.end <- NA
+      # k <- 1
+      # while(is.na(junct.end)) {
+      #   if(segroutes[[start]][k] != segroutes[[end]][k]) {
+      #     junct.start <- segroutes[[start]][k]
+      #     junct.end <- segroutes[[end]][k]
+      #   }
+      #   k <- k+1
+      # }
+      # part1 <- segroutes[[start]][which(segroutes[[start]]==start):which(segroutes[[start]]==junct.start)]
+      # part2 <- segroutes[[end]][which(segroutes[[end]]==junct.end):which(segroutes[[end]]==end)]
+      
+      # ijunct <- suppressWarnings(min(which(segroutes[[start]] != segroutes[[end]])))
+      
+      minl <- min(length(segroutes[[start]]), length(segroutes[[end]]))
+      ijunct <- min(which(segroutes[[start]][1:minl] != segroutes[[end]][1:minl]))
+      
+      # part1 <- segroutes[[start]][which(segroutes[[start]]==start):ijunct]
+      # part2 <- segroutes[[end]][ijunct:which(segroutes[[end]]==end)]
+      # route <- c(part1,part2)
+      route <- c(segroutes[[start]][which(segroutes[[start]]==start):ijunct], segroutes[[end]][ijunct:which(segroutes[[end]]==end)])
     }
     return(route)
   }
@@ -167,6 +183,8 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
   }
 
   if(algorithm=="sequential") {
+    connections <- rivers$connections
+    length <- length(rivers$lines)
     if(start==end) path <- start
     if(start != end) {
       is.connected <- is.na(connections)==F
@@ -260,7 +278,17 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
     return(path)
   }
 }
-
+# microbenchmark(detectroute(start=120, end=111, rivers=abstreams),times=10000)
+# microbenchmark(detectroute(start=120, end=111, rivers=abstreams, algorithm="segroutes"),times=10000)
+# microbenchmark(detectroute2(start=120, end=111, rivers=abstreams),times=10000)
+# microbenchmark(detectroute2a(start=120, end=111, rivers=abstreams),times=10000)
+# 
+# 
+# 
+# microbenchmark(detectroute(start=120, end=158, rivers=abstreams),times=10000)
+# microbenchmark(detectroute(start=120, end=158, rivers=abstreams, algorithm="segroutes"),times=10000)
+# microbenchmark(detectroute2(start=120, end=158, rivers=abstreams),times=10000)
+# microbenchmark(detectroute2a(start=120, end=158, rivers=abstreams),times=10000)
 
 
 #' Build Segment Routes
@@ -358,6 +386,138 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
 }
 
 
+# riverdistance_old <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,path=NULL,map=FALSE,add=FALSE,stopiferror=TRUE,algorithm=NULL) {
+#   # if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   
+#   connections <- rivers$connections
+#   seg.lengths <- rivers$lengths
+#   lines <- rivers$lines
+#   
+#   if(is.null(path)) path <- detectroute(start=startseg,end=endseg,rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)
+#   
+#   if(is.na(path[1])) return(NA)
+#   startseg <- path[1]
+#   endseg <- path[length(path)]
+#   
+#   # if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
+#   #   stop("Invalid segments specified.")
+#   # } 
+#   if(startvert>dim(lines[[startseg]])[1] | startvert<1 | endvert>dim(lines[[endseg]])[1] | endvert<1) {
+#     stop("Invalid vertex specified.")
+#   } 
+#   
+#   if(map) {
+#     if(!add) plot(x=rivers)
+#     riverpoints(seg=c(startseg,endseg),vert=c(startvert,endvert),rivers=rivers,pch=15,col=4)
+#     if(length(path)>1) {
+#       # distance on the partial segment the beginning is on
+#       if(connections[startseg,path[2]]<=2) {
+#         if(startvert!=1) { 
+#           lines(lines[[startseg]][1:startvert,],lwd=3,col=4)
+#         }
+#       }
+#       if(connections[startseg,path[2]]>=3) {
+#         linelength <- dim(lines[[startseg]])[1]
+#         if(linelength!=startvert) {
+#           lines(lines[[startseg]][linelength:startvert,],lwd=3,col=4)
+#         }
+#       }
+#       # distance on the full segments between the beginning and end segments
+#       if(length(path)>2) {
+#         for(i in path[2:(length(path)-1)]) lines(lines[[i]],col=4,lty=1,lwd=3)
+#       }
+#       #distance on the partial segment the end is on
+#       if(any(connections[path[length(path)-1],endseg]==c(1,3))) {
+#         if(endvert!=1) { 
+#           lines(lines[[endseg]][1:endvert,],lwd=3,col=4)
+#         }
+#       }
+#       if(any(connections[path[length(path)-1],endseg]==c(2,4))) {
+#         linelength <- dim(lines[[endseg]])[1]
+#         if(linelength!=endvert) {
+#           lines(lines[[endseg]][linelength:endvert,],lwd=3,col=4)
+#         }
+#       }
+#     }
+#     # if the beginning and end are on the same segment
+#     if(length(path)==1) {
+#       min <- min(startvert,endvert)
+#       max <- max(startvert,endvert)
+#       if(min!=max) {
+#         lines(lines[[path[1]]][min:max])
+#       }
+#     }
+#   }
+# 
+#   route.dist <- 0
+#   
+#   if(length(path)>1) {
+#     # distance on the partial segment the beginning is on
+#     if(any(connections[startseg,path[2]]==c(1,2))) {
+#       if(startvert!=1) { 
+#         route.dist <- route.dist + pdisttot(lines[[startseg]][1:startvert,])
+#       }
+#     }
+#     if(any(connections[startseg,path[2]]==c(3,4))) {
+#       linelength <- dim(lines[[startseg]])[1]
+#       if(linelength!=startvert) {
+#         route.dist <- route.dist + pdisttot(lines[[startseg]][linelength:startvert,])
+#       }
+#     } 
+#     # distance on the full segments between the beginning and end segments
+#     if(length(path)>2) {
+#       route.dist <- route.dist+sum(seg.lengths[path[2:(length(path)-1)]])
+#     } 
+#     #distance on the partial segment the end is on
+#     if(any(connections[path[length(path)-1],endseg]==c(1,3))) {
+#       if(endvert!=1) { 
+#         route.dist <- route.dist + pdisttot(lines[[endseg]][1:endvert,])
+#       }
+#     }
+#     if(any(connections[path[length(path)-1],endseg]==c(2,4))) {
+#       linelength <- dim(lines[[endseg]])[1]
+#       if(linelength!=endvert) {
+#         route.dist <- route.dist + pdisttot(lines[[endseg]][linelength:endvert,])
+#       }
+#     } 
+#   }
+#   # if the beginning and end are on the same segment
+#   if(length(path)==1) {
+#     # min <- min(startvert,endvert)
+#     # max <- max(startvert,endvert)
+#     if(startvert!=endvert) {
+#       route.dist <- route.dist + pdisttot(lines[[startseg]][startvert:endvert,])
+#     }
+#   } 
+#   
+#   return(route.dist)
+# }
+# 
+# summary(microbenchmark(riverdistance(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams),times=1000))[4:5]
+# summary(microbenchmark(detectroute(start=120, end=111, rivers=abstreams),times=1000))[4:5]
+# summary(microbenchmark(riverdistance2(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams),times=1000))[4:5]
+# summary(microbenchmark(riverdistance2a(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams),times=1000))[4:5]
+# 
+# 
+# 
+# summary(microbenchmark(riverdistance(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(detectroute(start=1, end=14, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(riverdistance2(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(riverdistance2a(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
+# 
+# 
+# addcumuldist <- function(rivers) {
+#   cumuldist <- list()
+#   for(i in 1:length(rivers$lines)) {
+#     xy <- rivers$lines[[i]]
+#     n <- dim(xy)[1]
+#     cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
+#   }
+#   rivers$cumuldist <- cumuldist
+#   return(rivers)
+# }
+# Gulk_boom <- addcumuldist(Gulk)
+
 #' River Distance
 #' @description Calculates the total river network distance between two points 
 #'   on the river network, given in river locations (segment and vertex).
@@ -411,96 +571,127 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
 #' 
 #' @export
 riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,path=NULL,map=FALSE,add=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  # if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  
   connections <- rivers$connections
   seg.lengths <- rivers$lengths
   lines <- rivers$lines
+  cumuldist <- rivers$cumuldist
   
   if(is.null(path)) path <- detectroute(start=startseg,end=endseg,rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)
-  if(is.na(path[1])) return(NA)
-  if(is.null(path)==F) {
-    startseg <- path[1]
-    endseg <- path[length(path)]
-  }
   
-  if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
-    stop("Invalid segments specified.")
-  } 
-  if(startvert>dim(rivers$lines[[startseg]])[1] | startvert<1 | endvert>dim(rivers$lines[[endseg]])[1] | endvert<1) {
+  if(is.na(path[1])) return(NA)
+  startseg <- path[1]
+  endseg <- path[length(path)]
+  
+  # if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
+  #   stop("Invalid segments specified.")
+  # } 
+  if(startvert>dim(lines[[startseg]])[1] | startvert<1 | endvert>dim(lines[[endseg]])[1] | endvert<1) {
     stop("Invalid vertex specified.")
   } 
   
-  if(map==T) {
-    if(add==F) plot(x=rivers)
-    riverpoints(seg=c(path[1],path[length(path)]),vert=c(startvert,endvert),rivers=rivers,pch=15,col=4)
+  if(map) {
+    if(!add) plot(x=rivers)
+    riverpoints(seg=c(startseg,endseg),vert=c(startvert,endvert),rivers=rivers,pch=15,col=4)
+    if(length(path)>1) {
+      # distance on the partial segment the beginning is on
+      if(connections[startseg,path[2]]<=2) {
+        if(startvert!=1) { 
+          lines(lines[[startseg]][1:startvert,],lwd=3,col=4)
+        }
+      }
+      if(connections[startseg,path[2]]>=3) {
+        linelength <- dim(lines[[startseg]])[1]
+        if(linelength!=startvert) {
+          lines(lines[[startseg]][linelength:startvert,],lwd=3,col=4)
+        }
+      }
+      # distance on the full segments between the beginning and end segments
+      if(length(path)>2) {
+        for(i in path[2:(length(path)-1)]) lines(lines[[i]],col=4,lty=1,lwd=3)
+      }
+      #distance on the partial segment the end is on
+      if(any(connections[path[length(path)-1],endseg]==c(1,3))) {
+        if(endvert!=1) { 
+          lines(lines[[endseg]][1:endvert,],lwd=3,col=4)
+        }
+      }
+      if(any(connections[path[length(path)-1],endseg]==c(2,4))) {
+        linelength <- dim(lines[[endseg]])[1]
+        if(linelength!=endvert) {
+          lines(lines[[endseg]][linelength:endvert,],lwd=3,col=4)
+        }
+      }
+    }
+    # if the beginning and end are on the same segment
+    if(length(path)==1) {
+      min <- min(startvert,endvert)
+      max <- max(startvert,endvert)
+      if(min!=max) {
+        lines(lines[[path[1]]][min:max])
+      }
+    }
   }
   
   route.dist <- 0
   
   if(length(path)>1) {
     # distance on the partial segment the beginning is on
-    if(connections[path[1],path[2]]<=2) {
+    if(any(connections[startseg,path[2]]==c(1,2))) {
       if(startvert!=1) { 
-        # for(j in 1:(startvert-1)) {
-        #   route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])
-        #   if(map==T) lines(lines[[path[1]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
-        # }
-        route.dist <- route.dist + pdisttot(lines[[path[1]]][1:startvert,])
-        if(map==T) lines(lines[[path[1]]][1:startvert,],lwd=3,col=4)
+        # route.dist <- route.dist + pdisttot(lines[[startseg]][1:startvert,])
+        route.dist <- route.dist + cumuldist[[startseg]][startvert]    
       }
     }
-    if(connections[path[1],path[2]]>=3) {
-      linelength <- dim(lines[[path[1]]])[1]
+    if(any(connections[startseg,path[2]]==c(3,4))) {
+      linelength <- dim(lines[[startseg]])[1]
       if(linelength!=startvert) {
-        # for(j in startvert:(linelength-1)) {
-        #   route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])
-        #   if(map==T) lines(lines[[path[1]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
-        # }
-        route.dist <- route.dist + pdisttot(lines[[path[1]]][linelength:startvert,])
-        if(map==T) lines(lines[[path[1]]][linelength:startvert,],lwd=3,col=4)
+        # route.dist <- route.dist + pdisttot(lines[[startseg]][linelength:startvert,])
+        route.dist <- route.dist + seg.lengths[startseg] - cumuldist[[startseg]][startvert]
       }
-    }
+    } 
     # distance on the full segments between the beginning and end segments
     if(length(path)>2) {
       route.dist <- route.dist+sum(seg.lengths[path[2:(length(path)-1)]])
-      if(map==T) for(i in path[2:(length(path)-1)]) lines(lines[[i]],col=4,lty=1,lwd=3)
-    }
+    } 
     #distance on the partial segment the end is on
-    if(connections[path[length(path)-1],path[length(path)]]==1 | connections[path[length(path)-1],path[length(path)]]==3) {
+    if(any(connections[path[length(path)-1],endseg]==c(1,3))) {
       if(endvert!=1) { 
-        # for(j in 1:(endvert-1)) {
-        #   route.dist <- route.dist+pdist(lines[[path[length(path)]]][j,],lines[[path[length(path)]]][(j+1),])
-        #   if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[length(path)]]][c(j,j+1),2],lwd=3,col=4)
-        # }
-        route.dist <- route.dist + pdisttot(lines[[path[length(path)]]][1:endvert,])
-        if(map==T) lines(lines[[path[length(path)]]][1:endvert,],lwd=3,col=4)
+        # route.dist <- route.dist + pdisttot(lines[[endseg]][1:endvert,])
+        route.dist <- route.dist + cumuldist[[endseg]][endvert]
       }
     }
-    if(connections[path[length(path)-1],path[length(path)]]==2 | connections[path[length(path)-1],path[length(path)]]==4) {
-      linelength <- dim(lines[[path[length(path)]]])[1]
+    if(any(connections[path[length(path)-1],endseg]==c(2,4))) {
+      linelength <- dim(lines[[endseg]])[1]
       if(linelength!=endvert) {
-        # for(j in endvert:(linelength-1)) {
-        #   route.dist <- route.dist+pdist(lines[[path[length(path)]]][j,],lines[[path[length(path)]]][(j+1),])
-        #   if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[length(path)]]][c(j,j+1),2],lwd=3,col=4)
-        # }
-        route.dist <- route.dist + pdisttot(lines[[path[length(path)]]][linelength:endvert,])
-        if(map==T) lines(lines[[path[length(path)]]][linelength:endvert,],lwd=3,col=4)
+        # route.dist <- route.dist + pdisttot(lines[[endseg]][linelength:endvert,])
+        route.dist <- route.dist + seg.lengths[endseg] - cumuldist[[endseg]][endvert]
       }
-    }
+    } 
   }
   # if the beginning and end are on the same segment
   if(length(path)==1) {
     min <- min(startvert,endvert)
     max <- max(startvert,endvert)
-    if(min!=max) {
-      # for(j in min:(max-1)) {
-      #   route.dist <- route.dist+pdist(lines[[path[1]]][j,],lines[[path[1]]][(j+1),])    
-      #   if(map==T) lines(lines[[path[length(path)]]][c(j,j+1),1],lines[[path[1]]][c(j,j+1),2],lwd=3,col=4)
-      # }
-      route.dist <- route.dist + pdisttot(lines[[path[1]]][min:max,])
-      if(map==T) lines(lines[[path[1]]][min:max])
+    if(startvert!=endvert) {
+      # route.dist <- route.dist + pdisttot(lines[[startseg]][startvert:endvert,])
+      route.dist <- route.dist + cumuldist[[startseg]][max] - cumuldist[[startseg]][min]
     }
-  }
+  } 
   
   return(route.dist)
 }
+# 
+# summary(microbenchmark(riverdistance(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams),times=1000))[4:5]
+# summary(microbenchmark(detectroute(start=120, end=111, rivers=abstreams),times=1000))[4:5]
+# summary(microbenchmark(riverdistance2(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams),times=1000))[4:5]
+# summary(microbenchmark(riverdistance3(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams_boom),times=1000))[4:5]
+# 
+# 
+# 
+# summary(microbenchmark(riverdistance(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(detectroute(start=1, end=14, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(riverdistance2(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(riverdistance3(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk_boom),times=1000))[4:5]
+# 

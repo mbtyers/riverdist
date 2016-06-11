@@ -2,6 +2,7 @@
 
 S3method(plot,riverdensity)
 S3method(plot,rivernetwork)
+export(addcumuldist)
 export(addverts)
 export(buildsegroutes)
 export(checkbraided)

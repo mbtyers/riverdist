@@ -34,6 +34,27 @@ pdisttot <- function(xy) {
 }
 
 
+#' Add Cumulative Distance to a River Network
+#' @description Adds a vector of cumulative distances to a river network.  Called internally.
+#' @param rivers The river network object to use.
+#' @return Returns an object of class \code{"rivernetwork"} containing all
+#'   spatial and topological information.  See \link{rivernetwork-class}.
+#' @author Matt Tyers
+#' @examples
+#' Gulk1 <- addcumuldist(rivers=Gulk)
+#' @export
+addcumuldist <- function(rivers) {
+  cumuldist <- list()
+  for(i in 1:length(rivers$lines)) {
+    xy <- rivers$lines[[i]]
+    n <- dim(xy)[1]
+    cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
+  }
+  rivers$cumuldist <- cumuldist
+  return(rivers)
+}
+
+
 #' Create a River Network Object from a Shapefile
 #' @description Uses \link[rgdal]{readOGR} in package 'rgdal' to read a river 
 #'   shapefile, and establishes connectivity of segment endpoints based on 
@@ -170,8 +191,15 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   sequenced <- FALSE
   braided <- NA
   
-  out.names <- c("sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided")
-  out <- list(sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided)
+  cumuldist <- list()
+  for(i in 1:length) {
+    xy <- lines[[i]]
+    n <- dim(xy)[1]
+    cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
+  }
+  
+  out.names <- c("sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
+  out <- list(sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
   names(out) <- out.names
   class(out) <- "rivernetwork"
   return(out)

@@ -142,12 +142,20 @@ splitsegments <- function(rivers,tolerance=NULL) {
   # making a vector of total segment lengths
   lengths <- rep(NA,length)
   for(i in 1:length) {
-    sum<-0
-    linelength <- dim(lines[[i]])[1]
-    for(j in 1:(linelength-1)) {
-      sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
-    }
-    lengths[i]<-sum
+    # sum<-0
+    # linelength <- dim(lines[[i]])[1]
+    # for(j in 1:(linelength-1)) {
+    #   sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
+    # }
+    # lengths[i]<-sum
+    lengths[i] <- pdisttot(lines[[i]])
+  }
+  
+  cumuldist <- list()
+  for(i in 1:length(lines)) {
+    xy <- lines[[i]]
+    n <- dim(xy)[1]
+    cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
   }
   
   # updating rivers object
@@ -155,6 +163,7 @@ splitsegments <- function(rivers,tolerance=NULL) {
   rivers$lines <- newlines
   rivers$lengths <- lengths
   rivers$names <- rep(NA,length(lines))
+  rivers$cumuldist <- cumuldist
   if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
     for(i in 1:length(rivers$lines)) {
       for(j in 1:(dim(rivers$lines[[i]])[1])) {

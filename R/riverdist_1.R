@@ -571,7 +571,7 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   }
   trimmed.rivers <- rivers
   trimmed.rivers$lines <- trimmed.rivers$lines[segs]
-  trimmed.rivers$connections <- trimmed.rivers$connections[segs,segs]
+  trimmed.rivers$connections <- as.matrix(trimmed.rivers$connections[segs,segs])
   trimmed.rivers$names <- rivers$names[segs]
   trimmed.rivers$lengths <- rivers$lengths[segs]
   if(length(segs)==0) stop("Error - resulting river network has no remaining line segments")
@@ -582,13 +582,21 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
     if(!any(segs==rivers$mouth$mouth.seg)) {
       trimmed.rivers$mouth$mouth.seg <- NA
       trimmed.rivers$mouth$mouth.vert <- NA
+      message("River mouth must be redefined - see help(setmouth)")
     }
   }
   
-  if(!is.null(trimmed.rivers$segroutes)) {
-    trimmed.rivers$segroutes <- NULL
-    warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+  if(is.na(trimmed.rivers$mouth$mouth.seg)) {
+    warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes)")
   }
+  
+  if(!is.na(trimmed.rivers$mouth$mouth.seg) & !is.na(trimmed.rivers$mouth$mouth.vert) & !is.null(trimmed.rivers$segroutes)) {
+    # trimmed.rivers$segroutes <- NULL
+    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+    trimmed.rivers <- buildsegroutes(trimmed.rivers,lookup=F)
+  }
+  trimmed.rivers <- addcumuldist(trimmed.rivers)
+  if(!is.na(trimmed.rivers$mouth$mouth.seg) & !is.na(trimmed.rivers$mouth$mouth.vert) & !is.null(trimmed.rivers$distlookup)) trimmed.rivers <- buildlookup(trimmed.rivers)
   
   # updating sp object
   id <- rivers$lineID
@@ -739,15 +747,10 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
   
   rivers1 <- rivers
   rivers1$lines <- rivers1$lines[keep]
-  rivers1$connections <- rivers1$connections[keep,keep]
+  rivers1$connections <- as.matrix(rivers1$connections[keep,keep])
   rivers1$names <- rivers$names[keep]
   rivers1$lengths <- rivers$lengths[keep]
   if(keep[1]==0) stop("Error - resulting river network has no remaining line segments")
-  
-  if(!is.null(rivers1$segroutes)) {
-    rivers1$segroutes <- NULL
-    warning("Segment routes must be rebuilt - see help(buildsegroutes).")
-  }
   
   if(!is.na(rivers1$mouth$mouth.seg) & !is.na(rivers1$mouth$mouth.vert)) {
     if(any(keep==rivers$mouth$mouth.seg)) {
@@ -758,6 +761,14 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
       rivers1$mouth$mouth.vert <- NA
     }
   }
+  
+  if(!is.null(rivers1$segroutes)) {
+    # rivers1$segroutes <- NULL
+    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+    rivers1 <- buildsegroutes(rivers1,lookup=F)
+  }
+  rivers1 <- addcumuldist(rivers1)
+  if(!is.null(rivers1$distlookup)) rivers1 <- buildlookup(rivers1)
   
   # updating sp object
   id <- rivers$lineID

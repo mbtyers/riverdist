@@ -45,7 +45,6 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
   
   if(start==end) return(start)
   
-  # if I can make the algorithm a part of the rivers object, i can eliminate all this -----------
   if(is.null(algorithm)) {
     if(length(rivers$segroutes)>0) algorithm <- "segroutes"
     if(!is.na(rivers$braided)) {
@@ -64,10 +63,7 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
       algorithm <- "Dijkstra"
     }
   }
-  # ------------------
   
-  # if(is.null(algorithm) & !rivers$sequenced) algorithm <- "segroutes"
-
   if(!any(algorithm==c("sequential","Dijkstra","segroutes"))) stop("Invalid algorithm specified.")
   if(verbose) cat("Using",algorithm,"algorithm...",'\n')
 
@@ -292,24 +288,34 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
 
 
 #' Build Segment Routes
-#' @description Adds the travel routes from the mouth (lowest point) of a river
-#'   network to each segment.  This greatly reduces the time needed to detect
-#'   routes, making distance calculation much more efficient, particularly in
-#'   the case of multiple distance calculations.
+#' @description Adds the travel routes from the mouth (lowest point) of a river 
+#'   network to each segment, and (optionally) distance lookup tables.  This
+#'   greatly reduces the time needed to detect routes, making distance
+#'   calculation much more efficient, particularly in the case of multiple
+#'   distance calculations.
 #' @param rivers The river network object to use
-#' @param verbose Whether or not to print the segment number the function is
-#'   currently building a route for (used for error checking).  Defaults to
+#' @param lookup Whether to build lookup tables as well.  This may take
+#'   some time, but will result in even faster distance computation in analyses
+#'   (see \link{buildlookup}).  Because of the object size returned, this may
+#'   not be advisable in a large river network (more than a few hundred
+#'   segments).  Accepts \code{TRUE} or \code{FALSE}, and defaults to
+#'   \code{NULL}.  If the default value is accepted, lookup tables will be built
+#'   if the river network has 400 segments or fewer.
+#' @param verbose Whether or not to print the segment number the function is 
+#'   currently building a route for (used for error checking).  Defaults to 
 #'   FALSE.
-#' @return A rivernetwork object, with a new list element, \code{$segroutes},
-#'   which gives the route from the mouth to each rivernetwork segment.
-#'   (See \link{rivernetwork}.)
-#' @note In the event of braiding (multiple channels), it is likely that there
-#'   will be differences in the routes detected.  If this is the case, building
+#' @return A rivernetwork object, with a new list element, \code{$segroutes}, 
+#'   which gives the route from the mouth to each rivernetwork segment. 
+#'   Optionally, it may add \code{$distlookup}, distance lookup tables for even
+#'   faster distance computation. (See \link{rivernetwork}.)
+#' @note In the event of braiding (multiple channels), it is likely that there 
+#'   will be differences in the routes detected.  If this is the case, building 
 #'   routes will likely result in a shorter and more efficient route. 
 #'   Regardless, extreme caution is always advised in the event of braiding.
 #' @note The mouth segment and vertex must be specified (see \link{setmouth}).
 #' @author Matt Tyers
-#' @note This function is called within \link{cleanup}, which is recommended in most cases.
+#' @note This function is called within \link{cleanup}, which is recommended in
+#'   most cases.
 #' @examples
 #' data(abstreams)
 #' plot(x=abstreams)
@@ -329,8 +335,16 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
 #' tend - tstart
 #' @importFrom graphics plot
 #' @export
-buildsegroutes <- function(rivers,verbose=FALSE) {
+buildsegroutes <- function(rivers,lookup=NULL,verbose=FALSE) {
   if(is.na(rivers$mouth$mouth.seg) | is.na(rivers$mouth$mouth.vert)) stop("need to supply the segment and vertex of origin")
+  
+  if(length(rivers$lines)==1) {
+    rivers$segroutes <- list(1)
+    if(is.null(lookup)) lookup <- T
+    if(lookup) rivers <- buildlookup(rivers)
+    return(rivers)
+  } else{
+  
   if(is.na(rivers$braided)) rivers <- checkbraidedTF(rivers=rivers)
   if(rivers$braided) stop("Building segment routes is inappropriate in a braided river network.")
   
@@ -382,7 +396,11 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
   }
   
   rivers$segroutes <- realroutes
-  return(rivers)
+  
+  if(is.null(lookup) & length(rivers$lines)<=400) lookup <- T
+  if(lookup) rivers <- buildlookup(rivers) 
+
+  return(rivers) }
 }
 
 
@@ -573,6 +591,20 @@ buildsegroutes <- function(rivers,verbose=FALSE) {
 riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,path=NULL,map=FALSE,add=FALSE,stopiferror=TRUE,algorithm=NULL) {
   # if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   
+  if(!is.null(rivers$distlookup) & !map) {
+    cumuldist <- rivers$cumuldist
+    lengths <- rivers$lengths
+    x<-rivers$distlookup
+    if(startseg==endseg) dist <- abs(cumuldist[[startseg]][startvert] - cumuldist[[startseg]][endvert])
+    else {
+      if(x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+      if(x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
+      if(!x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+      if(!x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
+    }
+    return(dist)
+  }
+  
   connections <- rivers$connections
   seg.lengths <- rivers$lengths
   lines <- rivers$lines
@@ -629,7 +661,7 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
       min <- min(startvert,endvert)
       max <- max(startvert,endvert)
       if(min!=max) {
-        lines(lines[[path[1]]][min:max])
+        lines(lines[[path[1]]][min:max,],lwd=3,col=4)
       }
     }
   }
@@ -695,3 +727,165 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
 # summary(microbenchmark(riverdistance2(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
 # summary(microbenchmark(riverdistance3(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk_boom),times=1000))[4:5]
 # 
+
+# buildallroutes <- function(rivers) {
+#   length <- length(rivers$lines)
+#   allroutes <- list()
+#   for(i in 1:length) {
+#     allroutes[[i]] <- list()
+#     for(j in 1:length) {
+#       allroutes[[i]][[j]] <- detectroute(start=i, end=j, rivers=rivers)
+#     }
+#   }
+#   return(allroutes)
+# }
+# Gulk_allroutes <- buildallroutes(Gulk)
+# abstreams_allroutes <- buildallroutes(abstreams)
+# 
+# library(microbenchmark)
+# summary(microbenchmark(riverdistance(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(riverdistance(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk, path=Gulk_allroutes[[1]][[14]]),times=1000))[4:5]
+# 
+# summary(microbenchmark(riverdistance(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams),times=1000))[4:5]
+# summary(microbenchmark(riverdistance(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams, path=abstreams_allroutes[[120]][[111]]),times=1000))[4:5]
+# 
+# calcalldistances <- function(rivers) {
+#   length <- length(rivers$lines)
+#   alldists <- list()
+#   for(i in 1:length) {
+#     alldists[[i]] <- list()
+#     for(j in 1:length) {
+#       theroute <- detectroute(start=i, end=j, rivers=rivers)
+#       # nverti <- dim(rivers$lines[[i]])[1]
+#       # nvertj <- dim(rivers$lines[[j]])[1]
+#       # distmat <- matrix(nrow=nverti,ncol=nvertj)
+#       # for(verti in 1:nverti) {
+#       #   for(vertj in 1:nvertj) {
+#       #     distmat[i,j] <- riverdistance(startseg=i, endseg=j, startvert=verti, endvert=vertj, path=theroute, rivers=rivers)
+#       #   }
+#       # }
+#       # alldists[[i]][[j]] <- distmat
+#       # print(c(i,j))
+#     }
+#   }
+#   return(alldists)
+# }
+# system.time(Gulk_alldists <- calcalldistances(Gulk))
+# system.time(abstreams_alldists <- calcalldistances(abstreams))
+# 
+# 
+# summary(microbenchmark(riverdistance(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000))[4:5]
+# summary(microbenchmark(Gulk_alldists[[1]][[14]][120,120],times=1000))[4:5]
+# 
+# calcdisttable <- function(rivers) {
+#   length <- length(rivers$lines) 
+#   connections <- rivers$connections
+#   middistmat <- matrix(0,nrow=length,ncol=length)
+#   startheadmat <- endheadmat <- matrix(NA,nrow=length,ncol=length)
+#   for(i in 1:length) {
+#     for(j in 1:length) {
+#       theroute <- detectroute(start=i, end=j, rivers=rivers)
+#       routelength <- length(theroute)
+#       if(length(theroute) > 2) middistmat[i,j] <- sum(rivers$lengths[theroute[2:(routelength-1)]])
+#       if(length(theroute) > 1) {
+#         startheadmat[i,j] <- ifelse(any(connections[i, theroute[2]] == c(1,2)), T, F)
+#         endheadmat[i,j] <- ifelse(any(connections[theroute[routelength-1], j] == c(1,3)), T, F)
+#       }
+#     }
+#   }
+#   return(list(middist=middistmat, starttop=startheadmat, endtop=endheadmat))
+# }
+# system.time(Gulk_disttable <- calcdisttable(Gulk))
+# system.time(abstreams_disttable <- calcdisttable(abstreams))
+# 
+# riverdistancefromtable <- function(startseg,startvert,endseg,endvert,rivers,x) {
+#   if(startseg==endseg) dist <- abs(rivers$cumuldist[start] - rivers$cumuldist[end])
+#   else {
+#     if(x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + rivers$cumuldist[[startseg]][startvert] + rivers$cumuldist[[endseg]][endvert]
+#     if(x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + rivers$cumuldist[[startseg]][startvert] + rivers$lengths[endseg] - rivers$cumuldist[[endseg]][endvert]
+#     if(!x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + rivers$lengths[startseg] - rivers$cumuldist[[startseg]][startvert] + rivers$cumuldist[[endseg]][endvert]
+#     if(!x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + rivers$lengths[startseg] - rivers$cumuldist[[startseg]][startvert] + rivers$lengths[endseg] - rivers$cumuldist[[endseg]][endvert]
+#   }
+#   return(dist)
+# }
+# 
+# riverdistancefromtable <- function(startseg,startvert,endseg,endvert,rivers,x) {
+#   cumuldist <- rivers$cumuldist
+#   lengths <- rivers$lengths
+#   if(startseg==endseg) dist <- abs(cumuldist[start] - cumuldist[end])
+#   else {
+#     if(x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+#     if(x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
+#     if(!x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+#     if(!x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
+#   }
+#   return(dist)
+# }
+# riverdistance(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk)
+# riverdistancefromtable(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk, x=Gulk_disttable)
+# riverdistance(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams)
+# riverdistancefromtable(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams,x=abstreams_disttable)
+# 
+# microbenchmark(riverdistance(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk),times=1000)
+# microbenchmark(riverdistancefromtable(startseg=1, endseg=14 ,startvert=120, endvert=120, rivers=Gulk, x=Gulk_disttable),times=1000)
+# microbenchmark(riverdistance(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams),times=1000)
+# microbenchmark(riverdistancefromtable(startseg=120, endseg=111 ,startvert=120, endvert=120, rivers=abstreams,x=abstreams_disttable),times=1000)
+
+
+#' Build Lookup Tables for Fast Distance Computation
+#' @description Adds lookup tables for distance computation, dramatically
+#'   reducing computation time.  It may take some time to calculate,
+#'   particularly in a braided network.
+#' @param rivers The river network object to use
+#' @return A rivernetwork object, with a new list element, \code{$distlookup}, a
+#'   list of three matrices.  Element \code{[i,j]} of each matrix corresponds to
+#'   the route between segment \code{i} and \code{j}.  The
+#'   \code{distlookup$middist} matrix gives the total distance of the "middle"
+#'   of each route (between the starting and ending segments"), and the
+#'   \code{distlookup$starttop} and \code{distlookup$endtop} matrices have value
+#'   \code{TRUE}, \code{FALSE}, or \code{NA} if the segments at the beginning or
+#'   end of the route are connected to the resto of the route at the top of the
+#'   coordinate matrix, bottom of the coordinate matrix, or if the route is
+#'   contained to just one segment, respectively. (See \link{rivernetwork}.)
+#' @note This will add three n by n matrices to the river network object, which
+#'   will be very large if the river network has many segments.
+#' @author Matt Tyers
+#' @note This function is called within \link{cleanup}, which is recommended in
+#'   most cases.  It is also called within \link{buildsegroutes}, and will add
+#'   lookup tables by default if there are fewer than 400 segments in the river
+#'   network.
+#' @note This function can still be called in the presence of a braided network, but all resulting distances used in subsequent analyses will be the shortest route.
+#' @examples
+#' data(abstreams)
+#' 
+#' abstreams1 <- buildlookup(abstreams)
+#' @export
+buildlookup <- function(rivers) {
+  if(is.null(rivers$segroutes) & interactive()) pb <- txtProgressBar(style=3)
+  if(!is.na(rivers$braided)) {
+    if(rivers$braided) warning("Braiding detected in river network - all distances used in analysis will be shortest-path distances, not necessarily travel distances.")
+  } else {
+    warning("Braiding may be present in river network.  If so, all distances used in analysis will be shortest-path distances, not necessarily travel distances.")
+  }
+  length <- length(rivers$lines)
+  connections <- rivers$connections
+  middist <- matrix(0,nrow=length,ncol=length)
+  starttop <- endtop <- matrix(NA,nrow=length,ncol=length)
+  for(i in 1:length) {
+    for(j in 1:length) {
+      theroute <- detectroute(start=i, end=j, rivers=rivers)
+      routelength <- length(theroute)
+      if(length(theroute) > 2) middist[i,j] <- sum(rivers$lengths[theroute[2:(routelength-1)]])
+      if(length(theroute) > 1) {
+        starttop[i,j] <- ifelse(any(connections[i, theroute[2]] == c(1,2)), T, F)
+        endtop[i,j] <- ifelse(any(connections[theroute[routelength-1], j] == c(1,3)), T, F)
+      }
+      if(interactive() & is.null(rivers$segroutes)) setTxtProgressBar(pb=pb, value=(i/length + j/length/length))
+    }
+  }
+  distlookup <- list(middist=middist, starttop=starttop, endtop=endtop)
+  rivers$distlookup <- distlookup
+  
+  
+  return(rivers)
+}

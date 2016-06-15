@@ -4,35 +4,46 @@
 \alias{buildsegroutes}
 \title{Build Segment Routes}
 \usage{
-buildsegroutes(rivers, verbose = FALSE)
+buildsegroutes(rivers, lookup = NULL, verbose = FALSE)
 }
 \arguments{
 \item{rivers}{The river network object to use}
 
-\item{verbose}{Whether or not to print the segment number the function is
-currently building a route for (used for error checking).  Defaults to
+\item{lookup}{Whether to build lookup tables as well.  This may take
+some time, but will result in even faster distance computation in analyses
+(see \link{buildlookup}).  Because of the object size returned, this may
+not be advisable in a large river network (more than a few hundred
+segments).  Accepts \code{TRUE} or \code{FALSE}, and defaults to
+\code{NULL}.  If the default value is accepted, lookup tables will be built
+if the river network has 400 segments or fewer.}
+
+\item{verbose}{Whether or not to print the segment number the function is 
+currently building a route for (used for error checking).  Defaults to 
 FALSE.}
 }
 \value{
-A rivernetwork object, with a new list element, \code{$segroutes},
-  which gives the route from the mouth to each rivernetwork segment.
-  (See \link{rivernetwork}.)
+A rivernetwork object, with a new list element, \code{$segroutes}, 
+  which gives the route from the mouth to each rivernetwork segment. 
+  Optionally, it may add \code{$distlookup}, distance lookup tables for even
+  faster distance computation. (See \link{rivernetwork}.)
 }
 \description{
-Adds the travel routes from the mouth (lowest point) of a river
-  network to each segment.  This greatly reduces the time needed to detect
-  routes, making distance calculation much more efficient, particularly in
-  the case of multiple distance calculations.
+Adds the travel routes from the mouth (lowest point) of a river 
+  network to each segment, and (optionally) distance lookup tables.  This
+  greatly reduces the time needed to detect routes, making distance
+  calculation much more efficient, particularly in the case of multiple
+  distance calculations.
 }
 \note{
-In the event of braiding (multiple channels), it is likely that there
-  will be differences in the routes detected.  If this is the case, building
+In the event of braiding (multiple channels), it is likely that there 
+  will be differences in the routes detected.  If this is the case, building 
   routes will likely result in a shorter and more efficient route. 
   Regardless, extreme caution is always advised in the event of braiding.
 
 The mouth segment and vertex must be specified (see \link{setmouth}).
 
-This function is called within \link{cleanup}, which is recommended in most cases.
+This function is called within \link{cleanup}, which is recommended in
+  most cases.
 }
 \examples{
 data(abstreams)

@@ -43,12 +43,11 @@
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' # # Not run: this step takes a few minutes
-#' # Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
-#' #   survey=fakefish$flight.date)
+#' Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
+#'   survey=fakefish$flight.date)
 #'   
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
-#' # plot(x=Gulk_dens)
+#' plot(x=Gulk_dens)
 #' @export
 makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NULL,resolution=NULL) {
   if(is.null(resolution)) resolution <- sum(rivers$lengths)/500

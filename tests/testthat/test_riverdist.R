@@ -238,15 +238,15 @@ verts <- c(1,1,1,1)
 test_that("stopiferror, flowconnected",{
   expect_error(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
-  expect_equal(riverdistance(startseg=segs[3],endseg=segs[2],startvert=verts[3],endvert=verts[2],rivers=Kenai1a,stopiferror=F),2648.679,tolerance=0.001)
+  expect_equal(riverdistance(startseg=segs[3],endseg=segs[2],startvert=verts[3],endvert=verts[2],rivers=Kenai1a,stopiferror=F),2648.679,tolerance=0.001)   ### cumuldist subscript out of bounds
   expect_error(riverdirection(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(riverdirection(startseg=segs[3],endseg=segs[4],startvert=verts[3],endvert=verts[4],rivers=Kenai1a,flowconnected=T)))
   expect_true(is.na(riverdirection(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
-  expect_equal(riverdirection(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),"up")
+  expect_equal(riverdirection(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),"up")   ### cumuldist subscript out of bounds
   expect_error(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(upstream(startseg=segs[3],endseg=segs[4],startvert=verts[3],endvert=verts[4],rivers=Kenai1a,flowconnected=T)))
   expect_true(is.na(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
-  expect_equal(upstream(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),2648.679,tolerance=0.001)
+  expect_equal(upstream(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),2648.679,tolerance=0.001) ### cumuldist subscript out of bounds
 })
 
 data(abstreams0)

@@ -216,8 +216,12 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
   
   for(i in 1:length(ID)) {
     if(map==T) {
-      if(is.null(main)) main <- ID[i]
-      plot(x=rivers,main=main,color=F,segmentnum=F,...=...)
+      if(is.null(main)) {
+        main1 <- ID[i]
+      } else{
+        main1 <- main
+      }
+      plot(x=rivers,main=main1,color=F,segmentnum=F)#,...=...)
     }
     
     n.entries <- length(unique[unique==ID[i]])

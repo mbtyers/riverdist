@@ -151,19 +151,19 @@ splitsegments <- function(rivers,tolerance=NULL) {
     lengths[i] <- pdisttot(lines[[i]])
   }
   
-  cumuldist <- list()
-  for(i in 1:length(lines)) {
-    xy <- lines[[i]]
-    n <- dim(xy)[1]
-    cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
-  }
+  # cumuldist <- list()
+  # for(i in 1:length(lines)) {
+  #   xy <- lines[[i]]
+  #   n <- dim(xy)[1]
+  #   cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
+  # }
   
   # updating rivers object
   rivers$connections <- connections
   rivers$lines <- newlines
   rivers$lengths <- lengths
   rivers$names <- rep(NA,length(lines))
-  rivers$cumuldist <- cumuldist
+  # rivers$cumuldist <- cumuldist
   if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
     for(i in 1:length(rivers$lines)) {
       for(j in 1:(dim(rivers$lines[[i]])[1])) {
@@ -189,9 +189,12 @@ splitsegments <- function(rivers,tolerance=NULL) {
   rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
   
   if(!is.null(rivers$segroutes)) {
-    rivers$segroutes <- NULL
-    warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+    # rivers$segroutes <- NULL
+    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+    rivers <- buildsegroutes(rivers,lookup=F)
   }
+  rivers <- addcumuldist(rivers)
+  if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
   
   return(rivers)
 }

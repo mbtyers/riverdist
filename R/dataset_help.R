@@ -218,9 +218,18 @@ NULL
 #'      \item \code{sp_line} gives the corresponding list element in \code{sp@@lines}.
 #'      \item \code{sp_seg} gives the corresponding list element in \code{sp@@lines[[]]@@Lines}.
 #'      }}
-#'    \item{\code{segroutes}:}{Object of class \code{"list"}, with each element defined as a vector of class \code{"numeric"}, describing the route from the mouth segment to the specific segment.  This element only exists if \link{buildsegroutes} has been run, and can greatly speed up route and distance calculation.}
 #'    \item{\code{braided}:}{\code{"logical"}: Has value of \code{TRUE} if \link{checkbraidedTF} has detected braiding, \code{FALSE} if no braiding has been detected, and \code{NA} if braiding has not yet been checked.}
-#'    \item{\code{cumuldist}:}{List of class \code{"numeric"}: Each element is a vector of cumulative distances along each river segment, beginning with 0.} 
+#'    \item{\code{cumuldist}:}{List of class \code{"numeric"}: Each element is a vector of cumulative distances along each river segment, beginning with 0.}
+#'    \item{\code{segroutes}:}{Object of class \code{"list"}, with each element defined as a vector of class \code{"numeric"}, describing the route from the mouth segment to the specific segment.  This element only exists if \link{buildsegroutes} has been run, and can greatly speed up route and distance calculation.}
+#'    \item{\code{distlookup}:}{List of three matrices, of class \code{"numeric"} or \code{"logical"}.  Element \code{[i,j]} of each matrix corresponds to
+#'   the route between segment \code{i} and \code{j}.  The
+#'   \code{distlookup$middist} matrix gives the total distance of the "middle"
+#'   of each route (between the starting and ending segments"), and the
+#'   \code{distlookup$starttop} and \code{distlookup$endtop} matrices have value
+#'   \code{TRUE}, \code{FALSE}, or \code{NA} if the segments at the beginning or
+#'   end of the route are connected to the resto of the route at the top of the
+#'   coordinate matrix, bottom of the coordinate matrix, or if the route is
+#'   contained to just one segment, respectively. }
 #'   }
 #' @name rivernetwork 
 #' @rdname rivernetwork

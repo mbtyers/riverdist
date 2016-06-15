@@ -102,7 +102,10 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
   if(is.na(mouthseg)) stop("Mouth must be specified.")
   lines <- rivers$lines
   tolerance <- rivers$tolerance
-  
+  if(length==1) {
+    braiding <- F
+  } else{
+    
   # calculating a new connectivity matrix to capture beginning-beginning/end-end and beginning-end/end-beginning connections (special braided case)
   for(i in 1:length) {
     for(j in 1:length) {
@@ -164,7 +167,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
     i<-i+1
     #print(i)
   }
-  
+  }
   
   rivers$braided <- braiding
   if(toreturn=="logical") return(braiding)

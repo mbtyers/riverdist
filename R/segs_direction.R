@@ -191,5 +191,6 @@ sequenceverts <- function(rivers) {
   }
   rivers$connections <- connections
   rivers$sequenced <- TRUE
+  rivers <- addcumuldist(rivers)
   return(rivers) 
 }

@@ -595,6 +595,12 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
     cumuldist <- rivers$cumuldist
     lengths <- rivers$lengths
     x<-rivers$distlookup
+    if(!is.null(path)) {
+      startseg <- path[1]
+      endseg <- path[length(path)]
+    }
+    if(startseg<1 | endseg<1 | startseg>length(lengths) | endseg>length(lengths)) stop("Invalid segment specified")
+    if(startvert<1 | endvert<1 | startvert>length(cumuldist[[startseg]]) | endvert>length(cumuldist[[endseg]])) stop("Invalid vertex specified")
     if(startseg==endseg) dist <- abs(cumuldist[[startseg]][startvert] - cumuldist[[startseg]][endvert])
     else {
       if(x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]

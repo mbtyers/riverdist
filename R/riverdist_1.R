@@ -586,17 +586,18 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
     }
   }
   
-  if(is.na(trimmed.rivers$mouth$mouth.seg)) {
-    warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes)")
-  }
+  # if(is.na(trimmed.rivers$mouth$mouth.seg)) {
+  #   warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes)")
+  # }
   
-  if(!is.na(trimmed.rivers$mouth$mouth.seg) & !is.na(trimmed.rivers$mouth$mouth.vert) & !is.null(trimmed.rivers$segroutes)) {
-    # trimmed.rivers$segroutes <- NULL
-    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
-    trimmed.rivers <- buildsegroutes(trimmed.rivers,lookup=F)
+  if(!is.null(rivers$segroutes) | !is.null(rivers$distlookup)) {
+    trimmed.rivers$segroutes <- NULL
+    trimmed.rivers$distlookup <- NULL
+    warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes).")
+    # trimmed.rivers <- buildsegroutes(trimmed.rivers,lookup=F)
   }
   trimmed.rivers <- addcumuldist(trimmed.rivers)
-  if(!is.na(trimmed.rivers$mouth$mouth.seg) & !is.na(trimmed.rivers$mouth$mouth.vert) & !is.null(trimmed.rivers$distlookup)) trimmed.rivers <- buildlookup(trimmed.rivers)
+  # if(!is.na(trimmed.rivers$mouth$mouth.seg) & !is.na(trimmed.rivers$mouth$mouth.vert) & !is.null(trimmed.rivers$distlookup)) trimmed.rivers <- buildlookup(trimmed.rivers)
   
   # updating sp object
   id <- rivers$lineID
@@ -762,13 +763,14 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
     }
   }
   
-  if(!is.null(rivers1$segroutes)) {
-    # rivers1$segroutes <- NULL
-    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
-    rivers1 <- buildsegroutes(rivers1,lookup=F)
+  if(!is.null(rivers1$segroutes) | !is.null(rivers1$distlookup)) {
+    rivers1$segroutes <- NULL
+    rivers1$distlookup <- NULL
+    warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes).")
+    # rivers1 <- buildsegroutes(rivers1,lookup=F)
   }
   rivers1 <- addcumuldist(rivers1)
-  if(!is.null(rivers1$distlookup)) rivers1 <- buildlookup(rivers1)
+  # if(!is.null(rivers1$distlookup)) rivers1 <- buildlookup(rivers1)
   
   # updating sp object
   id <- rivers$lineID

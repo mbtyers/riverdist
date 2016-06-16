@@ -26,7 +26,7 @@ test_that("buildsegroutes",{
 
 data(Kenai3)
 Kenai3.1 <- setmouth(seg=61,vert=40,rivers=Kenai3)
-Kenai3.subset <- trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3)
+Kenai3.subset <- suppressWarnings(trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3))
 test_that("checkbraided",{
   expect_false(checkbraidedTF(rivers=Gulk, toreturn="logical"))
   expect_true(checkbraidedTF(rivers=Kenai3.1, toreturn="logical"))
@@ -167,7 +167,8 @@ test_that("splitsegments",{
 })
 
 Gulk3 <- Gulk
-Gulk3$segroutes <- NULL
+Gulk3$segroutes <- NULL             ## would be better to have a more elegant solution within trimriver
+Gulk3$distlookup <- NULL
 Gulk.trim <- trimriver(trim=1:4,rivers=Gulk3)
 Gulk.trimto <- trimriver(trimto=1:4,rivers=Gulk3)
 data(Koyukuk0)
@@ -238,11 +239,11 @@ verts <- c(1,1,1,1)
 test_that("stopiferror, flowconnected",{
   expect_error(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
-  expect_equal(riverdistance(startseg=segs[3],endseg=segs[2],startvert=verts[3],endvert=verts[2],rivers=Kenai1a,stopiferror=F),2648.679,tolerance=0.001)   ### cumuldist subscript out of bounds
+  expect_equal(riverdistance(startseg=segs[3],endseg=segs[2],startvert=verts[3],endvert=verts[2],rivers=Kenai1a,stopiferror=F),2648.679,tolerance=0.001)
   expect_error(riverdirection(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(riverdirection(startseg=segs[3],endseg=segs[4],startvert=verts[3],endvert=verts[4],rivers=Kenai1a,flowconnected=T)))
   expect_true(is.na(riverdirection(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
-  expect_equal(riverdirection(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),"up")   ### cumuldist subscript out of bounds
+  expect_equal(riverdirection(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),"up") 
   expect_error(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(upstream(startseg=segs[3],endseg=segs[4],startvert=verts[3],endvert=verts[4],rivers=Kenai1a,flowconnected=T)))
   expect_true(is.na(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))

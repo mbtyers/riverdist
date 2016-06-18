@@ -44,6 +44,7 @@
 #'   range (clustering); A K-function below the envelope for a given distance
 #'   range provides evidence of a smaller number of individuals than expected at
 #'   that distance range (dispersal).
+#' @note This function is distance-computation intensive, and will be extremely slow-running if a river network is used that does not have segment routes and/or distance lookup tables for fast distance computation.  See \link{buildsegroutes} and/or \link{buildlookup} for more information.
 #' @author Matt Tyers
 #' @importFrom stats quantile
 #' @examples

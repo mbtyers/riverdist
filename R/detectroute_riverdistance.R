@@ -114,30 +114,30 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
     max <- 2*sum(lengths)
     
     # calculating a new connectivity matrix to capture beginning-beginning/end-end and beginning-end/end-beginning connections (special braided case)
-    for(i in 1:length) {
-      for(j in 1:length) {
-        i.max <- dim(lines[[i]])[1]
-        j.max <- dim(lines[[j]])[1]
-        if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-          connections[i,j] <- 1
-        }
-        if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-          connections[i,j] <- 2
-        }
-        if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-          connections[i,j] <- 3
-        }
-        if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-          connections[i,j] <- 4
-        }
-        if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-          connections[i,j] <- 5
-        }
-        if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-          connections[i,j] <- 6
-        }
-      }
-    }
+    # for(i in 1:length) {   ####################
+    #   for(j in 1:length) {
+    #     i.max <- dim(lines[[i]])[1]
+    #     j.max <- dim(lines[[j]])[1]
+    #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
+    #       connections[i,j] <- 1
+    #     }
+    #     if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+    #       connections[i,j] <- 2
+    #     }
+    #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
+    #       connections[i,j] <- 3
+    #     }
+    #     if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
+    #       connections[i,j] <- 4
+    #     }
+    #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
+    #       connections[i,j] <- 5
+    #     }
+    #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+    #       connections[i,j] <- 6
+    #     }
+    #   }
+    # }    ####################
     
     segs <- 1:length
     dists <- rep(max,length)
@@ -354,10 +354,10 @@ buildsegroutes <- function(rivers,lookup=NULL,verbose=FALSE) {
   }
   #internal functions
   n.top <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2) & is.na(connections[seg,])==F]))
+    return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))   #########
   }
   n.bot <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==3 | connections[seg,]==4) & is.na(connections[seg,])==F]))
+    return(length(connections[seg,][(connections[seg,]==3 | connections[seg,]==4 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))   #########
   }
   dists <- rep(NA,length(rivers$lines))
   for(i in 1:length(rivers$lines)) {
@@ -557,11 +557,12 @@ buildsegroutes <- function(rivers,lookup=NULL,verbose=FALSE) {
 #' @param algorithm Which route detection algorithm to use (\code{"Dijkstra"},
 #'   \code{"sequential"}, or \code{"segroutes"}).  If left as \code{NULL} (the
 #'   default), the function will automatically make a selection.  See
-#'   \link{detectroute} for more details.
+#'   \link{detectroute} for more details.  
 #' @return Total route distance, in the units of the coordinate system used 
 #'   (this will likely be meters).
+#' @note If a distance lookup table (\code{$distlookup}) is present in the river network object, accepting \code{NULL} will bypass route detection and return distance automatically, the fastest algorithm of all.  This is done automatically in \link{buildsegroutes}, but can be called directly using \link{buildlookup}.
 #' @author Matt Tyers
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @examples
 #' data(Gulk)
@@ -591,7 +592,7 @@ buildsegroutes <- function(rivers,lookup=NULL,verbose=FALSE) {
 riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,path=NULL,map=FALSE,add=FALSE,stopiferror=TRUE,algorithm=NULL) {
   # if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   
-  if(!is.null(rivers$distlookup) & !map) {
+  if(!is.null(rivers$distlookup) & !map & is.null(algorithm)) {
     cumuldist <- rivers$cumuldist
     lengths <- rivers$lengths
     x<-rivers$distlookup
@@ -603,11 +604,28 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
     if(startvert<1 | endvert<1 | startvert>length(cumuldist[[startseg]]) | endvert>length(cumuldist[[endseg]])) stop("Invalid vertex specified")
     if(startseg==endseg) dist <- abs(cumuldist[[startseg]][startvert] - cumuldist[[startseg]][endvert])
     else {
-      if(x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
-      if(x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
-      if(!x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
-      if(!x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
+      if(!is.na(x$starttop[startseg,endseg])) { 
+        if(x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+        if(x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
+        if(!x$starttop[startseg,endseg] & x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+        if(!x$starttop[startseg,endseg] & !x$endtop[startseg,endseg]) dist <- x$middist[startseg,endseg] + lengths[startseg] - cumuldist[[startseg]][startvert] + lengths[endseg] - cumuldist[[endseg]][endvert]
+      }
     }
+    if(!is.na(rivers$braided)) if(rivers$braided) {    ###########
+    # if(x$middist[startseg,endseg]==0 & is.na(x$starttop[startseg,endseg]) & is.na(x$endtop[startseg,endseg])) {
+      if(!is.na(rivers$connections[startseg,endseg])) {
+        if(rivers$connections[startseg,endseg]==5) {
+          d1 <- cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+          d2 <- (lengths[startseg] - cumuldist[[startseg]][startvert]) + (lengths[endseg] - cumuldist[[endseg]][endvert])
+          dist <- min(d1,d2)
+        }
+        if(rivers$connections[startseg,endseg]==6) {
+          d1 <- cumuldist[[startseg]][startvert] + (lengths[endseg] - cumuldist[[endseg]][endvert])
+          d2 <- (lengths[startseg] - cumuldist[[startseg]][startvert]) + cumuldist[[endseg]][endvert]
+          dist <- min(d1,d2)
+        }
+      }
+    }    ###########
     return(dist)
   }
   
@@ -634,12 +652,12 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
     riverpoints(seg=c(startseg,endseg),vert=c(startvert,endvert),rivers=rivers,pch=15,col=4)
     if(length(path)>1) {
       # distance on the partial segment the beginning is on
-      if(connections[startseg,path[2]]<=2) {
+      if(any(connections[startseg,path[2]]==c(1,2))) {     
         if(startvert!=1) { 
           lines(lines[[startseg]][1:startvert,],lwd=3,col=4)
         }
       }
-      if(connections[startseg,path[2]]>=3) {
+      if(any(connections[startseg,path[2]]==c(3,4))) {
         linelength <- dim(lines[[startseg]])[1]
         if(linelength!=startvert) {
           lines(lines[[startseg]][linelength:startvert,],lwd=3,col=4)
@@ -661,6 +679,29 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
           lines(lines[[endseg]][linelength:endvert,],lwd=3,col=4)
         }
       }
+      # special braided case #############
+      if(length(path)==2 & connections[path[1],path[2]]==5) {
+        d1 <- cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+        d2 <- (seg.lengths[startseg] - cumuldist[[startseg]][startvert]) + (seg.lengths[endseg] - cumuldist[[endseg]][endvert])
+        if(d1<d2) {
+          lines(lines[[startseg]][1:startvert,],lwd=3,col=4)
+          lines(lines[[endseg]][1:endvert,],lwd=3,col=4)
+        } else{
+          lines(lines[[startseg]][(dim(lines[[startseg]])[1]):startvert,],lwd=3,col=4)
+          lines(lines[[endseg]][(dim(lines[[endseg]])[1]):endvert,],lwd=3,col=4)
+        }
+      }
+      if(length(path)==2 & connections[path[1],path[2]]==6) {
+        d1 <- cumuldist[[startseg]][startvert] + (seg.lengths[endseg] - cumuldist[[endseg]][endvert])
+        d2 <- (seg.lengths[startseg] - cumuldist[[startseg]][startvert]) + cumuldist[[endseg]][endvert]
+        if(d1<d2) {
+          lines(lines[[startseg]][1:startvert,],lwd=3,col=4)
+          lines(lines[[endseg]][(dim(lines[[endseg]])[1]):endvert,],lwd=3,col=4)
+        } else{
+          lines(lines[[startseg]][(dim(lines[[startseg]])[1]):startvert,],lwd=3,col=4)
+          lines(lines[[endseg]][1:endvert,],lwd=3,col=4)
+        }
+      }   ####################
     }
     # if the beginning and end are on the same segment
     if(length(path)==1) {
@@ -707,6 +748,17 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
         route.dist <- route.dist + seg.lengths[endseg] - cumuldist[[endseg]][endvert]
       }
     } 
+    # special braided case #############
+    if(length(path)==2 & connections[path[1],path[2]]==5) {
+      d1 <- cumuldist[[startseg]][startvert] + cumuldist[[endseg]][endvert]
+      d2 <- (seg.lengths[startseg] - cumuldist[[startseg]][startvert]) + (seg.lengths[endseg] - cumuldist[[endseg]][endvert])
+      route.dist <- route.dist + min(d1,d2)
+    }
+    if(length(path)==2 & connections[path[1],path[2]]==6) {
+      d1 <- cumuldist[[startseg]][startvert] + (seg.lengths[endseg] - cumuldist[[endseg]][endvert])
+      d2 <- (seg.lengths[startseg] - cumuldist[[startseg]][startvert]) + cumuldist[[endseg]][endvert]
+      route.dist <- route.dist + min(d1,d2)
+    }   ####################
   }
   # if the beginning and end are on the same segment
   if(length(path)==1) {
@@ -861,6 +913,7 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
 #'   lookup tables by default if there are fewer than 400 segments in the river
 #'   network.
 #' @note This function can still be called in the presence of a braided network, but all resulting distances used in subsequent analyses will be the shortest route.
+#' @note If segment routes (\code{$segroutes}) are not present, this function will take a very long time to run.
 #' @examples
 #' data(abstreams)
 #' 
@@ -869,9 +922,9 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
 buildlookup <- function(rivers) {
   if(is.null(rivers$segroutes) & interactive()) pb <- txtProgressBar(style=3)
   if(!is.na(rivers$braided)) {
-    if(rivers$braided) warning("Braiding detected in river network - all distances used in analysis will be shortest-path distances, not necessarily travel distances.")
+    if(rivers$braided) message("Braiding detected in river network - all distances used in analysis will be shortest-path distances, not necessarily travel distances.")
   } else {
-    warning("Braiding may be present in river network.  If so, all distances used in analysis will be shortest-path distances, not necessarily travel distances.")
+    message("Braiding may be present in river network.  If so, all distances used in analysis will be shortest-path distances, not necessarily travel distances.")
   }
   length <- length(rivers$lines)
   connections <- rivers$connections
@@ -883,8 +936,12 @@ buildlookup <- function(rivers) {
       routelength <- length(theroute)
       if(length(theroute) > 2) middist[i,j] <- sum(rivers$lengths[theroute[2:(routelength-1)]])
       if(length(theroute) > 1) {
-        starttop[i,j] <- ifelse(any(connections[i, theroute[2]] == c(1,2)), T, F)
-        endtop[i,j] <- ifelse(any(connections[theroute[routelength-1], j] == c(1,3)), T, F)
+        # starttop[i,j] <- ifelse(any(connections[i, theroute[2]] == c(1,2)), T, F)
+        # endtop[i,j] <- ifelse(any(connections[theroute[routelength-1], j] == c(1,3)), T, F)
+        if(any(connections[i, theroute[2]] == c(1,2))) starttop[i,j] <- T
+        if(any(connections[i, theroute[2]] == c(3,4))) starttop[i,j] <- F
+        if(any(connections[theroute[routelength-1], j] == c(1,3))) endtop[i,j] <- T
+        if(any(connections[theroute[routelength-1], j] == c(2,4))) endtop[i,j] <- F
       }
       if(interactive() & is.null(rivers$segroutes)) setTxtProgressBar(pb=pb, value=(i/length + j/length/length))
     }

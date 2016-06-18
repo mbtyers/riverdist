@@ -51,7 +51,7 @@ Returns a matrix of distance with direction by unique fish
 Returns either net upstream distance (net=TRUE) or total distance
   (net=FALSE, default).  See \link{upstream}.
 
-Building routes from the river mouth to each river network segment may
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
   greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{

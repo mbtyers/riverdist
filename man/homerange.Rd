@@ -39,7 +39,8 @@ Returns the minimum observed home range for multiple
   observations of each individual fish.
 }
 \note{
-Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
+  greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{
 data(Gulk, fakefish)

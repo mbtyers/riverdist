@@ -34,6 +34,7 @@
 #'   kernel density calculation.  Accepting the default (\code{NULL}) will
 #'   result in the function determining a value to use, based on the total
 #'   length of the river network.
+#' @note This function is distance-computation intensive, and will be extremely slow-running if a river network is used that does not have segment routes and/or distance lookup tables for fast distance computation.  See \link{buildsegroutes} and/or \link{buildlookup} for more information.
 #' @return A river density object, see \link{riverdensity-class}.
 #' @seealso \link{plot.riverdensity}, \link{plotriverdensitypoints}
 #' @author Matt Tyers
@@ -358,10 +359,9 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
 #' @examples
 #' data(Gulk, fakefish)
 #' 
-#' # # Not run: this step takes a few minutes
-#' # Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+#' Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 #' 
-#' # plotriverdensitypoints(riverdensity=Gulk_dens)
+#' plotriverdensitypoints(riverdensity=Gulk_dens)
 #' @export
 plotriverdensitypoints <- function(riverdensity) {
   lines <- riverdensity$rivers$lines

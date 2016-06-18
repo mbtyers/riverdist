@@ -1,9 +1,24 @@
 data(Gulk)
 test_that("distance",{
+  expect_equal(riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, algorithm="Dijkstra"), 155435.2, tolerance=0.001)
+  expect_equal(riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, algorithm="sequential"), 155435.2, tolerance=0.001)
+  expect_equal(riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk, algorithm="segroutes"), 155435.2, tolerance=0.001)
   expect_equal(riverdistance(startseg=7, startvert=49, endseg=14, endvert=121, rivers=Gulk), 155435.2, tolerance=0.001)
   expect_equal(riverdistance(startseg=1, startvert=49, endseg=14, endvert=27, rivers=Gulk), 155105.9, tolerance=0.001)
   expect_error(riverdistance(startseg=77, startvert=49, endseg=14, endvert=121, rivers=Gulk))
   expect_error(riverdistance(startseg=7, startvert=149, endseg=14, endvert=121, rivers=Gulk))
+  expect_equal(riverdistance(startseg=1, endseg=3, startvert=20, endvert=20, rivers=Gulk, algorithm="Dijkstra"), 76375.44, tolerance=0.01)  #end-beginning
+  expect_equal(riverdistance(startseg=3, endseg=1, startvert=20, endvert=20, rivers=Gulk, algorithm="Dijkstra"), 76375.44, tolerance=0.01)  #beginning-end
+  expect_equal(riverdistance(startseg=3, endseg=4, startvert=20, endvert=20, rivers=Gulk, algorithm="Dijkstra"), 2996.144, tolerance=0.01)  #beginning-beginning
+  expect_equal(riverdistance(startseg=1, endseg=3, startvert=20, endvert=20, rivers=Gulk, algorithm="sequential"), 76375.44, tolerance=0.01)  #end-beginning
+  expect_equal(riverdistance(startseg=3, endseg=1, startvert=20, endvert=20, rivers=Gulk, algorithm="sequential"), 76375.44, tolerance=0.01)  #beginning-end
+  expect_equal(riverdistance(startseg=3, endseg=4, startvert=20, endvert=20, rivers=Gulk, algorithm="sequential"), 2996.144, tolerance=0.01)  #beginning-beginning
+  expect_equal(riverdistance(startseg=1, endseg=3, startvert=20, endvert=20, rivers=Gulk, algorithm="segroutes"), 76375.44, tolerance=0.01)  #end-beginning
+  expect_equal(riverdistance(startseg=3, endseg=1, startvert=20, endvert=20, rivers=Gulk, algorithm="segroutes"), 76375.44, tolerance=0.01)  #beginning-end
+  expect_equal(riverdistance(startseg=3, endseg=4, startvert=20, endvert=20, rivers=Gulk, algorithm="segroutes"), 2996.144, tolerance=0.01)  #beginning-beginning
+  expect_equal(riverdistance(startseg=1, endseg=3, startvert=20, endvert=20, rivers=Gulk), 76375.44, tolerance=0.01)  #end-beginning
+  expect_equal(riverdistance(startseg=3, endseg=1, startvert=20, endvert=20, rivers=Gulk), 76375.44, tolerance=0.01)  #beginning-end
+  expect_equal(riverdistance(startseg=3, endseg=4, startvert=20, endvert=20, rivers=Gulk), 2996.144, tolerance=0.01)  #beginning-beginning
 })
 
 data(fakefish)
@@ -18,10 +33,13 @@ Gulk1 <- buildsegroutes(Gulk)
 data(abstreams)
 abstreams_nosegroutes <- abstreams
 abstreams_nosegroutes$segroutes <- NULL
+abstreams_nosegroutes$distlookup <- NULL
 abstreams_nosegroutes1 <- buildsegroutes(abstreams_nosegroutes)
 test_that("buildsegroutes",{
   expect_equal(Gulk1$segroutes[[9]],c(1,4,9))
   expect_equal(abstreams_nosegroutes1$segroutes,abstreams$segroutes)
+  expect_equal(abstreams_nosegroutes1$distlookup,abstreams$distlookup)
+  expect_equal(Gulk$cumuldist,addcumuldist(Gulk)$cumuldist)
 })
 
 data(Kenai3)
@@ -43,6 +61,10 @@ test_that("detectroute",{
 data(Kenai2)
 test_that("dissolve",{
   expect_equal(dissolve(Kenai2),Kenai3)
+  expect_equal(length(dissolve(Gulk)$segroutes),13,tolerance=0.001)
+  expect_equal(sum(dissolve(Gulk)$distlookup$middist),8360513,tolerance=1)
+  expect_equal(sum(dissolve(Gulk)$distlookup$endtop,na.rm=T),126,tolerance=0.001)
+  expect_equal(sum(dissolve(Gulk)$distlookup$starttop,na.rm=T),126,tolerance=0.001)
 })
 
 hr <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk)
@@ -167,7 +189,7 @@ test_that("splitsegments",{
 })
 
 Gulk3 <- Gulk
-Gulk3$segroutes <- NULL             ## would be better to have a more elegant solution within trimriver
+Gulk3$segroutes <- NULL             
 Gulk3$distlookup <- NULL
 Gulk.trim <- trimriver(trim=1:4,rivers=Gulk3)
 Gulk.trimto <- trimriver(trimto=1:4,rivers=Gulk3)
@@ -292,4 +314,19 @@ asdf<-kfunctest(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefi
 test_that("kfunc", {
   expect_equal(length(asdf),10,tolerance=0.001)
   expect_equal(lapply(asdf[[1]],sum)[[3]] + lapply(asdf[[1]],sum)[[4]], 16122.44, tolerance=10)
+})
+
+K2 <- trimriver(trimto=c(1,27,64,104),rivers=Kenai3)
+K2l <- buildlookup(K2)
+test_that("connections 5 and 6", {
+  expect_equal(K2$connections[2,3],5,tolerance=0.001)
+  expect_equal(K2l$connections[3,2],5,tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=5, endvert=5, rivers=K2), 486.0265, tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=5, endvert=5, rivers=K2l), 486.0265, tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=1, endvert=1, rivers=K2), 0, tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=1, endvert=1, rivers=K2l), 0, tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=24, endvert=24, rivers=K2), 113.4867, tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=24, endvert=24, rivers=K2l), 113.4867, tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=25, endvert=25, rivers=K2), 0, tolerance=0.001)
+  expect_equal(riverdistance(startseg=2, endseg=3, startvert=25, endvert=25, rivers=K2l), 0, tolerance=0.001)
 })

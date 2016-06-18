@@ -51,7 +51,8 @@ A matrix of upstream distances (numeric) with rows and columns labeled by corres
 Returns a matrix of upstream distances between each river location in two datasets, with one expressed as rows and the other expressed as columns.
 }
 \note{
-Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
+  greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{
 data(Gulk)

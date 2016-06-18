@@ -37,6 +37,7 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
     stop("Error - need to specify both starting and ending segments, or neither")
   }
   
+  if(interactive()) pb <- txtProgressBar(style=3)
   if(is.null(startseg) & is.null(endseg)) {
     finished <- FALSE
     braiding <- FALSE
@@ -54,9 +55,11 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
       if(i==length & j==length) finished<-T
       if(i==length) j<-j+1
       if(i<length) i<-i+1
+      if(interactive()) setTxtProgressBar(pb=pb, value=i/length)
     }
-    if(braiding) cat("Braiding detected in river network.  Distance measurements may be inaccurate.")
-    if(finished & !braiding) cat("No braiding detected in river network.")
+    if(interactive()) setTxtProgressBar(pb=pb, value=1)
+    if(braiding) cat('\n',"Braiding detected in river network.  Distance measurements may be inaccurate.")
+    if(finished & !braiding) cat('\n',"No braiding detected in river network.")
   }
   
   if(!is.null(startseg) & !is.null(endseg)) {
@@ -107,30 +110,30 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
   } else{
     
   # calculating a new connectivity matrix to capture beginning-beginning/end-end and beginning-end/end-beginning connections (special braided case)
-  for(i in 1:length) {
-    for(j in 1:length) {
-      i.max <- dim(lines[[i]])[1]
-      j.max <- dim(lines[[j]])[1]
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 1
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 2
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 3
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 4
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 5
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 6
-      }
-    }
-  }
+  # for(i in 1:length) {
+  #   for(j in 1:length) {
+  #     i.max <- dim(lines[[i]])[1]
+  #     j.max <- dim(lines[[j]])[1]
+  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
+  #       connections[i,j] <- 1
+  #     }
+  #     if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 2
+  #     }
+  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
+  #       connections[i,j] <- 3
+  #     }
+  #     if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 4
+  #     }
+  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 5
+  #     }
+  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 6
+  #     }
+  #   }
+  # }
   n.top <- function(seg,connections) {
     return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
   }
@@ -151,6 +154,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
   braiding <- F 
   finished <- F
   i<-1
+  if(interactive()) pb <- txtProgressBar(style=3)
   while(!finished) {
     route1 <- detectroute(start=checkthese[i],end=mouthseg,rivers=rivers,algorithm="sequential")
     route2 <- detectroute(start=(length-checkthese[i]+1),end=(length-mouthseg+1),rivers=invertrivers,algorithm="sequential")
@@ -166,9 +170,11 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
     if(i==length(checkthese)) finished <- T
     i<-i+1
     #print(i)
+    if(interactive()) setTxtProgressBar(pb=pb, value=i/length)
   }
   }
   
+  if(interactive()) setTxtProgressBar(pb=pb, value=1)
   rivers$braided <- braiding
   if(toreturn=="logical") return(braiding)
   if(toreturn=="rivers") return(rivers)

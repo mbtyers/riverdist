@@ -36,6 +36,8 @@ This function is called within \link{cleanup}, which is recommended in
   network.
 
 This function can still be called in the presence of a braided network, but all resulting distances used in subsequent analyses will be the shortest route.
+
+If segment routes (\code{$segroutes}) are not present, this function will take a very long time to run.
 }
 \examples{
 data(abstreams)

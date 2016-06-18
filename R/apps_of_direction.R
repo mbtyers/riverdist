@@ -52,7 +52,7 @@ isflowconnected <- function(seg1,seg2,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   \link{detectroute} for more details.
 #' @param flowconnected If \code{TRUE}, only returns direction if the two input segments are flow-connected.  Defaults to \code{FALSE}.
 #' @return Direction: "up", "down", or "0" (character).  Returns NA if \code{flowconnected==TRUE} and the two segments are not flow-connected.
-#' @note Building routes from the river mouth to each river network segment may
+#' @note BBuilding routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -127,7 +127,7 @@ riverdirection <- function(startseg,endseg,startvert,endvert,rivers,flowconnecte
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return Upstream distance (numeric).  Returns NA if \code{flowconnected} has value \code{TRUE} and the two segments are not flow-connected.
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -205,7 +205,7 @@ upstream <- function(startseg,endseg,startvert,endvert,rivers,flowconnected=FALS
 #' @return A data frame of directions (character), with rows defined by unique
 #'   fish and columns defined by observation increment (1 to 2, 2 to 3, etc.)  See \link{riverdirection} for additional information.
 #' @seealso \link{riverdirection}
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -281,7 +281,7 @@ riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowcon
 #'   traveled from survey A to survey B.  Therefore, it is likely that only the
 #'   upper triangle of the matrix will be of interest.
 #' @seealso \link{riverdirection}
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -347,7 +347,7 @@ riverdirectionmatbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=T
 #' @return A matrix of directions (character) with rows and columns labeled by
 #'   corresponding values of \code{ID}.  See \link{riverdirection} for additional information.
 #' @seealso \link{riverdirection}
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -410,7 +410,7 @@ riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected
 #' @author Matt Tyers
 #' @note Returns either net upstream distance (net=TRUE) or total distance
 #'   (net=FALSE, default).  See \link{upstream}.
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @examples
 #' data(Gulk, fakefish)
@@ -489,7 +489,7 @@ upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected
 #'   traveled from survey A to survey B.  Therefore, it is likely that only the
 #'   upper triangle of the matrix will be of interest.
 #' @seealso \link{upstream}
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -548,7 +548,7 @@ upstreammatbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TRUE,fl
 #' @param stopiferror Optional parameter to pass to the distance or direction calculation.  Defaults to \code{TRUE}.
 #' @param algorithm Optional parameter to pass to the distance or direction calculation.  Defaults to \code{NULL}.
 #' @seealso \link{riverdistance}, \link{riverdirection}, \link{upstream}, \link{riverdistancematbysurvey}, \link{riverdirectionmatbysurvey}, \link{upstreammatbysurvey}, \link{plotmatbysurveylist}
-#' @note Building routes from the river mouth to each river network segment may 
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @return A list with each element corresponding to a unique fish.  Each list element is the output from either \link{riverdistancematbysurvey}, \link{riverdirectionmatbysurvey}, or \link{upstreammatbysurvey}.
 #' @author Matt Tyers
@@ -601,7 +601,7 @@ matbysurveylist <- function(unique,survey,seg,vert,rivers,indiv=NULL,method="ups
 #'   TRUE.
 #' @param ... Additional plotting arguments.
 #' @seealso \link{upstream}, \link{upstreammatbysurvey}
-#' @note Building routes from the river mouth to each river network segment may 
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @importFrom graphics rect
@@ -735,7 +735,7 @@ plotmatbysurveylist <- function(matbysurveylist,type="boxplot",showN=TRUE,...) {
 #' @return A matrix of upstream distances (numeric) with rows and columns
 #'   labeled by corresponding values of \code{ID}.  See \link{upstream} for additional information.
 #' @seealso \link{upstream}
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -784,7 +784,8 @@ upstreammat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected=FALSE
 #'   default), the function will automatically make a selection.  See
 #'   \link{detectroute} for more details.
 #' @return Distance (numeric)
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk)
@@ -845,7 +846,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   corresponding to a unique fish and each column corresponding to a unique
 #'   survey.  Values of \code{NA} indicate the individual not being located
 #'   during the survey in question.
-#' @note Building routes from the river mouth to each river network segment may 
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @seealso \link{plotseq}
 #' @author Matt Tyers
@@ -1015,7 +1016,8 @@ plotseq <- function(seqbysurvey,type="boxplot",xlab="",ylab="",main="",cex.axisX
 #'   \link{detectroute} for more details.
 #' @return A matrix of directions (character) with rows and columns labeled by corresponding values of \code{ID}.  See \link{riverdirection} for additional information.
 #' @seealso \link{riverdirection}
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk)
@@ -1101,7 +1103,8 @@ riverdirectiontofrom <- function(seg1,vert1,seg2,vert2,rivers,logical1=NULL,logi
 #'   \link{detectroute} for more details.
 #' @return A matrix of upstream distances (numeric) with rows and columns labeled by corresponding values of \code{ID}.  See \link{upstream} for additional information.
 #' @seealso \link{upstream}
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk)

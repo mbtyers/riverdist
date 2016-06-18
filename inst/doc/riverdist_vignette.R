@@ -102,8 +102,10 @@ Sys.time()- tstart
 
 # distance calculation after building routes
 tstart <- Sys.time()
-riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
-              algorithm="segroutes")
+riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams)
+
+# Note: it is not necessary to specify the algorithm here: the distance function
+# will automatically select the fastest algorithm unless otherwise specified.
 Sys.time()- tstart
 
 ## ----eval=FALSE----------------------------------------------------------

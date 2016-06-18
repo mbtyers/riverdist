@@ -18,7 +18,8 @@
 #'   \link{detectroute} for more details.
 #' @return A data frame of distances (numeric), with rows defined by unique fish and columns defined by observation increment (1 to 2, 2 to 3, etc.)
 #' @seealso \link{riverdistance}, \link{plotseq}
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
@@ -85,7 +86,7 @@ riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopifer
 #' @return A matrix of distances (numeric), with rows and columns defined by
 #'   survey.
 #' @seealso \link{riverdistance}
-#' @note Building routes from the river mouth to each river network segment may
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -147,7 +148,8 @@ riverdistancematbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TR
 #'   \link{detectroute} for more details.
 #' @return A matrix of distances (numeric) with rows and columns labeled by corresponding values of \code{ID}.
 #' @seealso \link{riverdistance}
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
@@ -196,7 +198,8 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 #'   \link{detectroute} for more details.
 #' @param main Plot title, if \code{map} is set to \code{TRUE}.  If unspecified, the unique ID will be used for the title.
 #' @param ... Additional plotting arguments, if \code{map} is set to \code{TRUE}.
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
@@ -214,14 +217,27 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
   ID <- sort(unique(unique))
   range <- rep(0,length(ID))
   
+  alllengths <- function(xy) {       #############
+    n <- dim(xy)[1]
+    if(n==1) dist <- 0
+    if(n==2) dist <- pdist(xy[1,],xy[2,])
+    if(n>2) dist <- sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))
+    return(dist)
+  }
+  subseglength <- list()
+  for(i in 1:length(rivers$lines)) {
+    subseglength[[i]] <- alllengths(rivers$lines[[i]])
+  }   ##################
+      
   for(i in 1:length(ID)) {
+    # i <- 7
     if(map==T) {
       if(is.null(main)) {
         main1 <- ID[i]
       } else{
         main1 <- main
       }
-      plot(x=rivers,main=main1,color=F,segmentnum=F)#,...=...)
+      plot(x=rivers,main=main1,color=F,segmentnum=F)#,...=...)  ###############
     }
     
     n.entries <- length(unique[unique==ID[i]])
@@ -240,10 +256,18 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
         }
       }
       seg.rep.max <- rep(0,length(rivers$lines))
+      seg.rep.max2 <- rep(0,length(rivers$lines))   ##############
+      
       
       # calculate amounts of each segment represented in each route
       for(j in 1:length(rivers$lines)) {   # segment j
+        linelength <- dim(rivers$lines[[j]])[1]
+        
+        # j <- 2
+        subsegused <- rep(F,length(subseglength[[j]]))   ####################
+        
         for(k in 1:length(routes)) {       # route k
+          # k<-8
           
           # if segment j shows up in route k
           if(length(routes[[k]][routes[[k]]==j])>0) {
@@ -252,52 +276,129 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
             if(length(routes[[k]])>2 & routes[[k]][1]!=j & routes[[k]][length(routes[[k]])]!=j) {
               seg.rep.max[j] <- rivers$lengths[j]
               if(map==T) lines(rivers$lines[[j]][,1],rivers$lines[[j]][,2],col=4,lwd=3)
+              subsegused[] <- T  ##################
             }
             
             #only
             if(length(routes[[k]])==1) {
-              if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=vert2[[k]][2],rivers,algorithm=algorithm) > seg.rep.max[j]) {
+              # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=vert2[[k]][2],rivers,algorithm=algorithm) > seg.rep.max[j]) {
                 seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=vert2[[k]][2],rivers=rivers,map=map,add=T,algorithm=algorithm)
-              }
+                # subsegused[(vert2[[k]][1]):(vert2[[k]][2]-1)] <- T   ####################
+                if(vert2[[k]][1] != vert2[[k]][2]) subsegused[min((linelength-1),min(vert2[[k]])):(max(vert2[[k]])-1)] <- T   #################### hack
+              # }
             }
             
             #beginning
             if(routes[[k]][1]==j & length(routes[[k]])>1) {
               # connected at beginning
               if(rivers$connections[routes[[k]][1],routes[[k]][[2]]]<=2) {
-                if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
+                # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
                   seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                }
+                  subsegused[1:(vert2[[k]][1]-1)] <- T   #####################
+                # }
               }
               # connected at end
-              if(rivers$connections[routes[[k]][1],routes[[k]][[2]]]>=3) {
+              if(any(rivers$connections[routes[[k]][1],routes[[k]][[2]]]==3:4)) {
                 linelength <- dim(rivers$lines[[j]])[1]
-                if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
+                # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
                   seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                  subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################
+                # }
+              }
+              #special braided case ---------------------------------------------------------------------------------------
+              if(length(routes[[k]]==2) & rivers$connections[j,routes[[k]][2]]==5) {
+                linelength <- dim(rivers$lines[[j]])[1]
+                d1 <- rivers$cumuldist[[j]][vert2[[k]][1]] + rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]]
+                d2 <- (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]]) + (rivers$lengths[routes[[k]][2]] - rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]])
+                if(d1 <= d2) {
+                  # if(rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[1:(vert2[[k]][1]-1)] <- T   #####################
+                  # } 
+                } else {
+                  # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################
+                  # }
                 }
               }
+              if(length(routes[[k]]==2) & rivers$connections[j,routes[[k]][2]]==6) {
+                linelength <- dim(rivers$lines[[j]])[1]
+                d1 <- rivers$cumuldist[[j]][vert2[[k]][1]] + (rivers$lengths[routes[[k]][2]] - rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]])
+                d2 <- (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]]) + rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]]
+                if(d1 <= d2) {
+                  # if(rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[1:(vert2[[k]][1]-1)] <- T   #####################
+                  # } 
+                } else {
+                  # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################
+                  # }
+                }
+              }   # -------------------------------------------------------------------------------------------------------
             }
             
             #end
             if(routes[[k]][length(routes[[k]])]==j & length(routes[[k]])>1) {
               # connected at beginning
               if(rivers$connections[routes[[k]][length(routes[[k]])],routes[[k]][[length(routes[[k]])-1]]]<=2) {
-                if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
+                # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
                   seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                }
+                  subsegused[1:(vert2[[k]][2]-1)] <- T   #####################
+                # }
               }
               # connected at end
-              if(rivers$connections[routes[[k]][length(routes[[k]])],routes[[k]][[length(routes[[k]])-1]]]>=3) {
+              if(any(rivers$connections[routes[[k]][length(routes[[k]])],routes[[k]][[length(routes[[k]])-1]]]==3:4)) {
                 linelength <- dim(rivers$lines[[j]])[1]
-                if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
+                # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
                   seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                  subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################
+                # }
+              }
+              
+              #special braided case ---------------------------------------------------------------------------------------
+              if(length(routes[[k]]==2) & rivers$connections[routes[[k]][1],routes[[k]][2]]==5) {
+                linelength <- dim(rivers$lines[[j]])[1]
+                d1 <- rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]] + rivers$cumuldist[[j]][vert2[[k]][2]]
+                d2 <- (rivers$lengths[routes[[k]][1]] - rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]]) + (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]])
+                if(d1 <= d2) {
+                  # if(rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[1:(vert2[[k]][2]-1)] <- T   #####################
+                  # } 
+                } else {
+                  # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################
+                  # }
                 }
               }
+              if(length(routes[[k]]==2) & rivers$connections[routes[[k]][1],routes[[k]][2]]==6) {
+                linelength <- dim(rivers$lines[[j]])[1]
+                d1 <- (rivers$lengths[routes[[k]][1]] - rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]]) + rivers$cumuldist[[j]][vert2[[k]][2]]
+                d2 <- rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]] + (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]])
+                if(d1 <= d2) {
+                  # if(rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[1:(vert2[[k]][2]-1)] <- T   #####################
+                  # } 
+                } else {
+                  # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
+                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################
+                  # }
+                }
+              }   # -------------------------------------------------------------------------------------------------------   
             }
-          }         
+          }
+          # print(c(k,length(subsegused)))
         }
+        seg.rep.max2[j] <- sum(subsegused*subseglength[[j]])   ################
       }
-      range[i] <- sum(seg.rep.max)
+      # range[i] <- sum(seg.rep.max)
+      range[i] <- sum(seg.rep.max2)
     }
     if(map) riverpoints(seg=seg[unique==ID[i]],vert=vert[unique==ID[i]],rivers=rivers,pch=15,col=4)
   }
@@ -331,7 +432,8 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
 #'   \link{detectroute} for more details.
 #' @return A matrix of distances (numeric) with rows and columns labeled by corresponding values of \code{ID}.
 #' @seealso \link{riverdistance}
-#' @note Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
+#'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk)

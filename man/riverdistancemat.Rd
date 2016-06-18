@@ -38,7 +38,8 @@ Returns a matrix of distances between every point and every
   other point of given river locations (segment and vertex), or of a subset.
 }
 \note{
-Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
+  greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{
 data(Gulk, fakefish)

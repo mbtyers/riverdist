@@ -26,6 +26,7 @@ removeduplicates <- function(rivers) {
   }
   trim <- unique(trim)
   rivers1 <- trimriver(trim=trim,rivers=rivers)
+  # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)
 }
 
@@ -125,7 +126,7 @@ cleanup <- function(rivers) {
     while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Dissolve? (y/n) ")
     if(yes=="Y" | yes=="y") {
       cat("Dissolving...",'\n')
-      rivers2 <- dissolve(rivers=rivers1)
+      suppressMessages(rivers2 <- dissolve(rivers=rivers1))
       cat("Simplified from",length(rivers1$lines),"to",length(rivers2$lines),"segments.",'\n')
       plot(rivers2)
     }
@@ -143,13 +144,13 @@ cleanup <- function(rivers) {
   cat('\n',length(problems),"microsegments identified.",'\n')
   if(length(problems)>0) {
     cat('\n',"Removing microsegments...",'\n')
-    rivers3 <- removemicrosegs(rivers2)  
+    suppressMessages(rivers3 <- removemicrosegs(rivers2) ) 
     plot(rivers3)
     yes<-0
     while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="(Re)dissolve? (y/n) ")
     if(yes=="Y" | yes=="y") {
       cat("Dissolving...",'\n')
-      rivers3a <- dissolve(rivers=rivers3)
+      suppressMessages(rivers3a <- dissolve(rivers=rivers3))
       plot(rivers3a)
       cat("Simplified from",length(rivers3$lines),"to",length(rivers3a$lines),"segments.",'\n')
       rivers3 <- rivers3a
@@ -212,7 +213,7 @@ cleanup <- function(rivers) {
   if(needed) {
     cat("Segments must be split for connectedness to be correct.",'\n')
     cat("Splitting segments...",'\n')
-    rivers4 <- splitsegments(rivers=rivers3)
+    suppressMessages(rivers4 <- splitsegments(rivers=rivers3))
     cat("Identified",(length(rivers4$lines)-length(rivers3$lines)),"new segment breaks.",'\n')
   }
   
@@ -233,7 +234,7 @@ cleanup <- function(rivers) {
   if(yes=="Y" | yes=="y") {
     mindist <- as.numeric(readline(prompt="Minimum distance to use: "))
     cat("Inserting vertices...",'\n')
-    rivers4 <- addverts(rivers4, mindist=mindist)
+    suppressMessages(rivers4 <- addverts(rivers4, mindist=mindist))
   }
   
   if(is.na(rivers4$mouth$mouth.seg) | is.na(rivers4$mouth$mouth.vert)) {
@@ -291,7 +292,7 @@ cleanup <- function(rivers) {
         whattodo <- readline(prompt="Please select - (r)emove unconnected segments or (c)onnect segments & check again (r/c) ")
       }
       if(whattodo=="r" | whattodo=="R") {
-        rivers5 <- trimriver(trim=takeout,rivers=rivers4)
+        suppressMessages(rivers5 <- trimriver(trim=takeout,rivers=rivers4))
         dealtwith<-T
         cat("No unconnected segments detected.",'\n')
       }
@@ -307,7 +308,7 @@ cleanup <- function(rivers) {
         if(any(howtodo==c("e","E"))) closestpt <- F
         if(closestpt) cat('\n',"Connecting and calculating new segment splits...",'\n')
         if(!closestpt) cat('\n',"Connecting...",'\n')
-        rivers4 <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4)
+        suppressMessages(rivers4 <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))
       }
     }
     if(is.null(takeout)) {
@@ -325,7 +326,7 @@ cleanup <- function(rivers) {
     if(yes=="Y" | yes=="y") {
       whichones <- readline("Enter segments to remove, separated by commas: ")
       whichones <- as.numeric(unlist(strsplit(whichones, ",")))
-      rivers5a <- trimriver(trim=whichones,rivers=rivers5)
+      suppressMessages(rivers5a <- trimriver(trim=whichones,rivers=rivers5))
       plot(rivers5a)
       accept<-0
       while(!any(accept==c("y","Y","n","N"))) accept <- readline(prompt="Accept changes? (y/n) ")
@@ -366,7 +367,7 @@ cleanup <- function(rivers) {
       if(yes=="Y" | yes=="y") {
         whichones <- readline("Enter segments to remove, separated by commas: ")
         whichones <- as.numeric(unlist(strsplit(whichones, ",")))
-        rivers6a <- trimriver(trim=whichones,rivers=rivers6)
+        suppressMessages(rivers6a <- trimriver(trim=whichones,rivers=rivers6))
         plot(rivers6a)
         accept<-0
         while(!any(accept==c("y","Y","n","N"))) accept <- readline(prompt="Accept changes? (y/n) ")  
@@ -398,6 +399,7 @@ cleanup <- function(rivers) {
   
   cat('\n',"Cleanup completed, returning a network with",length(rivers6$lines),"segments.",'\n')
   cat('\n',"Recommend saving output to a .Rdata or .rda file.",'\n')
+  cat('\n',"Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().",'\n')
   return(rivers6)
 }
 
@@ -476,8 +478,15 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
         if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
           rivers$connections[i,j] <- 4
         }
+        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][1,])<rivers$tolerance & pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {     ##########
+          rivers$connections[i,j] <- 5
+        }
+        if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][1,])<rivers$tolerance & pdist(rivers$lines[[i]][1,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
+          rivers$connections[i,j] <- 6
+        }    ##########
       }
     }
+    if(any(rivers$connections %in% 5:6)) rivers$braided <- TRUE
   }
   
   if(nearestvert) {
@@ -518,6 +527,7 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
   rivers <- addcumuldist(rivers)
   if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
   
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
 }
 
@@ -552,6 +562,7 @@ removemicrosegs <- function(rivers) {
     }
   }
   rivers <- trimriver(trim=problems,rivers=rivers)
+  # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
 }
 
@@ -626,5 +637,6 @@ addverts <- function(rivers,mindist=500) {
   rivers1 <- addcumuldist(rivers1)
   if(!is.null(rivers1$distlookup)) rivers1 <- buildlookup(rivers1)
   
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)
 }

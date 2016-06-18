@@ -47,7 +47,7 @@ Returns a matrix of upstream distance between every point and
   (see \link{setmouth}).
 }
 \note{
-Building routes from the river mouth to each river network segment may
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
   greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{

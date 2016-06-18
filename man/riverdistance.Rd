@@ -47,7 +47,9 @@ Calculates the total river network distance between two points
   on the river network, given in river locations (segment and vertex).
 }
 \note{
-Building routes from the river mouth to each river network segment may
+If a distance lookup table (\code{$distlookup}) is present in the river network object, accepting \code{NULL} will bypass route detection and return distance automatically, the fastest algorithm of all.  This is done automatically in \link{buildsegroutes}, but can be called directly using \link{buildlookup}.
+
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
   greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{

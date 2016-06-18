@@ -53,7 +53,7 @@ Returns a matrix of upstream travel distance between all observations of
   one unique fish.
 }
 \note{
-Building routes from the river mouth to each river network segment may
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
   greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{

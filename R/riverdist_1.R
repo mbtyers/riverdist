@@ -168,8 +168,15 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
       if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {     ##########
+        connections[i,j] <- 5
+      }
+      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+        connections[i,j] <- 6
+      }    ##########
     }
   }
+  if(any(connections %in% 5:6)) braided <- TRUE
   
   # making a vector of total segment lengths
   lengths <- rep(NA,length)
@@ -412,8 +419,8 @@ topologydots <- function(rivers,add=FALSE,...) {
   for(i in 1:dim(connections)[2]) {
     low <- 2
     high <- 2
-    if(length(connections[i,][connections[i,]==1 | connections[i,]==2])>0) low <- 3
-    if(length(connections[i,][connections[i,]==3 | connections[i,]==4])>0) high <- 3
+    if(length(connections[i,][connections[i,]==1 | connections[i,]==2 | connections[i,]==5 | connections[i,]==6])>0) low <- 3
+    if(length(connections[i,][connections[i,]==3 | connections[i,]==4 | connections[i,]==5 | connections[i,]==6])>0) high <- 3
     points(lines[[i]][1,1],lines[[i]][1,2],pch=16,col=low)
     points(lines[[i]][dim(lines[[i]])[1],1],
            lines[[i]][dim(lines[[i]])[1],2],pch=16,col=high)
@@ -572,6 +579,9 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   trimmed.rivers <- rivers
   trimmed.rivers$lines <- trimmed.rivers$lines[segs]
   trimmed.rivers$connections <- as.matrix(trimmed.rivers$connections[segs,segs])
+  if(!is.na(trimmed.rivers$braided)) {
+    if(trimmed.rivers$braided & !any(trimmed.rivers$connections %in% 5:6)) trimmed.rivers$braided <- NA
+  }
   trimmed.rivers$names <- rivers$names[segs]
   trimmed.rivers$lengths <- rivers$lengths[segs]
   if(length(segs)==0) stop("Error - resulting river network has no remaining line segments")
@@ -625,6 +635,7 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
     trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
   }
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(trimmed.rivers)
 }
 
@@ -749,6 +760,9 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
   rivers1 <- rivers
   rivers1$lines <- rivers1$lines[keep]
   rivers1$connections <- as.matrix(rivers1$connections[keep,keep])
+  if(!is.na(rivers1$braided)) {
+    if(rivers1$braided & !any(rivers1$connections %in% 5:6)) rivers1$braided <- NA
+  }
   rivers1$names <- rivers$names[keep]
   rivers1$lengths <- rivers$lengths[keep]
   if(keep[1]==0) stop("Error - resulting river network has no remaining line segments")
@@ -798,6 +812,7 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
   if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
     rivers1$sp@data <- rivers$sp@data[unique(rivers$lineID[keep,2]),]
   }
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)
 }
 
@@ -845,5 +860,6 @@ removeunconnected <- function(rivers) {
   if(!is.null(takeout)) takeout <- order[takeout]
   
   rivers2 <- trimriver(trim=takeout,rivers=rivers)
+  # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers2)
 }

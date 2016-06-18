@@ -187,8 +187,15 @@ sequenceverts <- function(rivers) {
       if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {     ##########
+        connections[i,j] <- 5
+      }
+      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+        connections[i,j] <- 6
+      }    ##########
     }
   }
+  if(any(connections %in% 5:6)) rivers$braided <- TRUE
   rivers$connections <- connections
   rivers$sequenced <- TRUE
   rivers <- addcumuldist(rivers)

@@ -309,14 +309,14 @@ River direction and upstream distance are also applied in functions `riverdirect
 
 <a name="Allowing different route-detection algorithms a possible time-saver"></a>
 
-Allowing different route-detection algorithms: a possible time-saver
+Allowing different route-detection algorithms: a definite time-saver
 -----------------------------------------------------
 
 Currently three algorithms are implemented to detect routes between river locations, with the functions automatically selecting the most appropriate unless another is specified.  If braiding presence is detected or unknown, Dijkstra's algorithm is used (`algorithm="Dijkstra"`) to return the shortest route, which is safe but slow.  If braiding is confirmed to be absent using `checkbraidedTF()`, the first complete route detected between locations is used, which can save considerable processing time.  
 
-Running `buildsegroutes()` calculates the routes to each network segment from a single point, defined as the river network mouth.  This allows route calculation to switch to an even simpler method, further reducing processing time.
+Running `buildsegroutes()` calculates the routes to each network segment from a single point, defined as the river network mouth.  This allows route calculation to switch to an even simpler method, further reducing processing time.  The `buildsegroutes()` function also includes an option to calculate a distance lookup table as well.  This may take a few seconds to run, but will reduce computation times even further - cutting the already-fast segment route algorithm by 50-80%.  Lookup tables can be calculated directly using `buildlookup()`, but will be extremely slow to calculate without running `buildsegroutes()` first.
 
-In the example below, distance is calculated between the two points in a very complex river network, using all three route detection algorithms, and calculating the time requirement for a single calculation.
+In the example below, distance is calculated between the two points in a complex river network, using all three route detection algorithms, and calculating the time requirement for a single calculation.
 
 ```{r}
 data(abstreams)
@@ -335,12 +335,14 @@ Sys.time()- tstart
 
 # distance calculation after building routes
 tstart <- Sys.time()
-riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
-              algorithm="segroutes")
+riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams)
+
+# Note: it is not necessary to specify the algorithm here: the distance function
+# will automatically select the fastest algorithm unless otherwise specified.
 Sys.time()- tstart
 ```
 
-In this case, building segment routes takes about as much time as calculating a single distance, a little less than a second.  Calculating a single distance after building segment routes takes about a hundredth of a second, thus dramatically saving time if multiple distances were to be computed, such as in a large matrix of distances, or multiple analyses.
+In this case, building segment routes and distance lookup tables takes about as much time as calculating a single distance, about a second.  Calculating a single distance afterwards takes about 80 microseconds using segment routes and about 25 microseconds using the lookup tables.  This dramatically saves time if multiple distances are to be computed, such as in a large matrix of distances, or multiple analyses.  Kernel density and K-function analysis is prohibitively slow otherwise.
 
 
 <a name="Beyond individuals summarizing or plotting at the dataset level"></a>

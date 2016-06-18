@@ -43,7 +43,7 @@ Returns a matrix of directions traveled by unique fish between
   specified (see \link{setmouth}).
 }
 \note{
-Building routes from the river mouth to each river network segment may
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
   greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{

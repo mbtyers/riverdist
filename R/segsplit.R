@@ -136,6 +136,12 @@ splitsegments <- function(rivers,tolerance=NULL) {
       if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {     ##########
+        connections[i,j] <- 5
+      }
+      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+        connections[i,j] <- 6
+      }    ##########
     }
   }
   
@@ -160,6 +166,7 @@ splitsegments <- function(rivers,tolerance=NULL) {
   
   # updating rivers object
   rivers$connections <- connections
+  if(any(connections %in% 5:6)) rivers$braided <- TRUE
   rivers$lines <- newlines
   rivers$lengths <- lengths
   rivers$names <- rep(NA,length(lines))
@@ -196,5 +203,6 @@ splitsegments <- function(rivers,tolerance=NULL) {
   rivers <- addcumuldist(rivers)
   if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
   
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
 }

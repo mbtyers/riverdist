@@ -27,7 +27,7 @@ Produces a matrix of plots (boxplots are default), with plot \code{[i,j]} giving
   \code{j}, for all individuals.
 }
 \note{
-Building routes from the river mouth to each river network segment may 
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
   greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{

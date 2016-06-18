@@ -31,7 +31,8 @@ Calculates distance from a river location (given as segment and
   be specified (see \link{setmouth}).
 }
 \note{
-Building routes from the river mouth to each river network segment may greatly reduce computation time (see \link{buildsegroutes}).
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
+  greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{
 data(Gulk)

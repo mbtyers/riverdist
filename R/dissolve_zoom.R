@@ -24,30 +24,30 @@ dissolve <- function(rivers) {
   }
   
   # calculating a new connectivity matrix to capture beginning-beginning/end-end and beginning-end/end-beginning connections (special braided case)
-  for(i in 1:length) {
-    for(j in 1:length) {
-      i.max <- dim(lines[[i]])[1]
-      j.max <- dim(lines[[j]])[1]
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 1
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 2
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 3
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 4
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 5
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 6
-      }
-    }
-  }
+  # for(i in 1:length) {
+  #   for(j in 1:length) {
+  #     i.max <- dim(lines[[i]])[1]
+  #     j.max <- dim(lines[[j]])[1]
+  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
+  #       connections[i,j] <- 1
+  #     }
+  #     if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 2
+  #     }
+  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
+  #       connections[i,j] <- 3
+  #     }
+  #     if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 4
+  #     }
+  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 5
+  #     }
+  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+  #       connections[i,j] <- 6
+  #     }
+  #   }
+  # }
   
   #internal functions
   n.top <- function(seg,connections) {
@@ -145,6 +145,12 @@ dissolve <- function(rivers) {
       if(pdist(newlines[[i]][i.max,],newlines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
+      if(pdist(newlines[[i]][1,],newlines[[j]][1,])<tolerance & pdist(newlines[[i]][i.max,],newlines[[j]][j.max,])<tolerance & i!=j) {     ##########
+        connections[i,j] <- 5
+      }
+      if(pdist(newlines[[i]][i.max,],newlines[[j]][1,])<tolerance & pdist(newlines[[i]][1,],newlines[[j]][j.max,])<tolerance & i!=j) {
+        connections[i,j] <- 6
+      }    ##########
     }
   }
   
@@ -186,6 +192,7 @@ dissolve <- function(rivers) {
     }
   }
   rivers1$connections <- connections
+  if(any(connections %in% 5:6)) rivers1$braided <- TRUE
   rivers1$lengths <- lengths
   
   Id <- 0
@@ -209,6 +216,7 @@ dissolve <- function(rivers) {
   rivers1 <- addcumuldist(rivers1)
   if(!is.null(rivers1$distlookup)) rivers1 <- buildlookup(rivers1)
   
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)
 }
 

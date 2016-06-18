@@ -40,7 +40,7 @@ Returns a list of matrices, each giving the river distance, direction, or upstre
   one unique fish.  This function is principally intended for producing an object to plot in \link{plotmatbysurveylist}.
 }
 \note{
-Building routes from the river mouth to each river network segment may 
+Building routes from the river mouth to each river network segment and/or distance lookup tables will
   greatly reduce computation time (see \link{buildsegroutes}).
 }
 \examples{

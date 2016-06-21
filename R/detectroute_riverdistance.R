@@ -160,7 +160,7 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
           minroutes[[neighbor]] <- route.tentative
         }
       }
-      if(is.null(minroutes[[current]][1])) {  # this is a hack
+      if(is.null(minroutes[[current]][1])) {  # this is a hack                 ########## here's the problem
         if(stopiferror) stop("No route detected.")
         found <- TRUE
         minroutes[[end]] <- NA
@@ -168,7 +168,12 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
       if(verbose) print(minroutes[[current]])
       visited[current] <- TRUE
       if(current==end) found <- TRUE
-      if(!found) current <- which(dists==min(dists[!visited]))[1]
+      if(!found) current <- which(dists==min(dists[!visited]))[1]                 ########## here's the problem
+      if(!any(connected[current,unique(unlist(minroutes))])) {   ########hacky solution
+        if(stopiferror) stop("No route detected.")
+        found <- TRUE
+        minroutes[[end]] <- NA
+      }   ########hacky solution
       if(all(visited)&!found) {
         if(stopiferror) stop("No route detected.")
         found <- TRUE

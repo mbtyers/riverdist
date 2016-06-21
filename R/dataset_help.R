@@ -205,6 +205,8 @@ NULL
 #'      \item A value of 2 in element \code{[i,j]} indicates that the beginning of segment \code{i} is connected to the end of segment \code{j}.
 #'      \item A value of 3 in element \code{[i,j]} indicates that the end of segment \code{i} is connected to the beginning of segment \code{j}.
 #'      \item A value of 4 in element \code{[i,j]} indicates that the end of segment \code{i} is connected to the end of segment \code{j}.
+#'      \item A value of 5 in element \code{[i,j]} indicates that segments \code{i} and \code{j} are connected at both beginning and end.
+#'      \item A value of 6 in element \code{[i,j]} indicates that the beginning of segment \code{i} is connected to the end of segment \code{j}, and the end of segment \code{i} is connected to the beginning of segment \code{j}.
 #'      \item A value of NA in element \code{[i,j]} indicates that segments \code{i} and \code{j} are not connected.}}
 #'    \item{\code{lengths}:}{Vector of class \code{"numeric"}.  Defined as the calculated total lengths of each river segment.}
 #'    \item{\code{names}:}{Vector of class \code{"character"}.  Defined as the names of each river segment.}

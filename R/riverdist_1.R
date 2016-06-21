@@ -96,10 +96,10 @@ addcumuldist <- function(rivers) {
 #' @export
 line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   sp <- suppressWarnings(rgdal::readOGR(dsn=path,layer=layer,verbose=F)) # reading the shapefile as an sp object
-  if(class(sp)!="SpatialLinesDataFrame") stop("Error - specified shapefile is not a linear feature.")
+  if(class(sp)!="SpatialLinesDataFrame") stop("Specified shapefile is not a linear feature.")
   proj4 <- strsplit(sp@proj4string@projargs,split=" ")
   projected <- sp::is.projected(sp)
-  if(is.null(reproject) & !projected) stop("Error - Distances can only be computed from a projected coordinate system.  Use reproject= to specify a Proj.4 projection to use.")
+  if(is.null(reproject) & !projected) stop("Distances can only be computed from a projected coordinate system.  Use reproject= to specify a Proj.4 projection to use.")
   
   if(!is.null(reproject)) {
     sp <- sp::spTransform(sp,sp::CRS(reproject))
@@ -209,6 +209,15 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   out <- list(sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
   names(out) <- out.names
   class(out) <- "rivernetwork"
+  
+  length1 <- length(out$lengths)
+  out <- removeduplicates(out)   ##########
+  length2 <- length(out$lengths)
+  if(length2<length1) cat('\n',"Removed",length2-length1,"duplicate segments.",'\n')
+  out <- removemicrosegs(out)    ##########
+  length3 <- length(out$lengths)
+  if(length3<length2) cat('\n',"Removed",length3-length2,"segments with lengths shorter than the connectivity tolerance.",'\n')
+  
   return(out)
 }
 

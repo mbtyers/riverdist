@@ -75,9 +75,9 @@ dissolve <- function(rivers) {
       runs[[run.i]] <- seg
       i <- 1
       nextone<-"bot"
-      #take the first one out of avail
+      #take the first one out of avail   <- this is it!!!!
       while(run.done==F) {
-        if(nextone=="top" & n.top(runs[[run.i]][[i]],connections)!=1) run.done<-T
+        if(nextone=="top" & n.top(runs[[run.i]][[i]],connections)!=1) run.done<-T    #here's where to take it out, i think
         if(nextone=="bot" & n.bot(runs[[run.i]][[i]],connections)!=1) run.done<-T
         if(nextone=="top" & n.top(runs[[run.i]][i],connections)==1) {
           i <- i+1

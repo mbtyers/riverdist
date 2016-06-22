@@ -278,7 +278,7 @@ cleanup <- function(rivers) {
     origin41 <-which(order==origin)
     
     for(i in 1:length(rivers41$lines)) {
-      if(is.na(detectroute(end=origin41,start=i,rivers=rivers41,stopiferror=FALSE,algorithm="sequential")[1])) {
+      if(is.na(detectroute(end=origin41,start=i,rivers=rivers41,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential
         takeout[k] <- i
         k <- k+1
       }

@@ -213,10 +213,10 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
   length1 <- length(out$lengths)
   out <- removeduplicates(out)   ##########
   length2 <- length(out$lengths)
-  if(length2<length1) cat('\n',"Removed",length2-length1,"duplicate segments.",'\n')
+  if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
   out <- removemicrosegs(out)    ##########
   length3 <- length(out$lengths)
-  if(length3<length2) cat('\n',"Removed",length3-length2,"segments with lengths shorter than the connectivity tolerance.",'\n')
+  if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
   
   return(out)
 }

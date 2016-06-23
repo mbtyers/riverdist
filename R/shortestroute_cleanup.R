@@ -17,7 +17,7 @@ removeduplicates <- function(rivers) {
   for(i in 1:length(rivers$lines)) {
     for(j in 1:length(rivers$lines)) {
       if(i!=j&length(rivers$lines[[i]])==length(rivers$lines[[j]])) {
-        if(all(rivers$lines[[i]]==rivers$lines[[j]])) {
+        if(all(rivers$lines[[i]]==rivers$lines[[j]]) | all(rivers$lines[[i]]==(rivers$lines[[j]][(dim(rivers$lines[[j]])[1]):1,]))) {
           trim[trim.i] <- max(c(i,j))
           trim.i <- trim.i+1
         }

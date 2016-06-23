@@ -94,15 +94,18 @@ addcumuldist <- function(rivers) {
 #' plot(Gulk_AKalbers)
 #' 
 #' @export
-line2network <- function(path=".",layer,tolerance=100,reproject=NULL) {
+line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyprojection=NULL) {
   sp <- suppressWarnings(rgdal::readOGR(dsn=path,layer=layer,verbose=F)) # reading the shapefile as an sp object
   if(class(sp)!="SpatialLinesDataFrame") stop("Specified shapefile is not a linear feature.")
+  if(is.na(sp@proj4string@projargs) & !is.null(supplyprojection)) sp@proj4string@projargs <- supplyprojection
+  if(is.na(sp@proj4string@projargs)) stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 (in double-quotes).  If so, it must also be reprojected using reproject=.")
   proj4 <- strsplit(sp@proj4string@projargs,split=" ")
   projected <- sp::is.projected(sp)
   if(is.null(reproject) & !projected) stop("Distances can only be computed from a projected coordinate system.  Use reproject= to specify a Proj.4 projection to use.")
   
   if(!is.null(reproject)) {
     sp <- sp::spTransform(sp,sp::CRS(reproject))
+    proj4 <- strsplit(sp@proj4string@projargs,split=" ")
   }
   
   units <- "unknown"

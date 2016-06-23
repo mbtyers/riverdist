@@ -65,6 +65,8 @@ Importing and displaying river network data
 
 In a typical workflow, a user will first import a projected polyline shapefile using `line2network()`.  This function reads the specified shapefile using the 'sp' and 'rgdal' packages, and adds the network connectivity, thus creating a river network object.  If an unprojected shapefile is detected, an error will be generated.  However, the `reproject=` argument allows the `line2network()` to re-project the shapefile before importing it as a river network.
 
+While 'riverdist' does provide tools for editing a river network that do not rely on GIS software, it is strongly recommended to simplify the river shapefile as much as possible before importing into R.  In particular, a spatial dissolve will likely be very helpful, if GIS software is available.  This will create a few long line segments instead of many, many short segments.
+
 ```{r,eval=FALSE}
 library(riverdist)
 MyRivernetwork <- line2network(path=".", layer="MyShapefile")

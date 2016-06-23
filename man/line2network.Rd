@@ -4,7 +4,8 @@
 \alias{line2network}
 \title{Create a River Network Object from a Shapefile}
 \usage{
-line2network(path = ".", layer, tolerance = 100, reproject = NULL)
+line2network(path = ".", layer, tolerance = 100, reproject = NULL,
+  supplyprojection = NULL)
 }
 \arguments{
 \item{path}{File path, default is the current working directory.}

@@ -121,9 +121,13 @@ dissolve <- function(rivers) {
       if(n.top(seg,connections) != 1) nextone<-"bot"    ########
       if(n.bot(seg,connections) != 1) nextone<-"top"    ########
       #take the first one out of avail   <- this is it!!!!
-      while(run.done==F) {
-        if(nextone=="top" & n.top(runs[[run.i]][[i]],connections)!=1) run.done<-T    #here's where to take it out, i think
+      while(!run.done) {
+        if(nextone=="top" & n.top(runs[[run.i]][[i]],connections)!=1) run.done<-T    
         if(nextone=="bot" & n.bot(runs[[run.i]][[i]],connections)!=1) run.done<-T
+        # if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {     none of this is done because i'm working on something else
+        #   if(nextone=="top" & runs[[run.i]][[i]]==rivers$mouth$mouth.seg) run.done<-T    
+        #   if(nextone=="bot" & n.bot(runs[[run.i]][[i]],connections)!=1) run.done<-T
+        # }
         if(nextone=="top" & n.top(runs[[run.i]][i],connections)==1) {
           i <- i+1
           runs[[run.i]][i] <- who.top(runs[[run.i]][i-1],connections)
@@ -268,6 +272,12 @@ dissolve <- function(rivers) {
   sp_line <- rep(1,length)
   sp_seg <- 1:length
   rivers1$lineID <- data.frame(rivID,sp_line,sp_seg)
+  
+  if(!is.na(rivers1$mouth$mouth.seg) & !is.na(rivers1$mouth$mouth.vert)) {   #########
+    if(rivers1$mouth$mouth.vert > 1 & rivers1$mouth$mouth.vert < dim(rivers1$lines[[rivers1$mouth$mouth.seg]])[1]) {
+      suppressMessages(rivers1 <- splitsegmentat(seg=rivers1$mouth$mouth.seg, vert=rivers1$mouth$mouth.vert, rivers=rivers1))
+    }
+  }     #########
   
   if(!is.null(rivers1$segroutes)) {
     # rivers1$segroutes <- NULL

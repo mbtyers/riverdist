@@ -206,3 +206,110 @@ splitsegments <- function(rivers,tolerance=NULL) {
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
 }
+
+
+#'@export
+splitsegmentat <- function(seg, vert, rivers) {
+  lines <- rivers$lines
+  lines[[length(lines)+1]] <- lines[[seg]][vert:dim(lines[[seg]])[1],]
+  lines[[seg]] <- lines[[seg]][1:vert,]
+  
+  rivers$lines <- lines
+  length <- length(lines)
+  
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
+  }
+  
+  # defining a connectivity matrix...
+  # connection type 1: beginning - beginning
+  # connection type 2: beginning - end
+  # connection type 3: end - beginning
+  # connection type 4: end - end
+  tolerance <- rivers$tolerance
+  connections <- matrix(NA,nrow=length,ncol=length)
+  for(i in 1:length) {
+    for(j in 1:length) {
+      i.max <- dim(lines[[i]])[1]
+      j.max <- dim(lines[[j]])[1]
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
+        connections[i,j] <- 1
+      }
+      if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+        connections[i,j] <- 2
+      }
+      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
+        connections[i,j] <- 3
+      }
+      if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
+        connections[i,j] <- 4
+      }
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {     ##########
+        connections[i,j] <- 5
+      }
+      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
+        connections[i,j] <- 6
+      }    ##########
+    }
+  }
+  
+  # making a vector of total segment lengths
+  lengths <- rep(NA,length)
+  for(i in 1:length) {
+    # sum<-0
+    # linelength <- dim(lines[[i]])[1]
+    # for(j in 1:(linelength-1)) {
+    #   sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
+    # }
+    # lengths[i]<-sum
+    lengths[i] <- pdisttot(lines[[i]])
+  }
+  
+  # cumuldist <- list()
+  # for(i in 1:length(lines)) {
+  #   xy <- lines[[i]]
+  #   n <- dim(xy)[1]
+  #   cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
+  # }
+  
+  # updating rivers object
+  rivers$connections <- connections
+  if(any(connections %in% 5:6)) rivers$braided <- TRUE
+  rivers$lengths <- lengths
+  rivers$names <- rep(NA,length(lines))
+  # rivers$cumuldist <- cumuldist
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    for(i in 1:length(rivers$lines)) {
+      for(j in 1:(dim(rivers$lines[[i]])[1])) {
+        if(all(mouthcoords==rivers$lines[[i]][j,])) {
+          rivers$mouth$mouth.seg <- i
+          rivers$mouth$mouth.vert <- j
+        }
+      }
+    }
+  }
+  
+  Id <- 0
+  rivers$sp@data <- data.frame(Id)
+  rivers$sp@lines <- list(rivers$sp@lines[[1]])
+  rivers$sp@lines[[1]]@Lines <- list(rivers$sp@lines[[1]]@Lines[[1]])
+  for(i in 1:length) {
+    rivers$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers$lines[[i]])
+  }
+  
+  rivID <- 1:length
+  sp_line <- rep(1,length)
+  sp_seg <- 1:length
+  rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
+  
+  if(!is.null(rivers$segroutes)) {
+    # rivers$segroutes <- NULL
+    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
+    rivers <- buildsegroutes(rivers,lookup=F)
+  }
+  rivers <- addcumuldist(rivers)
+  if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
+  
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
+  return(rivers)
+}

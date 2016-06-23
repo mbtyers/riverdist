@@ -73,6 +73,7 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
   
   if(algorithm=="segroutes") {
     segroutes <- rivers$segroutes
+    connections <- rivers$connections
     if(any(segroutes[[start]]==end)) {
       route <- segroutes[[start]][which(segroutes[[start]]==start):which(segroutes[[start]]==end)]
     }
@@ -101,6 +102,9 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
       # part2 <- segroutes[[end]][ijunct:which(segroutes[[end]]==end)]
       # route <- c(part1,part2)
       route <- c(segroutes[[start]][which(segroutes[[start]]==start):ijunct], segroutes[[end]][ijunct:which(segroutes[[end]]==end)])
+      if(is.na(connections[segroutes[[start]][ijunct],segroutes[[end]][ijunct]])) {
+        route <- c(segroutes[[start]][which(segroutes[[start]]==start):ijunct], segroutes[[start]][1], segroutes[[end]][ijunct:which(segroutes[[end]]==end)])
+      }
     }
     return(route)
   }

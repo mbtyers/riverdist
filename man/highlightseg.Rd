@@ -4,7 +4,8 @@
 \alias{highlightseg}
 \title{Highlight Segments}
 \usage{
-highlightseg(seg, rivers, cex = 0.8, lwd = 3, add = FALSE, ...)
+highlightseg(seg, rivers, cex = 0.8, lwd = 3, add = FALSE,
+  color = FALSE, ...)
 }
 \arguments{
 \item{seg}{A vector of segments to highlight}
@@ -16,6 +17,8 @@ highlightseg(seg, rivers, cex = 0.8, lwd = 3, add = FALSE, ...)
 \item{lwd}{The line width to use for highlighted segments}
 
 \item{add}{Whether to add the highlighted segments to an existing plot (\code{TRUE}) or call a new plot (\code{FALSE}).  Defaults to \code{FALSE}.}
+
+\item{color}{Whether to display segment labels as the same color as the segments.  Defaults to \code{FALSE}.}
 
 \item{...}{Additional plotting arguments (see \link[graphics]{par})}
 }

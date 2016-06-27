@@ -382,6 +382,7 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
 #' @param cex The character expansion factor to use for segment labels
 #' @param lwd The line width to use for highlighted segments
 #' @param add Whether to add the highlighted segments to an existing plot (\code{TRUE}) or call a new plot (\code{FALSE}).  Defaults to \code{FALSE}.
+#' @param color Whether to display segment labels as the same color as the segments.  Defaults to \code{FALSE}.
 #' @param ... Additional plotting arguments (see \link[graphics]{par})
 #' @author Matt Tyers
 #' @examples
@@ -393,7 +394,7 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
 #' @importFrom graphics par
 #' @importFrom graphics text
 #' @export
-highlightseg <- function(seg,rivers,cex=0.8,lwd=3,add=FALSE,...) {
+highlightseg <- function(seg,rivers,cex=0.8,lwd=3,add=FALSE,color=FALSE,...) {
   length<-length(rivers$lines)
   if(!add) plot(rivers,color=FALSE,segmentnum=FALSE,...=...)
   lines<-rivers$lines
@@ -406,7 +407,7 @@ highlightseg <- function(seg,rivers,cex=0.8,lwd=3,add=FALSE,...) {
     if(length(xplot)>0) midptx[j] <- mean(xplot)
     if(length(yplot)>0) midpty[j] <- mean(yplot)
     if(length(xplot)==0 | length(yplot)==0) midptx[j] <- midpty[j] <-NA
-    text(midptx[j],midpty[j],j,cex=cex)
+    text(midptx[j],midpty[j],j,cex=cex,col=ifelse(color,rgb((sin(j)+1)/2.3,(cos(7*j)+1)/2.3,(sin(3*(length-j))+1)/2.3),1))
   }
 }
 
@@ -878,6 +879,6 @@ removeunconnected <- function(rivers) {
   if(!is.null(takeout)) takeout <- order[takeout]
   
   suppressMessages(rivers2 <- trimriver(trim=takeout,rivers=rivers))
-  # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers2)
 }

@@ -26,7 +26,7 @@ removeduplicates <- function(rivers) {
   }
   trim <- unique(trim)
   suppressMessages(rivers1 <- trimriver(trim=trim,rivers=rivers))
-  # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)
 }
 
@@ -315,6 +315,7 @@ cleanup <- function(rivers) {
         ymin <- min(tozoomto[,2],na.rm=T)
         ymax <- max(tozoomto[,2],na.rm=T)
         plot(rivers4a,xlim=c(xmin,xmax),ylim=c(ymin,ymax))
+        topologydots(rivers=rivers4a,add=TRUE)
         whatnow <- 0
         while(!any(whatnow==c("y","Y","n","N"))) {
           whatnow <- readline(prompt="Accept changes? (y/n) ")
@@ -366,15 +367,21 @@ cleanup <- function(rivers) {
   }
   
   cat('\n',"Checking for braiding...",'\n')
-  rivers5<-checkbraidedTF(rivers5)
+  routes<-checkbraidedTF(rivers5,toreturn="routes")
+  rivers5$braided <- !is.null(routes)
   braided <- rivers5$braided
   rivers6<-rivers5
   if(braided) {
     cat("Braiding detected within river network.",'\n')
     yes <- "Y"
     while(yes=="Y" | yes=="y") {
-      yes<-0
-      while(!any(yes==c("y","Y","n","N"))) yes<-readline(prompt="Remove any additional segments (y/n) ")  
+      yes<-0 
+      if(braided) {
+        routestoplot <- c(routes$route1[!routes$route1 %in% routes$route2], routes$route2[!routes$route2 %in% routes$route1])
+        zoomtoseg(seg=routestoplot,rivers=rivers6,segmentnum=F)
+        highlightseg(seg=routestoplot,add=T,rivers=rivers6,color=T)
+      }
+      while(!any(yes==c("y","Y","n","N"))) yes<-readline(prompt="Remove any additional segments (y/n) ") 
       if(yes=="Y" | yes=="y") {
         whichones <- readline("Enter segments to remove, separated by commas: ")
         whichones <- as.numeric(unlist(strsplit(whichones, ",")))
@@ -384,7 +391,7 @@ cleanup <- function(rivers) {
         while(!any(accept==c("y","Y","n","N"))) accept <- readline(prompt="Accept changes? (y/n) ")  
         if(accept=="Y" | accept=="y") rivers6 <- rivers6a
         if(accept!="Y" & accept!="y") plot(rivers6)
-        if(is.na(rivers5$mouth$mouth.seg)) {
+        if(is.na(rivers6$mouth$mouth.seg)) {
           mouthseg <- readline(prompt="Please identify new segment number of river mouth ")
           showends(seg=as.numeric(mouthseg),rivers=rivers6)
           mouthvert <- readline(prompt="Please identify new vertex number of river mouth ")
@@ -394,7 +401,8 @@ cleanup <- function(rivers) {
       checkagain<-0
       while(!any(checkagain==c("y","Y","n","N"))) checkagain<-readline(prompt="Re-check for braiding? (y/n) ")
       if(checkagain=="Y" | checkagain=="y") {
-        rivers6 <- checkbraidedTF(rivers6)
+        routes<-checkbraidedTF(rivers6,toreturn="routes")
+        rivers6$braided <- !is.null(routes)
         braided <- rivers6$braided
         if(braided) cat("Braiding still detected.",'\n')
         if(!braided) cat("Braiding no longer detected.",'\n')
@@ -573,7 +581,7 @@ removemicrosegs <- function(rivers) {
     }
   }
   if(length(problems)>0) suppressMessages(rivers <- trimriver(trim=problems,rivers=rivers))
-  # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
 }
 

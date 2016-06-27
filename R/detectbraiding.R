@@ -80,7 +80,7 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
 #' @description Detects braiding (multiple flow channels between two locations)
 #'   within a river network object, and returns a logical value for specifying braiding within a river network object.
 #' @param rivers The river network object to check.
-#' @param toreturn Specifying \code{toreturn="rivers"} (the default) will return a river network object with a value of \code{TRUE} or \code{FALSE} assigned to the \code{$braided} element of the river network object.  Specifying \code{toreturn="logical"} will just return \code{TRUE} if braiding is detected or \code{FALSE} if no braiding is detected.
+#' @param toreturn Specifying \code{toreturn="rivers"} (the default) will return a river network object with a value of \code{TRUE} or \code{FALSE} assigned to the \code{$braided} element of the river network object.  Specifying \code{toreturn="logical"} will just return \code{TRUE} if braiding is detected or \code{FALSE} if no braiding is detected.  Specifying \code{toreturn="routes"} will return the first two differing routes detected, which may be useful in identifying where the problem lies.
 #' @author Matt Tyers
 #' @note This function is called within \link{cleanup}, which is recommended in most cases.
 #' @examples
@@ -92,12 +92,13 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
 #' KilleyW <- setmouth(seg=1, vert=288, rivers=KilleyW)
 #' plot(x=KilleyW)
 #' checkbraidedTF(rivers=KilleyW, toreturn="logical")
+#' checkbraidedTF(rivers=KilleyW, toreturn="routes")
 #' 
 #' KilleyW.1 <- checkbraidedTF(rivers=KilleyW, toreturn="rivers")
 #' str(KilleyW.1)
 #' @export
 checkbraidedTF <- function(rivers,toreturn="rivers") {
-  if(toreturn != "rivers" & toreturn != "logical") stop("Invalid specification of argument 'toreturn'.  See help for more details.")
+  if(toreturn != "rivers" & toreturn != "logical" & toreturn != "routes") stop("Invalid specification of argument 'toreturn'.  See help for more details.")
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   connections <- rivers$connections
   length <- length(rivers$lines)
@@ -178,6 +179,9 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
   rivers$braided <- braiding
   if(toreturn=="logical") return(braiding)
   if(toreturn=="rivers") return(rivers)
+  if(toreturn=="routes") {
+    if(braiding) return(list(route1=route1, route2=route2))
+  }
 }
 
 #' Detect Multiple Routes

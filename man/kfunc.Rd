@@ -7,7 +7,7 @@
 kfunc(seg, vert, survey = NULL, rivers, lwd = 2, envelope = TRUE,
   envreps = 1000, envcol = "grey80", envborder = NA, maxdist = NULL,
   xlab = "Distance", ylab = "\% within", showN = TRUE,
-  whichplots = NULL, ...)
+  whichplots = NULL, returnoutput = FALSE, ...)
 }
 \arguments{
 \item{seg}{A vector of river locations (segment)}
@@ -50,6 +50,8 @@ produced.  For example, specifying \code{whichplot=c(2,3,4)} will result in
 only the second, third, and fourth plots of the sequence being produced. 
 Accepting the default (\code{NULL}) will result in all plots being 
 produced.}
+
+\item{returnoutput}{Whether to return output instead of producing a plot.  Defaults to \code{FALSE}.}
 
 \item{...}{Additional plotting parameters.}
 }

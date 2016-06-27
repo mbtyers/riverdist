@@ -11,9 +11,9 @@
 #'   \code{detectroute()} will return \code{NA}.  Defaults to \code{TRUE}.
 #' @param algorithm Which route detection algorithm to use.  If set to \code{NULL} (the default), the function will automatically make a selection.  Choices are:
 #' \itemize{
-#' \item Setting \code{algorithm="Dijkstra"} may be slow, but the shortest route will be detected in the event of braiding.  If braiding is present or unknown, this will be the algorithm automatically chosen.
-#' \item Setting \code{algorithm="sequential"} will be much faster, but may give inaccurate results in the event of braiding.  This algorithm returns the first complete route detected, which may not be the shortest.  This is the algorithm automatically chosen if the network is known not to be braided, but lacks segment routes.
-#' \item Setting \code{algorithm="segroutes"} will be the fastest of all, but will only return results in a non-braided network.  This will be the algorithm automatically selected if segment routes are present.}
+#' \item Setting \code{algorithm="sequential"} will be quite slow, and may give inaccurate results in the event of braiding.  This algorithm returns the first complete route detected, which may not be the shortest.  This algorithm is not recommended in almost all cases, but is retained as an option for certain checks.  It will not be used unless specified.
+#' \item Setting \code{algorithm="Dijkstra"} will be much faster, and will return the shortest route in the event of braiding.  If braiding is present or unknown, this will be the algorithm automatically chosen.
+#' \item Setting \code{algorithm="segroutes"} will be the fastest of all, but will only return results in a non-braided network.  This will be the algorithm automatically selected if segment routes are present - see \link{buildsegroutes}.}
 #' @return A vector of segment numbers corresponding to the ordered route.
 #' @author Matt Tyers
 #' @examples
@@ -22,14 +22,14 @@
 #' 
 #' detectroute(start=6, end=14, rivers=Gulk)
 #' 
-#' data(abstreams)
 #' tstart <- Sys.time()
-#' detectroute(start=120, end=111, rivers=abstreams, algorithm="Dijkstra")
+#' detectroute(start=120, end=111, rivers=abstreams, algorithm="sequential")
 #' tend <- Sys.time()
 #' tend - tstart
 #' 
+#' data(abstreams)
 #' tstart <- Sys.time()
-#' detectroute(start=120, end=111, rivers=abstreams, algorithm="sequential")
+#' detectroute(start=120, end=111, rivers=abstreams, algorithm="Dijkstra")
 #' tend <- Sys.time()
 #' tend - tstart
 #' 
@@ -45,23 +45,29 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
   
   if(start==end) return(start)
   
+  # if(is.null(algorithm)) {
+  #   if(length(rivers$segroutes)>0) algorithm <- "segroutes"
+  #   if(!is.na(rivers$braided)) {
+  #     if(rivers$braided) algorithm <- "Dijkstra"
+  #   }
+  #   if(is.na(rivers$braided)) {
+  #     algorithm <- "Dijkstra"
+  #   }
+  #   if(is.null(algorithm)) algorithm <- "sequential"
+  # }
+  # if(algorithm=="segroutes" & is.null(rivers$segroutes)) { #(length(rivers$segroutes)==0)) {
+  #   if(!is.na(rivers$braided)) {
+  #     algorithm <- ifelse(rivers$braided,"Dijkstra","sequential")
+  #   }
+  #   if(is.na(rivers$braided)) {
+  #     algorithm <- "Dijkstra"
+  #   }
+  # }
   if(is.null(algorithm)) {
-    if(length(rivers$segroutes)>0) algorithm <- "segroutes"
-    if(!is.na(rivers$braided)) {
-      if(rivers$braided) algorithm <- "Dijkstra"
-    }
-    if(is.na(rivers$braided)) {
-      algorithm <- "Dijkstra"
-    }
-    if(is.null(algorithm)) algorithm <- "sequential"
+    algorithm <- ifelse(is.null(rivers$segroutes), "Dijkstra", "segroutes")
   }
   if(algorithm=="segroutes" & is.null(rivers$segroutes)) { #(length(rivers$segroutes)==0)) {
-    if(!is.na(rivers$braided)) {
-      algorithm <- ifelse(rivers$braided,"Dijkstra","sequential")
-    }
-    if(is.na(rivers$braided)) {
-      algorithm <- "Dijkstra"
-    }
+    algorithm <- "Dijkstra"
   }
   
   if(!any(algorithm==c("sequential","Dijkstra","segroutes"))) stop("Invalid algorithm specified.")
@@ -334,14 +340,12 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
 #' # before
 #' tstart <- Sys.time()
 #' detectroute(start=120, end=111, rivers=abstreams1)
-#' tend <- Sys.time()
-#' tend - tstart
+#' Sys.time() - tstart
 #' 
 #' # after
 #' tstart <- Sys.time()
 #' detectroute(start=120, end=111, rivers=abstreams)
-#' tend <- Sys.time()
-#' tend - tstart
+#' Sys.time() - tstart
 #' @importFrom graphics plot
 #' @export
 buildsegroutes <- function(rivers,lookup=NULL,verbose=FALSE) {
@@ -579,28 +583,34 @@ buildsegroutes <- function(rivers,lookup=NULL,verbose=FALSE) {
 #' riverdistance(startvert=100, endvert=200, path=c(6,3,4,10,11,14), rivers=Gulk)
 #' riverdistance(startseg=6, endseg=14, startvert=100, endvert=200, rivers=Gulk, map=TRUE)
 #'       
-#' # speed comparison: before and after building routes for each segment...
+#' # speed comparison: 
+#' 
 #' data(abstreams)
-#' plot(x=abstreams)
-#' abstreams1 <- abstreams
-#' abstreams1$segroutes <- NULL #taking out the $segroutes component
 #' 
-#' # before
 #' tstart <- Sys.time()
-#' riverdistance(startseg=120, endseg=111, startvert=20, endvert=20, rivers=abstreams1)
-#' tend <- Sys.time()
-#' tend - tstart
+#' riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
+#'               algorithm="sequential")
+#' Sys.time()- tstart
 #' 
-#' # after
 #' tstart <- Sys.time()
-#' riverdistance(startseg=120, endseg=111 ,startvert=20, endvert=20, rivers=abstreams)
-#' tend <- Sys.time()
-#' tend - tstart
+#' riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
+#'               algorithm="Dijkstra")
+#' Sys.time()- tstart
+#' 
+#' tstart <- Sys.time()
+#' riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams)
+#' 
+#' # Note: it is not necessary to specify the algorithm here: the distance function
+#' # will automatically select the fastest algorithm unless otherwise specified.
+#' Sys.time()- tstart
 #' 
 #' @export
 riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,path=NULL,map=FALSE,add=FALSE,stopiferror=TRUE,algorithm=NULL) {
   # if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  
+  if(is.null(rivers$cumuldist)) {
+    rivers <- addcumuldist(rivers)
+    warning("River network does not have cumulative distances - recommend adding them with addcumuldist()")
+  }
   if(!is.null(rivers$distlookup) & !map & is.null(algorithm)) {
     cumuldist <- rivers$cumuldist
     lengths <- rivers$lengths
@@ -922,7 +932,7 @@ riverdistance <- function(startseg=NULL,endseg=NULL,startvert,endvert,rivers,pat
 #'   lookup tables by default if there are fewer than 400 segments in the river
 #'   network.
 #' @note This function can still be called in the presence of a braided network, but all resulting distances used in subsequent analyses will be the shortest route.
-#' @note If segment routes (\code{$segroutes}) are not present, this function will take a very long time to run.
+#' @note If segment routes (\code{$segroutes}) are not present, this function may take a very long time to run.
 #' @examples
 #' data(abstreams)
 #' 

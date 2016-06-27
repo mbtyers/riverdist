@@ -208,6 +208,21 @@ splitsegments <- function(rivers,tolerance=NULL) {
 }
 
 
+#'Split a Segment at a Specified Vertex
+#'@description Splits a segment at a specified vertex, creating two new segments.
+#'@param seg The segment to split
+#'@param vert The vertex to split it at
+#'@param rivers The river network object to use
+#'@return A new, updated river network object
+#'@seealso \link{line2network}
+#'@author Matt Tyers
+#'@examples
+#' data(Gulk)
+#' plot(x=Gulk)
+#' 
+#' Gulk2 <- splitsegmentat(seg=1, vert=400, rivers=Gulk)
+#' plot(x=Gulk2)
+#' @importFrom methods new
 #'@export
 splitsegmentat <- function(seg, vert, rivers) {
   lines <- rivers$lines

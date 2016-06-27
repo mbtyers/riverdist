@@ -58,23 +58,26 @@ riverdistance(startseg=6, endseg=14, startvert=100, endvert=200, rivers=Gulk)
 riverdistance(startvert=100, endvert=200, path=c(6,3,4,10,11,14), rivers=Gulk)
 riverdistance(startseg=6, endseg=14, startvert=100, endvert=200, rivers=Gulk, map=TRUE)
       
-# speed comparison: before and after building routes for each segment...
+# speed comparison: 
+
 data(abstreams)
-plot(x=abstreams)
-abstreams1 <- abstreams
-abstreams1$segroutes <- NULL #taking out the $segroutes component
 
-# before
 tstart <- Sys.time()
-riverdistance(startseg=120, endseg=111, startvert=20, endvert=20, rivers=abstreams1)
-tend <- Sys.time()
-tend - tstart
+riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
+              algorithm="sequential")
+Sys.time()- tstart
 
-# after
 tstart <- Sys.time()
-riverdistance(startseg=120, endseg=111 ,startvert=20, endvert=20, rivers=abstreams)
-tend <- Sys.time()
-tend - tstart
+riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
+              algorithm="Dijkstra")
+Sys.time()- tstart
+
+tstart <- Sys.time()
+riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams)
+
+# Note: it is not necessary to specify the algorithm here: the distance function
+# will automatically select the fastest algorithm unless otherwise specified.
+Sys.time()- tstart
 
 }
 \author{

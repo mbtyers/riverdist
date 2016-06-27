@@ -23,9 +23,9 @@ found.  If this is set to \code{FALSE} and a route cannot be found,
 
 \item{algorithm}{Which route detection algorithm to use.  If set to \code{NULL} (the default), the function will automatically make a selection.  Choices are:
 \itemize{
-\item Setting \code{algorithm="Dijkstra"} may be slow, but the shortest route will be detected in the event of braiding.  If braiding is present or unknown, this will be the algorithm automatically chosen.
-\item Setting \code{algorithm="sequential"} will be much faster, but may give inaccurate results in the event of braiding.  This algorithm returns the first complete route detected, which may not be the shortest.  This is the algorithm automatically chosen if the network is known not to be braided, but lacks segment routes.
-\item Setting \code{algorithm="segroutes"} will be the fastest of all, but will only return results in a non-braided network.  This will be the algorithm automatically selected if segment routes are present.}}
+\item Setting \code{algorithm="sequential"} will be quite slow, and may give inaccurate results in the event of braiding.  This algorithm returns the first complete route detected, which may not be the shortest.  This algorithm is not recommended in almost all cases, but is retained as an option for certain checks.  It will not be used unless specified.
+\item Setting \code{algorithm="Dijkstra"} will be much faster, and will return the shortest route in the event of braiding.  If braiding is present or unknown, this will be the algorithm automatically chosen.
+\item Setting \code{algorithm="segroutes"} will be the fastest of all, but will only return results in a non-braided network.  This will be the algorithm automatically selected if segment routes are present - see \link{buildsegroutes}.}}
 }
 \value{
 A vector of segment numbers corresponding to the ordered route.
@@ -40,14 +40,14 @@ plot(x=Gulk, cex=1)
 
 detectroute(start=6, end=14, rivers=Gulk)
 
-data(abstreams)
 tstart <- Sys.time()
-detectroute(start=120, end=111, rivers=abstreams, algorithm="Dijkstra")
+detectroute(start=120, end=111, rivers=abstreams, algorithm="sequential")
 tend <- Sys.time()
 tend - tstart
 
+data(abstreams)
 tstart <- Sys.time()
-detectroute(start=120, end=111, rivers=abstreams, algorithm="sequential")
+detectroute(start=120, end=111, rivers=abstreams, algorithm="Dijkstra")
 tend <- Sys.time()
 tend - tstart
 

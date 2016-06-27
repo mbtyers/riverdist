@@ -88,19 +88,16 @@ upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowcon
 ## ------------------------------------------------------------------------
 data(abstreams)
 
-# distance calculation before defining braiding or building routes
-tstart <- Sys.time()
-riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
-              algorithm="Dijkstra")
-Sys.time()- tstart
-
-# distance calculation before building routes
 tstart <- Sys.time()
 riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
               algorithm="sequential")
 Sys.time()- tstart
 
-# distance calculation after building routes
+tstart <- Sys.time()
+riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams, 
+              algorithm="Dijkstra")
+Sys.time()- tstart
+
 tstart <- Sys.time()
 riverdistance(startseg=120, startvert=10, endseg=131, endvert=10, rivers=abstreams)
 
@@ -173,7 +170,7 @@ plotmatbysurveylist(matbysurveylist)
 #  data(abstreams0)  # a messy river network
 #  abstreams_fixed <- cleanup(abstreams0)  # fixing many problems
 
-## ----fig.width=7.5,fig.height=4, warning=FALSE---------------------------
+## ----fig.width=7.5,fig.height=4, warning=FALSE, message=FALSE------------
 Gulk_trim1 <- trimriver(trim=c(10,11,12,13,14), rivers=Gulk)
 Gulk_trim2 <- trimriver(trimto=c(10,11,12,13,14), rivers=Gulk)
 
@@ -182,7 +179,7 @@ plot(x=Gulk, main="original")
 plot(x=Gulk_trim1, main="trim=c(10,11,12,13,14)")
 plot(x=Gulk_trim2, main="trimto=c(10,11,12,13,14)")
 
-## ----fig.width=5,fig.height=5--------------------------------------------
+## ----fig.width=5,fig.height=5, message=FALSE-----------------------------
 data(Kenai3)
 x <- c(174185, 172304, 173803, 176013)
 y <- c(1173471, 1173345, 1163638, 1164801)
@@ -204,7 +201,7 @@ points(x, y, pch=15, col=4)
 plot(x=Kenai3.buf3, main="buffer, dist=5000")
 points(x, y, pch=15, col=4)
 
-## ----fig.width=7.5,fig.height=5------------------------------------------
+## ----fig.width=7.5,fig.height=5, message=FALSE---------------------------
 data(Koyukuk2)
 Koy_subset <- trimriver(trimto=c(30,28,29,3,19,27,4),rivers=Koyukuk2)
 Koy_subset <- setmouth(seg=1,vert=427,rivers=Koy_subset)
@@ -215,7 +212,7 @@ par(mfrow=c(1,2))
 plot(x=Koy_subset, main="original")
 plot(x=Koy_subset_trim, main="unconnected segments removed")
 
-## ----fig.width=7.5,fig.height=5, warning=FALSE---------------------------
+## ----fig.width=7.5,fig.height=5, warning=FALSE, message=FALSE------------
 data(Kenai2)
 Kenai2_sub <- trimriver(trimto=c(26,157,141,69,3,160,2,35,102,18,64,86,49,103,61
                                  ,43,183,72,47,176), rivers=Kenai2)
@@ -226,7 +223,7 @@ par(mfrow=c(1,2))
 plot(x=Kenai2_sub, main="original")
 plot(x=Kenai2_sub_dissolve, main="dissolved")
 
-## ----fig.width=7.5,fig.height=4.5, warning=FALSE-------------------------
+## ----fig.width=7.5,fig.height=4.5, warning=FALSE, message=FALSE----------
 data(Koyukuk1)
 
 Koyukuk1.split <- splitsegments(rivers=Koyukuk1)
@@ -235,7 +232,7 @@ par(mfrow=c(1,2))
 topologydots(rivers=Koyukuk1, main="original")
 topologydots(rivers=Koyukuk1.split, main="split")
 
-## ----fig.width=7.5,fig.height=4, warning=FALSE---------------------------
+## ----fig.width=7.5,fig.height=4, warning=FALSE, message=FALSE------------
 data(Koyukuk0)
 
 Koyukuk0.1 <- connectsegs(connect=21, connectto=20, rivers=Koyukuk0)
@@ -248,19 +245,19 @@ plot(Koyukuk0.1,ylim=c(1930500,1931500), xlim=c(194900,195100), main="connected"
 topologydots(Koyukuk0.1, add=TRUE)
 
 ## ----eval=FALSE----------------------------------------------------------
-#  data(abstreams1)
-#  abstreams2 <- removemicrosegs(abstreams1)
+#  data(abstreams0)
+#  abstreams2 <- removemicrosegs(abstreams0)
 
-## ----fig.width=7.5,fig.height=4, warning=FALSE---------------------------
+## ----fig.width=7.5,fig.height=4, warning=FALSE, message=FALSE------------
 data(Kenai3)
 Kenai3split <- addverts(Kenai3, mindist=200)
 
 par(mfrow=c(1,2))
-zoomtoseg(seg=c(73,70,71), rivers=Kenai3, main="segment 71 vertices")
-points(Kenai3$lines[[71]]) 
+zoomtoseg(seg=c(47,74,78), rivers=Kenai3, main="segment 71 vertices")
+points(Kenai3$lines[[74]]) 
 
-zoomtoseg(seg=c(73,70,71), rivers=Kenai3split, main="adding points every 200m")
-points(Kenai3split$lines[[71]])  
+zoomtoseg(seg=c(47,74,78), rivers=Kenai3split, main="adding points every 200m")
+points(Kenai3split$lines[[74]])  
 
 ## ----fig.width=7.5,fig.height=5------------------------------------------
 data(Gulk, KilleyW)
@@ -272,7 +269,7 @@ checkbraided(rivers=Gulk)
 checkbraided(rivers=KilleyW)
 
 ## ----fig.width=5,fig.height=5--------------------------------------------
-Kenai3.subset <- trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3)
+Kenai3.subset <- trimriver(trimto=c(22,2,70,30,15,98,96,89,52,3), rivers=Kenai3)
 plot(x=Kenai3.subset)
 
 checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset)

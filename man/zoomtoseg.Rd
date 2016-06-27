@@ -23,7 +23,7 @@ data(Kenai3)
 plot(x=Kenai3)
 
 # checking out a particularly messy region...
-zoomtoseg(c(109,55), rivers=Kenai3)
+zoomtoseg(c(110,63), rivers=Kenai3)
 }
 \author{
 Matt Tyers

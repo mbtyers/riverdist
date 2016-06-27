@@ -25,7 +25,7 @@ Plots a river network object and displays specified segments in bold, for easy i
 \examples{
 data(Kenai3)
 plot(Kenai3)
-highlightseg(seg=c(3,9,27),rivers=Kenai3)
+highlightseg(seg=c(10,30,68),rivers=Kenai3)
 }
 \author{
 Matt Tyers

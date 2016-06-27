@@ -19,6 +19,8 @@ working with larger units of distance, such as km.}
 \item{reproject}{A valid Proj.4 projection string, if the shapefile is to be 
 re-projected.  Re-projection is done using \link[sp]{spTransform} in 
 package 'sp'.}
+
+\item{supplyprojection}{A valid Proj.4 projection string, if the input shapefile does not have the projection information attached.}
 }
 \value{
 Returns an object of class \code{"rivernetwork"} containing all

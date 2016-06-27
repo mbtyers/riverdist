@@ -26,11 +26,11 @@ This function is called within \link{cleanup}, which is recommended in most case
 data(Kenai3)
 Kenai3split <- addverts(Kenai3,mindist=200)
 
-zoomtoseg(seg=c(73,70,71), rivers=Kenai3)
-points(Kenai3$lines[[71]])        # vertices before adding
+zoomtoseg(seg=c(47,74,78), rivers=Kenai3)
+points(Kenai3$lines[[74]])        # vertices before adding
 
-zoomtoseg(seg=c(73,70,71), rivers=Kenai3split)
-points(Kenai3split$lines[[71]])   # vertices after adding
+zoomtoseg(seg=c(47,74,78), rivers=Kenai3split)
+points(Kenai3split$lines[[74]])   # vertices after adding
 }
 \author{
 Matt Tyers

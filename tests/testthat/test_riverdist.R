@@ -43,8 +43,8 @@ test_that("buildsegroutes",{
 })
 
 data(Kenai3)
-Kenai3.1 <- setmouth(seg=61,vert=40,rivers=Kenai3)
-Kenai3.subset <- suppressWarnings(trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3))
+Kenai3.1 <- setmouth(seg=68,vert=40,rivers=Kenai3)
+Kenai3.subset <- suppressWarnings(trimriver(trimto=c(22,2,70,30,15,98,96,89,52,3), rivers=Kenai3))
 test_that("checkbraided",{
   expect_false(checkbraidedTF(rivers=Gulk, toreturn="logical"))
   expect_true(checkbraidedTF(rivers=Kenai3.1, toreturn="logical"))
@@ -60,7 +60,7 @@ test_that("detectroute",{
 
 data(Kenai2)
 test_that("dissolve",{
-  expect_equal(dissolve(Kenai2),Kenai3)
+  expect_equal(dissolve(Kenai2),Kenai3)   #####
   expect_equal(length(dissolve(Gulk)$segroutes),13,tolerance=0.001)
   expect_equal(sum(dissolve(Gulk)$distlookup$middist),8360513,tolerance=1)
   expect_equal(sum(dissolve(Gulk)$distlookup$endtop,na.rm=T),126,tolerance=0.001)
@@ -224,7 +224,7 @@ test_that("trimriver",{
 
 x <- c(174185, 172304, 173803, 176013)
 y <- c(1173471, 1173345, 1163638, 1164801)
-Kenai3 <- setmouth(seg=61,vert=40,rivers=Kenai3)
+Kenai3 <- setmouth(seg=68,vert=40,rivers=Kenai3)
 Kenai3.buf1 <- trimtopoints(x=x, y=y, method="snap", rivers=Kenai3)
 Kenai3.buf2 <- trimtopoints(x=x, y=y, method="snaproute", rivers=Kenai3)
 Kenai3.buf3 <- trimtopoints(x=x, y=y, method="buffer", dist=5000, rivers=Kenai3)
@@ -246,19 +246,19 @@ test_that("trimtopoints",{
   expect_equal(dim(Kenai3.buf3$lineID),c(26,3))
   expect_true(is.na(Kenai3.buf1$mouth$mouth.seg))
   expect_true(is.na(Kenai3.buf2$mouth$mouth.seg))
-  expect_equal(Kenai3.buf3$mouth$mouth.seg,19)
+  expect_equal(Kenai3.buf3$mouth$mouth.seg,20)
   expect_equal(Kenai3.buf3$mouth$mouth.vert,40)
 })
 
 data(Kenai1)
 Kenai1a <- dissolve(Kenai1)
-Kenai1a$mouth$mouth.seg <- 63
+Kenai1a$mouth$mouth.seg <- 71
 Kenai1a$mouth$mouth.vert <- 40
 
-segs <- c(33,63,80,97)
+segs <- c(38,71,89,12)
 verts <- c(1,1,1,1)
 
-test_that("stopiferror, flowconnected",{
+test_that("stopiferror, flowconnected",{  ##########
   expect_error(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(riverdistance(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
   expect_equal(riverdistance(startseg=segs[3],endseg=segs[2],startvert=verts[3],endvert=verts[2],rivers=Kenai1a,stopiferror=F),2648.679,tolerance=0.001)
@@ -269,7 +269,7 @@ test_that("stopiferror, flowconnected",{
   expect_error(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a))
   expect_true(is.na(upstream(startseg=segs[3],endseg=segs[4],startvert=verts[3],endvert=verts[4],rivers=Kenai1a,flowconnected=T)))
   expect_true(is.na(upstream(startseg=segs[1],endseg=segs[2],startvert=verts[1],endvert=verts[2],rivers=Kenai1a,stopiferror=F)))
-  expect_equal(upstream(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),2648.679,tolerance=0.001) ### cumuldist subscript out of bounds
+  expect_equal(upstream(startseg=segs[2],endseg=segs[3],startvert=verts[2],endvert=verts[3],rivers=Kenai1a,stopiferror=F,flowconnected=T),2648.679,tolerance=0.001) 
 })
 
 data(abstreams0)
@@ -310,13 +310,18 @@ test_that("addverts", {
   expect_equal(dim(addverts(rivers=Gulk,mindist=100)$lines[[1]]),c(1130,2))
 })
 
-asdf<-kfunctest(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight,envreps=1000, maxdist=200000)
+asdf<-kfunc(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, survey=fakefish$flight,envreps=100, maxdist=200000, returnoutput=TRUE)   
 test_that("kfunc", {
-  expect_equal(length(asdf),10,tolerance=0.001)
-  expect_equal(lapply(asdf[[1]],sum)[[3]] + lapply(asdf[[1]],sum)[[4]], 16122.44, tolerance=10)
+  expect_equal(length(asdf),4,tolerance=0.001)
+  expect_equal(length(asdf$lines),10,tolerance=0.001)
+  expect_equal(length(asdf$env_low),10,tolerance=0.001)
+  expect_equal(length(asdf$env_high),10,tolerance=0.001)
+  expect_equal(length(asdf$dists),100,tolerance=0.001)
+  expect_equal(sum(unlist(asdf$lines)),73357.78,tolerance=0.001)
+  expect_equal(sum(asdf$dists),10000000,tolerance=0.001)
 })
 
-K2 <- trimriver(trimto=c(1,27,64,104),rivers=Kenai3)
+K2 <- trimriver(trimto=c(2,30,70,15),rivers=Kenai3)
 K2l <- buildlookup(K2)
 test_that("connections 5 and 6", {
   expect_equal(K2$connections[2,3],5,tolerance=0.001)

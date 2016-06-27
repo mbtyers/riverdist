@@ -67,6 +67,7 @@ addcumuldist <- function(rivers) {
 #' @param reproject A valid Proj.4 projection string, if the shapefile is to be 
 #'   re-projected.  Re-projection is done using \link[sp]{spTransform} in 
 #'   package 'sp'.
+#' @param supplyprojection A valid Proj.4 projection string, if the input shapefile does not have the projection information attached.
 #' @return Returns an object of class \code{"rivernetwork"} containing all
 #'   spatial and topological information.  See \link{rivernetwork-class}.
 #' @note Since distance can only be calculated using projected coordinates, 
@@ -155,6 +156,10 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
   # connection type 3: end - beginning
   # connection type 4: end - end
   connections <- matrix(NA,nrow=length,ncol=length)
+  if(interactive()) {
+    cat('\n',"Calculating connections...",'\n',"If this step is very time-consuming, a spatial dissolve in GIS before importing to R is recommended.",'\n')
+    pb <- txtProgressBar(style=3)
+  }
   for(i in 1:length) {
     for(j in 1:length) {
       i.max <- dim(lines[[i]])[1]
@@ -177,6 +182,7 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
       if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 6
       }    ##########
+      if(interactive()) setTxtProgressBar(pb=pb, value=(i/length + j/length/length))
     }
   }
   if(any(connections %in% 5:6)) braided <- TRUE
@@ -214,10 +220,10 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
   class(out) <- "rivernetwork"
   
   length1 <- length(out$lengths)
-  out <- removeduplicates(out)   ##########
+  suppressMessages(out <- removeduplicates(out))   ##########
   length2 <- length(out$lengths)
   if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
-  out <- removemicrosegs(out)    ##########
+  suppressMessages(out <- removemicrosegs(out))    ##########
   length3 <- length(out$lengths)
   if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
   
@@ -381,7 +387,7 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
 #' @examples
 #' data(Kenai3)
 #' plot(Kenai3)
-#' highlightseg(seg=c(3,9,27),rivers=Kenai3)
+#' highlightseg(seg=c(10,30,68),rivers=Kenai3)
 #' @importFrom grDevices rgb
 #' @importFrom graphics plot
 #' @importFrom graphics par
@@ -871,7 +877,7 @@ removeunconnected <- function(rivers) {
   
   if(!is.null(takeout)) takeout <- order[takeout]
   
-  rivers2 <- trimriver(trim=takeout,rivers=rivers)
+  suppressMessages(rivers2 <- trimriver(trim=takeout,rivers=rivers))
   # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers2)
 }

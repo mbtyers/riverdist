@@ -32,7 +32,7 @@ data(KilleyW)
 plot(x=KilleyW)
 checkbraided(rivers=KilleyW)
 
-Kenai3.subset <- trimriver(trimto=c(18,1,64,27,104,93,91,83,45,2), rivers=Kenai3)
+Kenai3.subset <- trimriver(trimto=c(22,2,70,30,15,98,96,89,52,3), rivers=Kenai3)
 plot(x=Kenai3.subset)
 
 checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset)

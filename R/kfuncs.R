@@ -31,6 +31,7 @@
 #'   only the second, third, and fourth plots of the sequence being produced. 
 #'   Accepting the default (\code{NULL}) will result in all plots being 
 #'   produced.
+#' @param returnoutput Whether to return output instead of producing a plot.  Defaults to \code{FALSE}.
 #' @param ... Additional plotting parameters.
 #' @note K-function envelopes for each survey are constructed by bootstrapping 
 #'   all within-survey distances, that is, the distances between all individuals
@@ -70,7 +71,7 @@
 #'   vert=fakefish$vert[fakefish$flight==i], rivers=Gulk, col=2, pch=15)
 #' }
 #' @export
-kfunc <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,envcol="grey80",envborder=NA,maxdist=NULL,xlab="Distance",ylab="% within",showN=TRUE,whichplots=NULL,...) {
+kfunc <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,envcol="grey80",envborder=NA,maxdist=NULL,xlab="Distance",ylab="% within",showN=TRUE,whichplots=NULL,returnoutput=FALSE,...) {
   if(is.null(survey)) survey <- " "
   if(length(unique(survey))==1) envelope <- F
   if(is.null(whichplots)) whichplots <- 1:length(unique(survey))
@@ -109,9 +110,18 @@ kfunc <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,e
     kdistavgavgboot <- matrix(NA,nrow=envreps,ncol=length(kdists))
   }
   kdistavgbootlower <- kdistavgbootupper <- NA*kdists
+  if(returnoutput) {
+    output <- list()
+    output$lines <- list()
+    output$env_low <- list()
+    output$env_high <- list()
+    output$dists <- list()
+  }
   for(i in whichplots) {
-    pmain <- ifelse(showN,paste0(sort(unique(survey))[i]," (n=",length(seg[survey==sort(unique(survey))[i]]),")"),sort(unique(survey))[i])
-    plot(kdists,kdistavg[[i]],col=1,lwd=lwd,xlim=c(0,1.1*max(kdists)),ylim=c(0,max(unlist(kdistavg))),xlab=xlab,ylab=ylab,type='l',main=pmain)
+    if(!returnoutput){
+      pmain <- ifelse(showN,paste0(sort(unique(survey))[i]," (n=",length(seg[survey==sort(unique(survey))[i]]),")"),sort(unique(survey))[i])
+      plot(kdists,kdistavg[[i]],col=1,lwd=lwd,xlim=c(0,1.1*max(kdists)),ylim=c(0,max(unlist(kdistavg))),xlab=xlab,ylab=ylab,type='l',main=pmain)
+    }
     if(envelope) {
       for(k in 1:envreps) {
         dmatallboot <- sample(dmatall,sum(upper.tri(dmats[[i]])),replace=T)
@@ -123,79 +133,90 @@ kfunc <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,e
         kdistavgbootlower[j] <- quantile(kdistavgavgboot[,j],0.025)
         kdistavgbootupper[j] <- quantile(kdistavgavgboot[,j],0.975)
       }
-      polygon(c(kdists,kdists[length(kdists):1]),c(kdistavgbootlower,kdistavgbootupper[length(kdists):1]),col=envcol,border=envborder)
-      lines(kdists,kdistavg[[i]],col=1,lwd=lwd)
+      if(!returnoutput) {
+        polygon(c(kdists,kdists[length(kdists):1]),c(kdistavgbootlower,kdistavgbootupper[length(kdists):1]),col=envcol,border=envborder)
+        lines(kdists,kdistavg[[i]],col=1,lwd=lwd)
+      }
+      if(returnoutput) {
+        output$lines[[i]] <- kdistavg[[i]]
+        output$env_low[[i]] <- kdistavgbootlower
+        output$env_high[[i]] <- kdistavgbootupper
+      }
     }
-    lines(kdists,kdistavgavg,lty=2)
+    if(!returnoutput) lines(kdists,kdistavgavg,lty=2)
+  }
+  if(returnoutput) {
+    output$dists <- kdists
+    return(output)
   }
 }
 
 
 
-kfunctest <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,envcol="grey80",envborder=NA,maxdist=NULL,xlab="Distance",ylab="% within",showN=TRUE,whichplots=NULL,...) {
-  if(is.null(survey)) survey <- " "
-  if(is.null(whichplots)) whichplots <- 1:length(unique(survey))
-  dmats <- list()
-  i <- 1
-  for(surveyi in sort(unique(survey))) {
-    dmats[[i]] <- riverdistancemat(seg=seg[survey==surveyi],vert=vert[survey==surveyi],rivers=rivers)
-    i <- i+1
-  }
-  maxes <- NA
-  for(i in 1:length(unique(survey))) maxes[i] <- max(unlist(dmats[[i]]))
-  maxdist1 <- ifelse(is.null(maxdist),min(maxes),maxdist)
-  kdists <- seq(from=0,to=maxdist1,l=100)
-  kdistavg <- list()
-  i <- 1
-  for(surveyi in sort(unique(survey))) {
-    kdistavg[[i]] <- NA*kdists
-    for(j in 1:length(kdists)) {
-      kdistavg[[i]][j] <- (sum(dmats[[i]]<kdists[j])-(dim(dmats[[i]])[1]))/(dim(dmats[[i]])[1])*100/(dim(dmats[[i]])[1]-1)
-      # if(scale) kdistavg[[i]][j] <- 100*kdistavg[[i]][j]/(dim(dmats[[i]])[1]-1)
-    }
-    i <- i+1
-  }
-  
-  kdistavgavg <- NA*kdists
-  dmatall <- NULL
-  dim1 <- 0
-  for(i in 1:length(kdistavg)) {
-    dim1 <- dim1+dim(dmats[[i]])[1]
-    dmatall <- c(dmatall,dmats[[i]][upper.tri(dmats[[i]],diag=F)])
-  }
-  dim2 <- dim1-length(kdistavg)
-  for(j in 1:length(kdists)) {
-    kdistavgavg[j] <- 100*(sum(dmatall<kdists[j]))/(length(dmatall))
-  }
-  if(envelope) {
-    kdistavgavgboot <- matrix(NA,nrow=envreps,ncol=length(kdists))
-  }
-  kdistavgbootlower <- kdistavgbootupper <- NA*kdists
-
-  testout <- list()
-  for(i in whichplots) {
-    pmain <- ifelse(showN,paste0(sort(unique(survey))[i]," (n=",length(seg[survey==sort(unique(survey))[i]]),")"),sort(unique(survey))[i])
-    # plot(kdists,kdistavg[[i]],col=1,lwd=lwd,xlim=c(0,1.1*max(kdists)),ylim=c(0,max(unlist(kdistavg))),xlab=xlab,ylab=ylab,type='l',main=pmain)
-    testout[[i]] <- list()
-    if(envelope) {
-      for(k in 1:envreps) {
-        dmatallboot <- sample(dmatall,sum(upper.tri(dmats[[i]])),replace=T)
-        for(j in 1:length(kdists)) {
-          kdistavgavgboot[k,j] <- 100*(sum(dmatallboot<kdists[j]))/(length(dmatallboot))
-        }
-      }
-      for(j in 1:length(kdists)) {
-        kdistavgbootlower[j] <- quantile(kdistavgavgboot[,j],0.025)
-        kdistavgbootupper[j] <- quantile(kdistavgavgboot[,j],0.975)
-      }
-      # polygon(c(kdists,kdists[length(kdists):1]),c(kdistavgbootlower,kdistavgbootupper[length(kdists):1]),col=envcol,border=envborder)
-      # lines(kdists,kdistavg[[i]],col=1,lwd=lwd)
-      testout[[i]]$kdistavgbootlower <- kdistavgbootlower
-      testout[[i]]$kdistavgbootupper <- kdistavgbootupper
-      testout[[i]]$kdistavg <- kdistavg[[i]]
-    }
-    # lines(kdists,kdistavgavg,lty=2)
-    testout[[i]]$kdistavgavg <- kdistavgavg
-  }
-  return(testout)
-}
+# kfunctest <- function(seg,vert,survey=NULL,rivers,lwd=2,envelope=TRUE,envreps=1000,envcol="grey80",envborder=NA,maxdist=NULL,xlab="Distance",ylab="% within",showN=TRUE,whichplots=NULL,...) {
+#   if(is.null(survey)) survey <- " "
+#   if(is.null(whichplots)) whichplots <- 1:length(unique(survey))
+#   dmats <- list()
+#   i <- 1
+#   for(surveyi in sort(unique(survey))) {
+#     dmats[[i]] <- riverdistancemat(seg=seg[survey==surveyi],vert=vert[survey==surveyi],rivers=rivers)
+#     i <- i+1
+#   }
+#   maxes <- NA
+#   for(i in 1:length(unique(survey))) maxes[i] <- max(unlist(dmats[[i]]))
+#   maxdist1 <- ifelse(is.null(maxdist),min(maxes),maxdist)
+#   kdists <- seq(from=0,to=maxdist1,l=100)
+#   kdistavg <- list()
+#   i <- 1
+#   for(surveyi in sort(unique(survey))) {
+#     kdistavg[[i]] <- NA*kdists
+#     for(j in 1:length(kdists)) {
+#       kdistavg[[i]][j] <- (sum(dmats[[i]]<kdists[j])-(dim(dmats[[i]])[1]))/(dim(dmats[[i]])[1])*100/(dim(dmats[[i]])[1]-1)
+#       # if(scale) kdistavg[[i]][j] <- 100*kdistavg[[i]][j]/(dim(dmats[[i]])[1]-1)
+#     }
+#     i <- i+1
+#   }
+#   
+#   kdistavgavg <- NA*kdists
+#   dmatall <- NULL
+#   dim1 <- 0
+#   for(i in 1:length(kdistavg)) {
+#     dim1 <- dim1+dim(dmats[[i]])[1]
+#     dmatall <- c(dmatall,dmats[[i]][upper.tri(dmats[[i]],diag=F)])
+#   }
+#   dim2 <- dim1-length(kdistavg)
+#   for(j in 1:length(kdists)) {
+#     kdistavgavg[j] <- 100*(sum(dmatall<kdists[j]))/(length(dmatall))
+#   }
+#   if(envelope) {
+#     kdistavgavgboot <- matrix(NA,nrow=envreps,ncol=length(kdists))
+#   }
+#   kdistavgbootlower <- kdistavgbootupper <- NA*kdists
+# 
+#   testout <- list()
+#   for(i in whichplots) {
+#     pmain <- ifelse(showN,paste0(sort(unique(survey))[i]," (n=",length(seg[survey==sort(unique(survey))[i]]),")"),sort(unique(survey))[i])
+#     # plot(kdists,kdistavg[[i]],col=1,lwd=lwd,xlim=c(0,1.1*max(kdists)),ylim=c(0,max(unlist(kdistavg))),xlab=xlab,ylab=ylab,type='l',main=pmain)
+#     testout[[i]] <- list()
+#     if(envelope) {
+#       for(k in 1:envreps) {
+#         dmatallboot <- sample(dmatall,sum(upper.tri(dmats[[i]])),replace=T)
+#         for(j in 1:length(kdists)) {
+#           kdistavgavgboot[k,j] <- 100*(sum(dmatallboot<kdists[j]))/(length(dmatallboot))
+#         }
+#       }
+#       for(j in 1:length(kdists)) {
+#         kdistavgbootlower[j] <- quantile(kdistavgavgboot[,j],0.025)
+#         kdistavgbootupper[j] <- quantile(kdistavgavgboot[,j],0.975)
+#       }
+#       # polygon(c(kdists,kdists[length(kdists):1]),c(kdistavgbootlower,kdistavgbootupper[length(kdists):1]),col=envcol,border=envborder)
+#       # lines(kdists,kdistavg[[i]],col=1,lwd=lwd)
+#       testout[[i]]$kdistavgbootlower <- kdistavgbootlower
+#       testout[[i]]$kdistavgbootupper <- kdistavgbootupper
+#       testout[[i]]$kdistavg <- kdistavg[[i]]
+#     }
+#     # lines(kdists,kdistavgavg,lty=2)
+#     testout[[i]]$kdistavgavg <- kdistavgavg
+#   }
+#   return(testout)
+# }

@@ -305,7 +305,7 @@ dissolve <- function(rivers) {
 #' plot(x=Kenai3)
 #' 
 #' # checking out a particularly messy region...
-#' zoomtoseg(c(109,55), rivers=Kenai3)
+#' zoomtoseg(c(110,63), rivers=Kenai3)
 #' @importFrom graphics plot
 #' @export
 zoomtoseg <- function(seg,rivers,...) {

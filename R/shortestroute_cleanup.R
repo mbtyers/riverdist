@@ -25,7 +25,7 @@ removeduplicates <- function(rivers) {
     }
   }
   trim <- unique(trim)
-  rivers1 <- trimriver(trim=trim,rivers=rivers)
+  suppressMessages(rivers1 <- trimriver(trim=trim,rivers=rivers))
   # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)
 }
@@ -308,7 +308,18 @@ cleanup <- function(rivers) {
         if(any(howtodo==c("e","E"))) closestpt <- F
         if(closestpt) cat('\n',"Connecting and calculating new segment splits...",'\n')
         if(!closestpt) cat('\n',"Connecting...",'\n')
-        suppressMessages(rivers4 <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))
+        suppressMessages(rivers4a <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))    ######
+        tozoomto <- rbind(rivers4$lines[[connect1]],rivers4$lines[[connect2]])
+        xmin <- min(tozoomto[,1],na.rm=T)
+        xmax <- max(tozoomto[,1],na.rm=T)
+        ymin <- min(tozoomto[,2],na.rm=T)
+        ymax <- max(tozoomto[,2],na.rm=T)
+        plot(rivers4a,xlim=c(xmin,xmax),ylim=c(ymin,ymax))
+        whatnow <- 0
+        while(!any(whatnow==c("y","Y","n","N"))) {
+          whatnow <- readline(prompt="Accept changes? (y/n) ")
+        }
+        if(any(whatnow==c("y","Y"))) rivers4 <- rivers4a    ######
       }
     }
     if(is.null(takeout)) {
@@ -516,7 +527,7 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
     #   rivers$segroutes <- NULL
     #   warning("Segment routes must be rebuilt - see help(buildsegroutes).")
     # }
-    rivers <- splitsegments(rivers)
+    suppressMessages(rivers <- splitsegments(rivers))
   }
   
   if(!is.null(rivers$segroutes)) {
@@ -561,7 +572,7 @@ removemicrosegs <- function(rivers) {
       }
     }
   }
-  if(length(problems)>0) rivers <- trimriver(trim=problems,rivers=rivers)
+  if(length(problems)>0) suppressMessages(rivers <- trimriver(trim=problems,rivers=rivers))
   # message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
 }
@@ -581,11 +592,11 @@ removemicrosegs <- function(rivers) {
 #' data(Kenai3)
 #' Kenai3split <- addverts(Kenai3,mindist=200)
 #' 
-#' zoomtoseg(seg=c(73,70,71), rivers=Kenai3)
-#' points(Kenai3$lines[[71]])        # vertices before adding
+#' zoomtoseg(seg=c(47,74,78), rivers=Kenai3)
+#' points(Kenai3$lines[[74]])        # vertices before adding
 #' 
-#' zoomtoseg(seg=c(73,70,71), rivers=Kenai3split)
-#' points(Kenai3split$lines[[71]])   # vertices after adding
+#' zoomtoseg(seg=c(47,74,78), rivers=Kenai3split)
+#' points(Kenai3split$lines[[74]])   # vertices after adding
 #' @export
 addverts <- function(rivers,mindist=500) {
 

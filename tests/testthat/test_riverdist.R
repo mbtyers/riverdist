@@ -302,7 +302,7 @@ fakesubdens <- makeriverdensity(seg=fakefish_sub$seg,vert=fakefish_sub$vert,surv
 test_that("riverdensity", {
   expect_equal(length(fakesubdens$densities),7)
   expect_equal(length(fakesubdens$densities[[1]]),14)
-  expect_equal(sum(unlist(fakesubdens$densities)),0.04732881,tolerance=0.0000001)
+  expect_equal(sum(unlist(fakesubdens$densities)),0.04737915,tolerance=0.0000001)
 })
 
 test_that("addverts", {

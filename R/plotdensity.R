@@ -34,7 +34,7 @@
 #'   kernel density calculation.  Accepting the default (\code{NULL}) will
 #'   result in the function determining a value to use, based on the total
 #'   length of the river network.
-#' @note This function is distance-computation intensive, and will be extremely slow-running if a river network is used that does not have segment routes and/or distance lookup tables for fast distance computation.  See \link{buildsegroutes} and/or \link{buildlookup} for more information.
+#' @note This function is distance-computation intensive, and may be slow-running if a river network is used that does not have segment routes and/or distance lookup tables for fast distance computation.  See \link{buildsegroutes} and/or \link{buildlookup} for more information.
 #' @return A river density object, see \link{riverdensity-class}.
 #' @seealso \link{plot.riverdensity}, \link{plotriverdensitypoints}
 #' @author Matt Tyers
@@ -55,32 +55,65 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
   if(is.null(bw)) bw <- 10*resolution     
   if(is.null(survey)) survey <- 0
   
+  # biggestdist <- 0
+  # for(i in 1:length(rivers$lines)) {
+  #   dists <- rivers$cumuldist[[i]][2:length(rivers$cumuldist[[i]])] - rivers$cumuldist[[i]][1:(length(rivers$cumuldist[[i]])-1)]
+  #   if(max(dists) >= biggestdist) biggestdist <- max(dists)
+  # }
+  # smallestdist <- biggestdist
+  # for(i in 1:length(rivers$lines)) {
+  #   dists <- rivers$cumuldist[[i]][2:length(rivers$cumuldist[[i]])] - rivers$cumuldist[[i]][1:(length(rivers$cumuldist[[i]])-1)]
+  #   if(min(dists) <= smallestdist) smallestdist <- min(dists)
+  # }
+  
+  # prediction grid
+  # densverts <- list()
+  # endptverts <- list()
+  # for(segi in 1:length(rivers$lines)) {
+  #   segilength <- dim(rivers$lines[[segi]])[1]
+  #   runsum <- 0
+  #   endptlengths <- c(seq(from=0,to=rivers$lengths[segi],by=resolution),(rivers$lengths[segi]))      
+  #   denslengths <- seq(from=(min(resolution,rivers$lengths[segi])/2),to=rivers$lengths[segi],by=resolution)
+  #   if(length(endptlengths)-length(denslengths)==2) {
+  #     denslengths[length(denslengths)+1] <- rivers$lengths[segi]  # this is a hack but shouldn't be too important
+  #   }
+  #   endptlengthsi <- 1
+  #   denslengthsi <- 1
+  #   densverts[[segi]] <- endptverts[[segi]] <- NA
+  #   for(verti in 1:segilength) {
+  #     runsum <- ifelse(verti==1,0,runsum+pdist(rivers$lines[[segi]][verti,],rivers$lines[[segi]][(verti-1),]))   ####
+  #     if(runsum >= endptlengths[endptlengthsi]) {
+  #       endptverts[[segi]][endptlengthsi] <- verti
+  #       endptlengthsi <- endptlengthsi+1
+  #     }
+  #     if(denslengthsi <= length(denslengths)) {
+  #       if(runsum >= denslengths[denslengthsi]) {
+  #         densverts[[segi]][denslengthsi] <- verti
+  #         denslengthsi <- denslengthsi+1
+  #       }
+  #     }
+  #   }
+  #   endptverts[[segi]] <- unique(c(1,endptverts[[segi]],segilength))      #########hack!
+  # }
+  
   # prediction grid
   densverts <- list()
   endptverts <- list()
   for(segi in 1:length(rivers$lines)) {
     segilength <- dim(rivers$lines[[segi]])[1]
-    runsum <- 0
-    endptlengths <- c(seq(from=0,to=rivers$lengths[segi],by=resolution),rivers$lengths[segi])
+    endptlengths <- c(seq(from=0,to=rivers$lengths[segi],by=resolution),(rivers$lengths[segi]))      
     denslengths <- seq(from=(min(resolution,rivers$lengths[segi])/2),to=rivers$lengths[segi],by=resolution)
     if(length(endptlengths)-length(denslengths)==2) {
       denslengths[length(denslengths)+1] <- rivers$lengths[segi]  # this is a hack but shouldn't be too important
     }
-    endptlengthsi <- 1
-    denslengthsi <- 1
     densverts[[segi]] <- endptverts[[segi]] <- NA
-    for(verti in 2:segilength) {
-      runsum <- runsum+pdist(rivers$lines[[segi]][verti,],rivers$lines[[segi]][(verti-1),])
-      if(runsum >= endptlengths[endptlengthsi]) {
-        endptverts[[segi]][endptlengthsi] <- verti
-        endptlengthsi <- endptlengthsi+1
-      }
-      if(denslengthsi <= length(denslengths)) {
-        if(runsum >= denslengths[denslengthsi]) {
-          densverts[[segi]][denslengthsi] <- verti
-          denslengthsi <- denslengthsi+1
-        }
-      }
+    for(endpti in 1:length(endptlengths)) {
+      absdiffs <- abs(rivers$cumuldist[[segi]]-endptlengths[endpti])
+      endptverts[[segi]][endpti] <- which(absdiffs==min(absdiffs,na.rm=T))[1]
+    }
+    for(densi in 1:length(denslengths)) {
+      absdiffs <- abs(rivers$cumuldist[[segi]]-denslengths[densi])
+      densverts[[segi]][densi] <- which(absdiffs==min(absdiffs,na.rm=T))[1]
     }
   }
   
@@ -331,9 +364,11 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
       if(dark<1) denscol <- adjustcolor(denscol,red.f=dark,green.f=dark,blue.f=dark)
       
       for(vertsi in 1:(length(endptverts[[segi]])-1)) {
-        lines(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],lwd=lwd,col=linecol,lend=1)
-        if(densities[[isurvey]][[segi]][vertsi] > 0) {
-          lines(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],lwd=lwds[vertsi],col=cols[vertsi],lend=1)
+        if(dim(matrix(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],ncol=2))[1] > 1) {
+          lines(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],lwd=lwd,col=linecol,lend=1)
+          if(densities[[isurvey]][[segi]][vertsi] > 0) {
+            lines(rivers$lines[[segi]][(endptverts[[segi]][vertsi]):(endptverts[[segi]][vertsi+1]),],lwd=lwds[vertsi],col=cols[vertsi],lend=1)
+          }
         }
       }
     }

@@ -372,7 +372,7 @@ cleanup <- function(rivers) {
   braided <- rivers5$braided
   rivers6<-rivers5
   if(braided) {
-    cat("Braiding detected within river network.",'\n')
+    cat('\n',"Braiding detected within river network.",'\n')
     yes <- "Y"
     while(yes=="Y" | yes=="y") {
       yes<-0 
@@ -404,13 +404,13 @@ cleanup <- function(rivers) {
         routes<-checkbraidedTF(rivers6,toreturn="routes")
         rivers6$braided <- !is.null(routes)
         braided <- rivers6$braided
-        if(braided) cat("Braiding still detected.",'\n')
-        if(!braided) cat("Braiding no longer detected.",'\n')
+        if(braided) cat('\n',"Braiding still detected.",'\n')
+        if(!braided) cat('\n',"Braiding no longer detected.",'\n')
       }
     }
   }
   if(!braided) {
-    cat("No braiding detected within river network.",'\n','\n')
+    cat('\n',"No braiding detected within river network.",'\n','\n')
     yes<-0
     while(!any(yes==c("y","Y","n","N"))) yes<-readline(prompt="Build segment routes?  This will save time in route calculations. (y/n) ")
     if(yes=="Y" | yes=="y") rivers6 <- buildsegroutes(rivers6)

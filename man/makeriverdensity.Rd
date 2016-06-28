@@ -57,7 +57,7 @@ It is likely that calculation will be very slow.  Use of this function
   with a river network for which segment routes has not yet been calculated 
   is not recommended.
 
-This function is distance-computation intensive, and will be extremely slow-running if a river network is used that does not have segment routes and/or distance lookup tables for fast distance computation.  See \link{buildsegroutes} and/or \link{buildlookup} for more information.
+This function is distance-computation intensive, and may be slow-running if a river network is used that does not have segment routes and/or distance lookup tables for fast distance computation.  See \link{buildsegroutes} and/or \link{buildlookup} for more information.
 }
 \examples{
 data(Gulk, fakefish)

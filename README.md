@@ -37,7 +37,9 @@ Summaries and plots are also available at the dataset level, in addition to indi
 
 ### Installation
 
-The 'riverdist' package is currently available on Github, and can be installed in R with the following code:
+Version 0.11.0 of the 'riverdist' package is available on CRAN.
+
+The development version is currently available on Github, and can be installed in R with the following code:
 
 `install.packages("devtools",dependencies=T)`
 

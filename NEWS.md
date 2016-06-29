@@ -8,7 +8,7 @@
 
 ## Bug fixes
 
-* Bugs in the `dissolve()` function and segroutes algorithm were identified and fixed.
+* Bugs in the `dissolve()` and `homerange()` functions and segroutes algorithm were identified and fixed.
 
 * New connection types were added, to handle special cases in braided networks.
 

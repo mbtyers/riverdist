@@ -9,6 +9,8 @@ vignette: >
 
 [Package overview](#Package overview)
 
+[Typical workflow](#Typical workflow)
+
 [Limitations, notes, and caveats](#Limitations, notes, and caveats)
 
 [Importing and displaying river network data](#Importing and displaying river network data)
@@ -28,15 +30,25 @@ vignette: >
 
 <a name="Package overview"></a>
 
-Package overview
----------------------------------------
+## Package overview
 The 'riverdist' package is intended as a free and readily-available resource for distance calculation along a river network.  This package was written with fisheries research in mind, but could be applied to other fields.  The 'riverdist' package builds upon the functionality of the 'sp' and 'rgdal' packages, which provide the utility of reading GIS shapefiles into the R environment.  What 'riverdist' adds is the ability to treat a linear feature as a connected network, and to calculate travel routes and travel distances along that network.
+
+
+<a name="Typical workflow"></a>
+
+## Typical workflow with 'riverdist'
+1. Import a linear shapefile using `line2network()`.  The shapefile to import must be a linear feature - converting a polygon to a line will result in an outline, which will not be useable.  The shapefile to import should be as simple as possible.  If GIS software is available, both trimming the shapefile to the same region as the study area and performing a spatial dissolve are recommended.
+
+2. Clean up the imported shapefile however necessary.  Editing functions are provided, but the `cleanup()` function interactively steps through all the editing functions in a good order, and is recommended in nearly all cases.
+
+3. Convert point data to river locations using `xy2segvert()` or `ptshp2segvert()`.  This will snap each point location to the nearest river network locations.
+
+4. Perform all analyses.
 
 
 <a name="Limitations, notes, and caveats"></a>
 
-Limitations, notes, and caveats
---------------------------------------------
+## Limitations, notes, and caveats
 Care must be exercised in the presence of braided channels, in which multiple routes may exist between river locations.  In these cases, the default route calculation provided by 'riverdist' will be the shortest travel route, but it is possible that the shortest travel route may not be the route of interest.  Functions are provided to check for braiding, as well as select the route of interest.  If no braiding is detected, route and distance calculation can switch to a more efficient algorithm.
 
 Another important note is that only projected data can be used, both for river networks and for point data.  The 'riverdist' environment in R does not share the ability of GIS software to project-on-the-fly, and treats all coordinates on a linear (rectangular) scale.  Therefore, the projection of all data must also be the same.
@@ -44,8 +56,7 @@ Another important note is that only projected data can be used, both for river n
 
 <a name="Importing and displaying river network data"></a>
 
-Importing and displaying river network data
--------------------------------------------
+## Importing and displaying river network data
 
 [Importing a river network](#Importing a river network)
 
@@ -148,8 +159,7 @@ riverpoints(seg=fakefish_riv$seg, vert=fakefish_riv$vert, rivers=Gulk, pch=15, c
 
 <a name="Basic distance calculation in a non-messy river network"></a>
 
-Basic distance calculation in a non-messy river network
--------------------------------------------------
+## Basic distance calculation in a non-messy river network
 
 [Computing network distance](#Computing network distance)
 
@@ -258,8 +268,7 @@ riverdistancetofrom(seg1=streamlocs.seg, vert1=streamlocs.vert, seg2=smallset$se
 
 <a name="Incorporating flow direction"></a>
 
-Incorporating flow direction
--------------------------------------
+## Incorporating flow direction
 
 [Defining flow direction of a river network](#Defining flow direction of a river network)
 
@@ -311,8 +320,7 @@ River direction and upstream distance are also applied in functions `riverdirect
 
 <a name="Allowing different route-detection algorithms a possible time-saver"></a>
 
-Allowing different route-detection algorithms: a possible time-saver
------------------------------------------------------
+## Allowing different route-detection algorithms: a possible time-saver
 
 Currently three algorithms are implemented to detect routes between river locations, with the functions automatically selecting the most appropriate unless another is specified.  Dijkstra's algorithm is used by default (`algorithm="Dijkstra"`), which returns the shortest route in the presence of braiding.  The sequential algorithm (`algorithm="sequential"`) may be used, which returns the first complete route detected.  The sequential algorithm is much slower and is not recommended in nearly all cases, but is retained as an option for certain checks.
 
@@ -346,8 +354,7 @@ In this case, building segment routes and distance lookup tables takes a little 
 
 <a name="Beyond individuals summarizing or plotting at the dataset level"></a>
 
-Beyond individuals: summarizing or plotting at the dataset level
-----------------------------------------
+## Beyond individuals: summarizing or plotting at the dataset level
 
 [Calculating and plotting kernel density](#Calculating and plotting kernel density)
 
@@ -500,8 +507,7 @@ plotmatbysurveylist(matbysurveylist)
 
 <a name="Editing a river network object, or fixing a messy one"></a>
 
-Editing a river network object, or fixing a messy one
-----------------------------------------------------------
+## Editing a river network object, or fixing a messy one
 
 [All-purpose river network cleanup](#All-purpose river network cleanup)
 
@@ -686,8 +692,7 @@ points(Kenai3split$lines[[74]])
 
 <a name="Dealing with braided channels"></a>
 
-Dealing with braided channels
---------------------------------
+## Dealing with braided channels
 Most of the utility of the 'riverdist' package was designed assuming a truly dendritic river network, in which there is no braiding of channels and only one path exists between one river location and another.  If this is not the case and a braided network is used, the user is **strongly cautioned** that the distances reported may be inaccurate.  In the event of braiding, the shortest route between two locations is returned, but the possibility exists that this may not be the route desired.
 
 [Checking for braiding](#Checking for braiding)

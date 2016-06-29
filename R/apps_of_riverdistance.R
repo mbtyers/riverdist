@@ -255,7 +255,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
           vert2[[((j-1)*n.entries+k)]] <- c(vert1[j],vert1[k])
         }
       }
-      seg.rep.max <- rep(0,length(rivers$lines))
+      seg.rep.max <- rep(0,length(rivers$lines))           ############bet i can remove this line
       seg.rep.max2 <- rep(0,length(rivers$lines))   ##############
       
       
@@ -267,6 +267,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
         subsegused <- rep(F,length(subseglength[[j]]))   ####################
         
         for(k in 1:length(routes)) {       # route k
+          # if(length(subsegused)==37) print(k)
           # k<-8
           
           # if segment j shows up in route k
@@ -274,7 +275,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
             
             #middle
             if(length(routes[[k]])>2 & routes[[k]][1]!=j & routes[[k]][length(routes[[k]])]!=j) {
-              seg.rep.max[j] <- rivers$lengths[j]
+              seg.rep.max[j] <- rivers$lengths[j]            ############bet i can remove this line
               if(map==T) lines(rivers$lines[[j]][,1],rivers$lines[[j]][,2],col=4,lwd=3)
               subsegused[] <- T  ##################
             }
@@ -282,9 +283,11 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
             #only
             if(length(routes[[k]])==1) {
               # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=vert2[[k]][2],rivers,algorithm=algorithm) > seg.rep.max[j]) {
-                seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=vert2[[k]][2],rivers=rivers,map=map,add=T,algorithm=algorithm)
+                # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=vert2[[k]][2],rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
                 # subsegused[(vert2[[k]][1]):(vert2[[k]][2]-1)] <- T   ####################
-                if(vert2[[k]][1] != vert2[[k]][2]) subsegused[min((linelength-1),min(vert2[[k]])):(max(vert2[[k]])-1)] <- T   #################### hack
+                if(vert2[[k]][1] != vert2[[k]][2]) {
+                  subsegused[min((linelength-1),min(vert2[[k]])):(max(vert2[[k]])-1)] <- T   #################### hack
+                }
               # }
             }
             
@@ -293,48 +296,48 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
               # connected at beginning
               if(rivers$connections[routes[[k]][1],routes[[k]][[2]]]<=2) {
                 # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
-                  seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                  # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
                   subsegused[1:(vert2[[k]][1]-1)] <- T   #####################
                 # }
               }
               # connected at end
               if(any(rivers$connections[routes[[k]][1],routes[[k]][[2]]]==3:4)) {
-                linelength <- dim(rivers$lines[[j]])[1]
+                # linelength <- dim(rivers$lines[[j]])[1]            ############bet i can remove this line
                 # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
-                  seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                  subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################
+                  # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
+                  if(vert2[[k]][1] < linelength) subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################     and same fix here
                 # }
               }
               #special braided case ---------------------------------------------------------------------------------------
               if(length(routes[[k]]==2) & rivers$connections[j,routes[[k]][2]]==5) {
-                linelength <- dim(rivers$lines[[j]])[1]
+                # linelength <- dim(rivers$lines[[j]])[1]            ############bet i can remove this line
                 d1 <- rivers$cumuldist[[j]][vert2[[k]][1]] + rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]]
                 d2 <- (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]]) + (rivers$lengths[routes[[k]][2]] - rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]])
                 if(d1 <= d2) {
                   # if(rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
                     subsegused[1:(vert2[[k]][1]-1)] <- T   #####################
                   # } 
                 } else {
                   # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                    subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
+                    if(vert2[[k]][1] < linelength) subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################     and same fix here
                   # }
                 }
               }
               if(length(routes[[k]]==2) & rivers$connections[j,routes[[k]][2]]==6) {
-                linelength <- dim(rivers$lines[[j]])[1]
+                # linelength <- dim(rivers$lines[[j]])[1]            ############bet i can remove this line
                 d1 <- rivers$cumuldist[[j]][vert2[[k]][1]] + (rivers$lengths[routes[[k]][2]] - rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]])
                 d2 <- (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]]) + rivers$cumuldist[[routes[[k]][2]]][vert2[[k]][2]]
                 if(d1 <= d2) {
                   # if(rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
                     subsegused[1:(vert2[[k]][1]-1)] <- T   #####################
                   # } 
                 } else {
                   # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][1]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                    subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][1],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
+                    if(vert2[[k]][1] < linelength) subsegused[(vert2[[k]][1]):(linelength-1)] <- T ###################     and same fix here
                   # }
                 }
               }   # -------------------------------------------------------------------------------------------------------
@@ -345,49 +348,49 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
               # connected at beginning
               if(rivers$connections[routes[[k]][length(routes[[k]])],routes[[k]][[length(routes[[k]])-1]]]<=2) {
                 # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
-                  seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                  # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
                   subsegused[1:(vert2[[k]][2]-1)] <- T   #####################
                 # }
               }
               # connected at end
               if(any(rivers$connections[routes[[k]][length(routes[[k]])],routes[[k]][[length(routes[[k]])-1]]]==3:4)) {
-                linelength <- dim(rivers$lines[[j]])[1]
+                # linelength <- dim(rivers$lines[[j]])[1]            ############bet i can remove this line
                 # if(riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,algorithm=algorithm) > seg.rep.max[j]) {
-                  seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                  subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################
+                  # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
+                  if(vert2[[k]][2] < linelength) subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################          <-------------- HERE IT IS and fixed
                 # }
               }
               
               #special braided case ---------------------------------------------------------------------------------------
               if(length(routes[[k]]==2) & rivers$connections[routes[[k]][1],routes[[k]][2]]==5) {
-                linelength <- dim(rivers$lines[[j]])[1]
+                # linelength <- dim(rivers$lines[[j]])[1]            ############bet i can remove this line
                 d1 <- rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]] + rivers$cumuldist[[j]][vert2[[k]][2]]
                 d2 <- (rivers$lengths[routes[[k]][1]] - rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]]) + (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]])
                 if(d1 <= d2) {
                   # if(rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
                     subsegused[1:(vert2[[k]][2]-1)] <- T   #####################
                   # } 
                 } else {
                   # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                    subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
+                    if(vert2[[k]][2] < linelength) subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################    and same fix here
                   # }
                 }
               }
               if(length(routes[[k]]==2) & rivers$connections[routes[[k]][1],routes[[k]][2]]==6) {
-                linelength <- dim(rivers$lines[[j]])[1]
+                # linelength <- dim(rivers$lines[[j]])[1]            ############bet i can remove this line
                 d1 <- (rivers$lengths[routes[[k]][1]] - rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]]) + rivers$cumuldist[[j]][vert2[[k]][2]]
                 d2 <- rivers$cumuldist[[routes[[k]][1]]][vert2[[k]][1]] + (rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]])
                 if(d1 <= d2) {
                   # if(rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=1,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
                     subsegused[1:(vert2[[k]][2]-1)] <- T   #####################
                   # } 
                 } else {
                   # if(rivers$lengths[j] - rivers$cumuldist[[j]][vert2[[k]][2]] > seg.rep.max[j]) {
-                    seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)
-                    subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################
+                    # seg.rep.max[j] <- riverdistance(startseg=j,endseg=j,startvert=vert2[[k]][2],endvert=linelength,rivers=rivers,map=map,add=T,algorithm=algorithm)            ############bet i can remove this line
+                    if(vert2[[k]][2] < linelength) subsegused[(vert2[[k]][2]):(linelength-1)] <- T ###################    and same fix here
                   # }
                 }
               }   # -------------------------------------------------------------------------------------------------------   
@@ -395,7 +398,12 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
           }
           # print(c(k,length(subsegused)))
         }
-        seg.rep.max2[j] <- sum(subsegused*subseglength[[j]])   ################
+        if(length(subsegused)!=length(subseglength[[j]])) {
+          print(c(i,j,k))
+          print(subsegused)
+          print(subseglength[[j]])
+        }
+        seg.rep.max2[j] <- sum(subsegused*subseglength[[j]])   ################    <--------- here's where the bug gets flagged
       }
       # range[i] <- sum(seg.rep.max)
       range[i] <- sum(seg.rep.max2)

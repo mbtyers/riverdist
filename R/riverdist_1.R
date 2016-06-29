@@ -176,12 +176,12 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
       if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {     ##########
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 5
       }
       if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 6
-      }    ##########
+      }
       if(interactive()) setTxtProgressBar(pb=pb, value=(i/length + j/length/length))
     }
   }
@@ -190,12 +190,6 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
   # making a vector of total segment lengths
   lengths <- rep(NA,length)
   for(i in 1:length) {
-    # sum<-0
-    # linelength <- dim(lines[[i]])[1]
-    # for(j in 1:(linelength-1)) {
-    #   sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
-    # }
-    # lengths[i]<-sum
     lengths[i] <- pdisttot(lines[[i]])
   }
   
@@ -220,10 +214,10 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
   class(out) <- "rivernetwork"
   
   length1 <- length(out$lengths)
-  suppressMessages(out <- removeduplicates(out))   ##########
+  suppressMessages(out <- removeduplicates(out))
   length2 <- length(out$lengths)
   if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
-  suppressMessages(out <- removemicrosegs(out))    ##########
+  suppressMessages(out <- removemicrosegs(out))
   length3 <- length(out$lengths)
   if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
   
@@ -615,22 +609,16 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
     }
   }
   
-  # if(is.na(trimmed.rivers$mouth$mouth.seg)) {
-  #   warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes)")
-  # }
-  
   if(!is.null(rivers$segroutes) | !is.null(rivers$distlookup)) {
     trimmed.rivers$segroutes <- NULL
     trimmed.rivers$distlookup <- NULL
     warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes).")
-    # trimmed.rivers <- buildsegroutes(trimmed.rivers,lookup=F)
   }
   trimmed.rivers <- addcumuldist(trimmed.rivers)
-  # if(!is.na(trimmed.rivers$mouth$mouth.seg) & !is.na(trimmed.rivers$mouth$mouth.vert) & !is.null(trimmed.rivers$distlookup)) trimmed.rivers <- buildlookup(trimmed.rivers)
   
   # updating sp object
   id <- rivers$lineID
-  sp_lines1 <- rivers$sp@lines[unique(id[segs,2])]   # this is a little kludgy - want to combine Lines in one line when sp_line is the same
+  sp_lines1 <- rivers$sp@lines[unique(id[segs,2])]   
   j<-1
   for(i in unique(id[segs,2])) {
     sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[segs,3][id[segs,2]==i]]
@@ -800,14 +788,12 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
     rivers1$segroutes <- NULL
     rivers1$distlookup <- NULL
     warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes).")
-    # rivers1 <- buildsegroutes(rivers1,lookup=F)
   }
   rivers1 <- addcumuldist(rivers1)
-  # if(!is.null(rivers1$distlookup)) rivers1 <- buildlookup(rivers1)
   
   # updating sp object
   id <- rivers$lineID
-  sp_lines1 <- rivers$sp@lines[unique(id[keep,2])]   # this is a little kludgy - want to combine Lines in one line when sp_line is the same
+  sp_lines1 <- rivers$sp@lines[unique(id[keep,2])]  
   j<-1
   for(i in unique(id[keep,2])) {
     sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[keep,3][id[keep,2]==i]]

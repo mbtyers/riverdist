@@ -275,7 +275,7 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
             
             #middle
             if(length(routes[[k]])>2 & routes[[k]][1]!=j & routes[[k]][length(routes[[k]])]!=j) {
-              seg.rep.max[j] <- rivers$lengths[j]            ############bet i can remove this line
+              # seg.rep.max[j] <- rivers$lengths[j]            ############bet i can remove this line
               # if(map) lines(rivers$lines[[j]][,1],rivers$lines[[j]][,2],col=4,lwd=3)
               if(map) lines(rivers$lines[[j]],col=4,lwd=3)
               subsegused[] <- T  ##################
@@ -406,11 +406,11 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
           }
           # print(c(k,length(subsegused)))
         }
-        if(length(subsegused)!=length(subseglength[[j]])) {        ########## this bit should get removed when i fix the bug!
-          print(c(i,j,k))
-          print(subsegused)
-          print(subseglength[[j]])
-        }       ########## this bit should get removed when i fix the bug!
+        # if(length(subsegused)!=length(subseglength[[j]])) {        ########## this bit should get removed when i fix the bug!
+        #   print(c(i,j,k))
+        #   print(subsegused)
+        #   print(subseglength[[j]])
+        # }       ########## this bit should get removed when i fix the bug!
         seg.rep.max2[j] <- sum(subsegused*subseglength[[j]])   ################    <--------- here's where the bug gets flagged
       }
       # range[i] <- sum(seg.rep.max)

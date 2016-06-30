@@ -41,29 +41,6 @@ splitsegments <- function(rivers,tolerance=NULL) {
   
   # first identifying where breaks should go
   breaks <- list()
-  # for(riv.i in 1:length(lines)) {     # ----------- for each segment (riv.i)
-  #   breaks.i <- 0
-  #   breaks[[riv.i]] <- NA
-  #   for(seg.i in 1:dim(lines[[riv.i]])[1]) {     # ----------- for each vertex (seg.i) in segment "riv.i"
-  #     for(riv.j in 1:length(lines)) {       # ----------- for each segment (riv.j)
-  #       if((pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][1,])<tolerance |
-  #           pdist(lines[[riv.i]][seg.i,],lines[[riv.j]][dim(lines[[riv.j]])[1],])<tolerance) & riv.i!=riv.j) {
-  #         breaks.i <- breaks.i+1
-  #         breaks[[riv.i]][breaks.i] <- seg.i
-  #       }
-  #     }  
-  #   }
-  #   if(breaks.i>1) {
-  #     for(i in 2:breaks.i) {
-  #       if(abs(breaks[[riv.i]][i]-breaks[[riv.i]][i-1])<=1) breaks[[riv.i]][i-1]<-0  # eliminating sequential runs
-  #       if(breaks[[riv.i]][i] <= i) breaks[[riv.i]][i] <- 0
-  #     }
-  #   }
-  #   breaks[[riv.i]][breaks[[riv.i]]==1] <- 0
-  #   breaks[[riv.i]][breaks[[riv.i]]==dim(lines[[riv.i]])[1]] <- 0
-  #   breaks[[riv.i]] <- breaks[[riv.i]][breaks[[riv.i]]>0]
-  #   if(length(breaks[[riv.i]])==0) breaks[[riv.i]] <- NA
-  # }
   
   for(segi in 1:length(lines)) {
     segibreaks <- NULL
@@ -71,10 +48,8 @@ splitsegments <- function(rivers,tolerance=NULL) {
       distanceses1 <- pdist2(lines[[segj]][1,], lines[[segi]])
       distanceses2 <- pdist2(lines[[segj]][dim(lines[[segj]])[1],], lines[[segi]])
       newbreaks <- which(distanceses1<tolerance | distanceses2<tolerance)
-      # breaks[[segi]] <- c(breaks[[segi]],newbreaks)
       segibreaks <- c(segibreaks,newbreaks)
     }
-    # breaks[[segi]] <- sort(unique(breaks[[segi]]))
     breaks[[segi]] <- sort(unique(segibreaks))
     if(length(breaks[[segi]]>1)) {
       for(ibreaks in 2:length(breaks[[segi]])) {
@@ -136,33 +111,20 @@ splitsegments <- function(rivers,tolerance=NULL) {
       if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {     ##########
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 5
       }
       if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 6
-      }    ##########
+      }
     }
   }
   
   # making a vector of total segment lengths
   lengths <- rep(NA,length)
   for(i in 1:length) {
-    # sum<-0
-    # linelength <- dim(lines[[i]])[1]
-    # for(j in 1:(linelength-1)) {
-    #   sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
-    # }
-    # lengths[i]<-sum
     lengths[i] <- pdisttot(lines[[i]])
   }
-  
-  # cumuldist <- list()
-  # for(i in 1:length(lines)) {
-  #   xy <- lines[[i]]
-  #   n <- dim(xy)[1]
-  #   cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
-  # }
   
   # updating rivers object
   rivers$connections <- connections
@@ -170,7 +132,6 @@ splitsegments <- function(rivers,tolerance=NULL) {
   rivers$lines <- newlines
   rivers$lengths <- lengths
   rivers$names <- rep(NA,length(lines))
-  # rivers$cumuldist <- cumuldist
   if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
     for(i in 1:length(rivers$lines)) {
       for(j in 1:(dim(rivers$lines[[i]])[1])) {
@@ -196,8 +157,6 @@ splitsegments <- function(rivers,tolerance=NULL) {
   rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
   
   if(!is.null(rivers$segroutes)) {
-    # rivers$segroutes <- NULL
-    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
     rivers <- buildsegroutes(rivers,lookup=F)
   }
   rivers <- addcumuldist(rivers)
@@ -259,33 +218,20 @@ splitsegmentat <- function(seg, vert, rivers) {
       if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {     ##########
+      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 5
       }
       if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 6
-      }    ##########
+      }
     }
   }
   
   # making a vector of total segment lengths
   lengths <- rep(NA,length)
   for(i in 1:length) {
-    # sum<-0
-    # linelength <- dim(lines[[i]])[1]
-    # for(j in 1:(linelength-1)) {
-    #   sum <- sum+pdist(lines[[i]][j,],lines[[i]][(j+1),])
-    # }
-    # lengths[i]<-sum
     lengths[i] <- pdisttot(lines[[i]])
   }
-  
-  # cumuldist <- list()
-  # for(i in 1:length(lines)) {
-  #   xy <- lines[[i]]
-  #   n <- dim(xy)[1]
-  #   cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
-  # }
   
   # updating rivers object
   rivers$connections <- connections
@@ -318,8 +264,6 @@ splitsegmentat <- function(seg, vert, rivers) {
   rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
   
   if(!is.null(rivers$segroutes)) {
-    # rivers$segroutes <- NULL
-    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
     rivers <- buildsegroutes(rivers,lookup=F)
   }
   rivers <- addcumuldist(rivers)

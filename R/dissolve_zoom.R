@@ -23,32 +23,6 @@ dissolve <- function(rivers) {
     mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
   }
   
-  # calculating a new connectivity matrix to capture beginning-beginning/end-end and beginning-end/end-beginning connections (special braided case)
-  # for(i in 1:length) {
-  #   for(j in 1:length) {
-  #     i.max <- dim(lines[[i]])[1]
-  #     j.max <- dim(lines[[j]])[1]
-  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-  #       connections[i,j] <- 1
-  #     }
-  #     if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 2
-  #     }
-  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-  #       connections[i,j] <- 3
-  #     }
-  #     if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 4
-  #     }
-  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 5
-  #     }
-  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 6
-  #     }
-  #   }
-  # }
-  
   #internal functions
   n.top <- function(seg,connections) {
     return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
@@ -64,74 +38,26 @@ dissolve <- function(rivers) {
   }
   
   # the first big algorithm, it detects "runs" of segments. this is what we ultimately want to combine.
-  # runs <- list(0)
-  # avail <- 1:length
-  # run.i <- 0
-  # 
-  # for(seg in 1:length) {
-  #   if(n.top(seg,connections) != 1) {
-  #     run.i <- run.i+1
-  #     run.done <- F
-  #     runs[[run.i]] <- seg
-  #     i <- 1
-  #     nextone<-"bot"
-  #     #take the first one out of avail   <- this is it!!!!
-  #     while(run.done==F) {
-  #       if(nextone=="top" & n.top(runs[[run.i]][[i]],connections)!=1) run.done<-T    #here's where to take it out, i think
-  #       if(nextone=="bot" & n.bot(runs[[run.i]][[i]],connections)!=1) run.done<-T
-  #       if(nextone=="top" & n.top(runs[[run.i]][i],connections)==1) {
-  #         i <- i+1
-  #         runs[[run.i]][i] <- who.top(runs[[run.i]][i-1],connections)
-  #         # take the next one out of available
-  #         if(n.top(runs[[run.i]][i],connections)==1) {
-  #           if(who.top(runs[[run.i]][i],connections)==runs[[run.i]][i-1]) nextnext <- "bot"
-  #         }
-  #         if(n.bot(runs[[run.i]][i],connections)==1) {
-  #           if(who.bot(runs[[run.i]][i],connections)==runs[[run.i]][i-1]) nextnext <- "top"
-  #         }
-  #       }
-  #       if(nextone=="bot" & n.bot(runs[[run.i]][i],connections)==1) {
-  #         i <- i+1
-  #         runs[[run.i]][i] <- who.bot(runs[[run.i]][i-1],connections)
-  #         # take the next one out of available
-  #         if(n.top(runs[[run.i]][i],connections)==1) {
-  #           if(who.top(runs[[run.i]][i],connections)==runs[[run.i]][i-1]) nextnext <- "bot"
-  #         }
-  #         if(n.bot(runs[[run.i]][i],connections)==1) {
-  #           if(who.bot(runs[[run.i]][i],connections)==runs[[run.i]][i-1]) nextnext <- "top"
-  #         }
-  #       }
-  #       if(!run.done) nextone <- nextnext
-  #     }
-  #   }
-  # }
-  
   runs <- list(0)
-  # avail <- 1:length    ########
   run.i <- 0
   used <- rep(F,length)
   
   for(seg in 1:length) {
-    if(((n.top(seg,connections) != 1) | (n.bot(seg,connections) != 1)) & !used[seg]) {    ########
-      used[seg] <- T   ###########
+    if(((n.top(seg,connections) != 1) | (n.bot(seg,connections) != 1)) & !used[seg]) {
+      used[seg] <- T 
       run.i <- run.i+1
       run.done <- F
       runs[[run.i]] <- seg
       i <- 1
-      if(n.top(seg,connections) != 1) nextone<-"bot"    ########
-      if(n.bot(seg,connections) != 1) nextone<-"top"    ########
-      #take the first one out of avail   <- this is it!!!!
+      if(n.top(seg,connections) != 1) nextone<-"bot"
+      if(n.bot(seg,connections) != 1) nextone<-"top"
+      #take the first one out of avail 
       while(!run.done) {
         if(nextone=="top" & n.top(runs[[run.i]][[i]],connections)!=1) run.done<-T    
         if(nextone=="bot" & n.bot(runs[[run.i]][[i]],connections)!=1) run.done<-T
-        # if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {     none of this is done because i'm working on something else
-        #   if(nextone=="top" & runs[[run.i]][[i]]==rivers$mouth$mouth.seg) run.done<-T    
-        #   if(nextone=="bot" & n.bot(runs[[run.i]][[i]],connections)!=1) run.done<-T
-        # }
         if(nextone=="top" & n.top(runs[[run.i]][i],connections)==1) {
           i <- i+1
           runs[[run.i]][i] <- who.top(runs[[run.i]][i-1],connections)
-          # take the next one out of available
           if(n.top(runs[[run.i]][i],connections)==1) {
             if(who.top(runs[[run.i]][i],connections)==runs[[run.i]][i-1]) nextnext <- "bot"
           }
@@ -142,7 +68,6 @@ dissolve <- function(rivers) {
         if(nextone=="bot" & n.bot(runs[[run.i]][i],connections)==1) {
           i <- i+1
           runs[[run.i]][i] <- who.bot(runs[[run.i]][i-1],connections)
-          # take the next one out of available
           if(n.top(runs[[run.i]][i],connections)==1) {
             if(who.top(runs[[run.i]][i],connections)==runs[[run.i]][i-1]) nextnext <- "bot"
           }
@@ -151,7 +76,7 @@ dissolve <- function(rivers) {
           }
         }
         if(!run.done) nextone <- nextnext
-        if(run.done) used[runs[[run.i]][length(runs[[run.i]])]] <- T    ###########
+        if(run.done) used[runs[[run.i]][length(runs[[run.i]])]] <- T
       }
     }
   }
@@ -162,16 +87,6 @@ dissolve <- function(rivers) {
     newlines[[run.i]] <- lines[[runs[[run.i]][1]]]
     if(length(runs[[run.i]]) > 1) {
       for(i in 2:length(runs[[run.i]])) {
-        # if(connections[runs[[run.i]][i-1],runs[[run.i]][i]]==1 | connections[runs[[run.i]][i-1],runs[[run.i]][i]]==3) {
-        #   newlines[[run.i]] <- rbind(newlines[[run.i]],lines[[runs[[run.i]][i]]])
-        # }
-        # if(connections[runs[[run.i]][i-1],runs[[run.i]][i]]==2 | connections[runs[[run.i]][i-1],runs[[run.i]][i]]==4) {
-        #   nextline <- NA*lines[[runs[[run.i]][i]]]
-        #   for(j in 1:dim(nextline)[1]) {
-        #     nextline[j,] <- lines[[runs[[run.i]][i]]][(dim(nextline)[1]-j+1),]
-        #   }
-        #   newlines[[run.i]] <- rbind(newlines[[run.i]],nextline)
-        # }
         if(connections[runs[[run.i]][i-1],runs[[run.i]][i]]==1) {    ###########
           len <- dim(newlines[[run.i]])[1]
           newlines[[run.i]] <- rbind(newlines[[run.i]][len:1,],lines[[runs[[run.i]][i]]])
@@ -186,7 +101,7 @@ dissolve <- function(rivers) {
         if(connections[runs[[run.i]][i-1],runs[[run.i]][i]]==4) {
           len <- dim(newlines[[run.i]])[1]
           newlines[[run.i]] <- rbind(lines[[runs[[run.i]][i]]],newlines[[run.i]][len:1,])
-        }    ###########
+        }
       }
     }
   }
@@ -210,42 +125,26 @@ dissolve <- function(rivers) {
       if(pdist(newlines[[i]][i.max,],newlines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 4
       }
-      if(pdist(newlines[[i]][1,],newlines[[j]][1,])<tolerance & pdist(newlines[[i]][i.max,],newlines[[j]][j.max,])<tolerance & i!=j) {     ##########
+      if(pdist(newlines[[i]][1,],newlines[[j]][1,])<tolerance & pdist(newlines[[i]][i.max,],newlines[[j]][j.max,])<tolerance & i!=j) { 
         connections[i,j] <- 5
       }
       if(pdist(newlines[[i]][i.max,],newlines[[j]][1,])<tolerance & pdist(newlines[[i]][1,],newlines[[j]][j.max,])<tolerance & i!=j) {
         connections[i,j] <- 6
-      }    ##########
+      }
     }
   }
   
   # updating lengths
   lengths <- rep(NA,length)
   for(i in 1:length) {
-    # sum<-0
-    # linelength <- dim(newlines[[i]])[1]
-    # for(j in 1:(linelength-1)) {
-    #   sum <- sum+pdist(newlines[[i]][j,],newlines[[i]][(j+1),])
-    # }
-    # lengths[i]<-sum
     lengths[i] <- pdisttot(newlines[[i]])
   }
   
-  # cumuldist <- list()
-  # for(i in 1:length(newlines)) {
-  #   xy <- newlines[[i]]
-  #   n <- dim(xy)[1]
-  #   cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
-  # }
-  
   #updating rivers object
   rivers1 <- rivers
-  #rivers1$mouth$mouth.seg <- NA
-  #rivers1$mouth$mouth.vert <- NA
   rivers1$sequenced <- F
   rivers1$names <- rep(NA,length)
   rivers1$lines <- newlines
-  # rivers1$cumuldist <- cumuldist
   if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
     for(i in 1:length(rivers1$lines)) {
       for(j in 1:(dim(rivers1$lines[[i]])[1])) {
@@ -273,15 +172,13 @@ dissolve <- function(rivers) {
   sp_seg <- 1:length
   rivers1$lineID <- data.frame(rivID,sp_line,sp_seg)
   
-  if(!is.na(rivers1$mouth$mouth.seg) & !is.na(rivers1$mouth$mouth.vert)) {   #########
+  if(!is.na(rivers1$mouth$mouth.seg) & !is.na(rivers1$mouth$mouth.vert)) {
     if(rivers1$mouth$mouth.vert > 1 & rivers1$mouth$mouth.vert < dim(rivers1$lines[[rivers1$mouth$mouth.seg]])[1]) {
       suppressMessages(rivers1 <- splitsegmentat(seg=rivers1$mouth$mouth.seg, vert=rivers1$mouth$mouth.vert, rivers=rivers1))
     }
-  }     #########
+  } 
   
   if(!is.null(rivers1$segroutes)) {
-    # rivers1$segroutes <- NULL
-    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
     rivers1 <- buildsegroutes(rivers1,lookup=F)
   }
   rivers1 <- addcumuldist(rivers1)

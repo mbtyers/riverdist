@@ -74,31 +74,6 @@ cleanup <- function(rivers) {
   connections <- rivers1$connections
   length <- length(lines)
   
-  # calculating a new connectivity matrix to capture beginning-beginning/end-end and beginning-end/end-beginning connections (special braided case)
-  # for(i in 1:length) {
-  #   for(j in 1:length) {
-  #     i.max <- dim(lines[[i]])[1]
-  #     j.max <- dim(lines[[j]])[1]
-  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-  #       connections[i,j] <- 1
-  #     }
-  #     if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 2
-  #     }
-  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-  #       connections[i,j] <- 3
-  #     }
-  #     if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 4
-  #     }
-  #     if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 5
-  #     }
-  #     if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-  #       connections[i,j] <- 6
-  #     }
-  #   }
-  # }
   n.top <- function(seg,connections) {
     return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
   }
@@ -171,12 +146,6 @@ cleanup <- function(rivers) {
   while(!done) {
     if(n.top(riv.i,rivers3$connections)==0) {
       for(riv.j in 1:length(rivers3$lines)) {
-        # for(vert.j in 1:(dim(rivers3$lines[[riv.j]])[1])) {
-        #   if(riv.i!=riv.j & pdist(rivers3$lines[[riv.i]][1,],rivers3$lines[[riv.j]][vert.j,]) < rivers3$tolerance) {
-        #     needed <- T
-        #     done <- T
-        #   }
-        # }
         if(riv.i!=riv.j) {
           distanceses <- pdist2(rivers3$lines[[riv.i]][1,],rivers3$lines[[riv.j]])
           if(any(distanceses<rivers3$tolerance)) {
@@ -188,12 +157,6 @@ cleanup <- function(rivers) {
     }
     if(n.bot(riv.i,rivers3$connections)==0) {
       for(riv.j in 1:length(rivers3$lines)) {
-        # for(vert.j in 1:(dim(rivers3$lines[[riv.j]])[1])) {
-        #   if(riv.i!=riv.j & pdist(rivers3$lines[[riv.i]][dim(rivers3$lines[[riv.i]])[1],],rivers3$lines[[riv.j]][vert.j,]) < rivers3$tolerance) {
-        #     needed <- T
-        #     done <- T
-        #   }
-        # }
         if(riv.i!=riv.j) {
           distanceses <- pdist2(rivers3$lines[[riv.i]][dim(rivers3$lines[[riv.i]])[1],],rivers3$lines[[riv.j]])
           if(any(distanceses<rivers3$tolerance)) {
@@ -308,7 +271,7 @@ cleanup <- function(rivers) {
         if(any(howtodo==c("e","E"))) closestpt <- F
         if(closestpt) cat('\n',"Connecting and calculating new segment splits...",'\n')
         if(!closestpt) cat('\n',"Connecting...",'\n')
-        suppressMessages(rivers4a <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))    ######
+        suppressMessages(rivers4a <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))
         tozoomto <- rbind(rivers4$lines[[connect1]],rivers4$lines[[connect2]])
         xmin <- min(tozoomto[,1],na.rm=T)
         xmax <- max(tozoomto[,1],na.rm=T)
@@ -320,7 +283,7 @@ cleanup <- function(rivers) {
         while(!any(whatnow==c("y","Y","n","N"))) {
           whatnow <- readline(prompt="Accept changes? (y/n) ")
         }
-        if(any(whatnow==c("y","Y"))) rivers4 <- rivers4a    ######
+        if(any(whatnow==c("y","Y"))) rivers4 <- rivers4a 
       }
     }
     if(is.null(takeout)) {
@@ -497,12 +460,12 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
         if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
           rivers$connections[i,j] <- 4
         }
-        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][1,])<rivers$tolerance & pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {     ##########
+        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][1,])<rivers$tolerance & pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) { 
           rivers$connections[i,j] <- 5
         }
         if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][1,])<rivers$tolerance & pdist(rivers$lines[[i]][1,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
           rivers$connections[i,j] <- 6
-        }    ##########
+        }  
       }
     }
     if(any(rivers$connections %in% 5:6)) rivers$braided <- TRUE
@@ -531,16 +494,10 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
     rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
     rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(c(dbeg,dend))
     
-    # if(!is.null(rivers$segroutes)) {
-    #   rivers$segroutes <- NULL
-    #   warning("Segment routes must be rebuilt - see help(buildsegroutes).")
-    # }
     suppressMessages(rivers <- splitsegments(rivers))
   }
   
   if(!is.null(rivers$segroutes)) {
-    # rivers$segroutes <- NULL
-    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
     rivers <- buildsegroutes(rivers,lookup=F)
   }
   rivers <- addcumuldist(rivers)
@@ -649,8 +606,6 @@ addverts <- function(rivers,mindist=500) {
   }
   
   if(!is.null(rivers1$segroutes)) {
-    # rivers1$segroutes <- NULL
-    # warning("Segment routes must be rebuilt - see help(buildsegroutes).")
     rivers1 <- buildsegroutes(rivers1,lookup=F)
   }
   rivers1 <- addcumuldist(rivers1)

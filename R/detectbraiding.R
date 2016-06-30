@@ -7,6 +7,7 @@
 #'   \code{endseg} are \code{NULL}, the full river network will be checked.
 #' @param endseg Starting segment of a route to investigate.  If this and
 #'   \code{startseg} are \code{NULL}, the full river network will be checked.
+#' @param progress Whether to show the progress bar.  Defaults to \code{TRUE}.
 #' @author Matt Tyers
 #' @note This function is called within \link{cleanup}, which is recommended in most cases.
 #' @examples
@@ -24,7 +25,7 @@
 #' checkbraided(startseg=1, endseg=7, rivers=Kenai3.subset)
 #' checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset)
 #' @export
-checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
+checkbraided <- function(rivers,startseg=NULL,endseg=NULL,progress=TRUE) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   connections <- rivers$connections
   length <- length(rivers$lines)
@@ -38,7 +39,7 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
   }
   
   if(is.null(startseg) & is.null(endseg)) {
-    if(interactive()) pb <- txtProgressBar(style=3)
+    if(interactive() & progress) pb <- txtProgressBar(style=3)
     finished <- FALSE
     braiding <- FALSE
     i <- 1
@@ -55,9 +56,9 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
       if(i==length & j==length) finished<-T
       if(i==length) j<-j+1
       if(i<length) i<-i+1
-      if(interactive()) setTxtProgressBar(pb=pb, value=i/length)
+      if(interactive() & progress) setTxtProgressBar(pb=pb, value=i/length)
     }
-    if(interactive()) setTxtProgressBar(pb=pb, value=1)
+    if(interactive() & progress) setTxtProgressBar(pb=pb, value=1)
     if(braiding) cat('\n',"Braiding detected in river network.  Distance measurements may be inaccurate.")
     if(finished & !braiding) cat('\n',"No braiding detected in river network.")
   }
@@ -81,6 +82,7 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
 #'   within a river network object, and returns a logical value for specifying braiding within a river network object.
 #' @param rivers The river network object to check.
 #' @param toreturn Specifying \code{toreturn="rivers"} (the default) will return a river network object with a value of \code{TRUE} or \code{FALSE} assigned to the \code{$braided} element of the river network object.  Specifying \code{toreturn="logical"} will just return \code{TRUE} if braiding is detected or \code{FALSE} if no braiding is detected.  Specifying \code{toreturn="routes"} will return the first two differing routes detected, which may be useful in identifying where the problem lies.
+#' @param progress Whether to show the progress bar.  Defaults to \code{TRUE}.
 #' @author Matt Tyers
 #' @note This function is called within \link{cleanup}, which is recommended in most cases.
 #' @examples
@@ -97,7 +99,7 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL) {
 #' KilleyW.1 <- checkbraidedTF(rivers=KilleyW, toreturn="rivers")
 #' str(KilleyW.1)
 #' @export
-checkbraidedTF <- function(rivers,toreturn="rivers") {
+checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
   if(toreturn != "rivers" & toreturn != "logical" & toreturn != "routes") stop("Invalid specification of argument 'toreturn'.  See help for more details.")
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   connections <- rivers$connections
@@ -130,7 +132,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
   braiding <- F 
   finished <- F
   i<-1
-  if(interactive()) pb <- txtProgressBar(style=3)
+  if(interactive() & progress) pb <- txtProgressBar(style=3)
   while(!finished) {
     route1 <- detectroute(start=checkthese[i],end=mouthseg,rivers=rivers,algorithm="sequential")
     route2 <- detectroute(start=(length-checkthese[i]+1),end=(length-mouthseg+1),rivers=invertrivers,algorithm="sequential")
@@ -146,11 +148,11 @@ checkbraidedTF <- function(rivers,toreturn="rivers") {
     if(i==length(checkthese)) finished <- T
     i<-i+1
     #print(i)
-    if(interactive()) setTxtProgressBar(pb=pb, value=i/length)
+    if(interactive() & progress) setTxtProgressBar(pb=pb, value=i/length)
   }
   }
   
-  if(interactive()) setTxtProgressBar(pb=pb, value=1)
+  if(interactive() & progress) setTxtProgressBar(pb=pb, value=1)
   rivers$braided <- braiding
   if(toreturn=="logical") return(braiding)
   if(toreturn=="rivers") return(rivers)

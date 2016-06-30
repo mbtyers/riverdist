@@ -265,8 +265,8 @@ par(mfrow=c(1,2))
 plot(x=Gulk, main="Gulkana River")
 plot(x=KilleyW, ylim=c(1164500, 1168500), main="Killey River West")
 
-checkbraided(rivers=Gulk)
-checkbraided(rivers=KilleyW)
+checkbraided(rivers=Gulk, progress=FALSE)
+checkbraided(rivers=KilleyW, progress=FALSE)
 
 ## ----fig.width=5,fig.height=5--------------------------------------------
 Kenai3.subset <- trimriver(trimto=c(22,2,70,30,15,98,96,89,52,3), rivers=Kenai3)

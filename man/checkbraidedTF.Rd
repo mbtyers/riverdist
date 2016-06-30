@@ -4,12 +4,14 @@
 \alias{checkbraidedTF}
 \title{Check for Braiding in a River Network}
 \usage{
-checkbraidedTF(rivers, toreturn = "rivers")
+checkbraidedTF(rivers, toreturn = "rivers", progress = TRUE)
 }
 \arguments{
 \item{rivers}{The river network object to check.}
 
 \item{toreturn}{Specifying \code{toreturn="rivers"} (the default) will return a river network object with a value of \code{TRUE} or \code{FALSE} assigned to the \code{$braided} element of the river network object.  Specifying \code{toreturn="logical"} will just return \code{TRUE} if braiding is detected or \code{FALSE} if no braiding is detected.  Specifying \code{toreturn="routes"} will return the first two differing routes detected, which may be useful in identifying where the problem lies.}
+
+\item{progress}{Whether to show the progress bar.  Defaults to \code{TRUE}.}
 }
 \description{
 Detects braiding (multiple flow channels between two locations)

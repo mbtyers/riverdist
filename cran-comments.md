@@ -11,4 +11,4 @@
 * There were no ERRORs, WARNINGs, or NOTEs. 
 
 ## Downstream dependencies
-* This is a new package and there are no downstream dependencies.
+* This is a fairly new package and there are not yet any downstream dependencies.

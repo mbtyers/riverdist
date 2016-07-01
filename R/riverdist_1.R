@@ -154,10 +154,12 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
   
   units <- "unknown"
   for(i in 1:length(proj4[[1]])) {
-    proj4arg <- strsplit(proj4[[1]][i],split="=")
-    if(proj4arg[[1]][1]=="+units") {
-      units <- proj4arg[[1]][2]
-      cat('\n',"Units:",proj4arg[[1]][2],'\n')
+    if(proj4[[1]][i]!="") {
+      proj4arg <- strsplit(proj4[[1]][i],split="=")
+      if(proj4arg[[1]][1]=="+units") {
+        units <- proj4arg[[1]][2]
+        cat('\n',"Units:",proj4arg[[1]][2],'\n')
+      }
     }
   }
   

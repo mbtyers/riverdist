@@ -7,8 +7,8 @@ River Network Distance Computation and Applications
 }
 \description{
 Reads river network shape files and computes network distances.
-    Also included are a variety of analysical and graphical tools designed 
-    for fisheries research, such as minimum homerange, kernel density 
+    Also included are a variety of computation and graphical tools designed 
+    for fisheries telemetry research, such as minimum home range, kernel density 
     estimation, and clustering analysis using empirical k-functions with 
     a bootstrap envelope.  Tools are also provided for editing the river 
     networks, meaning there is no reliance on GIS software.
@@ -17,7 +17,7 @@ Reads river network shape files and computes network distances.
 \tabular{ll}{
 Package: \tab riverdist\cr
 Type: \tab Package\cr
-Version: \tab 0.11.6.9004\cr
+Version: \tab 0.12.0\cr
 Date: \tab 2016-07-01\cr
 License: \tab GPL-2\cr
 }

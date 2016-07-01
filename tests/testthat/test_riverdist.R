@@ -367,9 +367,11 @@ test_that("cleanup funcs",{
 })
 
 filepath <- system.file("extdata", package="riverdist")
+ptshp <- pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)
 test_that("line2network",{
   expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
-  expect_equal(dim(pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)),c(100,8))
+  expect_equal(dim(ptshp),c(100,8))
+  expect_equal(sum(ptshp[,1:2]),27095)
 }) 
 
 test_that("matbysurvey", {
@@ -386,7 +388,7 @@ fakesubdens <- makeriverdensity(seg=fakefish_sub$seg,vert=fakefish_sub$vert,surv
 test_that("riverdensity", {
   expect_equal(length(fakesubdens$densities),7)
   expect_equal(length(fakesubdens$densities[[1]]),14)
-  expect_equal(sum(unlist(fakesubdens$densities)),0.04737915,tolerance=0.0000001)
+  expect_equal(sum(unlist(fakesubdens$densities)),0.04737915,tolerance=0.000001)
 })
 
 test_that("addverts", {

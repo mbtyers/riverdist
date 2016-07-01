@@ -1,18 +1,18 @@
 Package: riverdist
 Type: Package
 Title: River Network Distance Computation, and Applications
-Version: 0.11.6.9004
+Version: 0.12.0
 Date: 2016-07-01
 Author: Matt Tyers [aut, cre]
 Authors@R: person("Matt", "Tyers", email = "matt.tyers@alaska.gov",
     role = c("aut", "cre"))
 Maintainer: Matt Tyers <matt.tyers@alaska.gov>
 Description: Reads river network shape files and computes network distances.
-    Also included are a variety of analysical and graphical tools designed 
-    for fisheries research, such as minimum homerange, kernel density 
+    Also included are a variety of computation and graphical tools designed 
+    for fisheries telemetry research, such as minimum home range, kernel density 
     estimation, and clustering analysis using empirical k-functions with 
     a bootstrap envelope.  Tools are also provided for editing the river 
-    networks, meaning there is no reliance on GIS software.
+    networks, meaning there is no reliance on external software.
 License: GPL-2
 Depends:
     R (>= 2.14.0)

@@ -55,6 +55,10 @@ par(mfrow=c(1,3))
 homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk, map=TRUE)
 
 ## ------------------------------------------------------------------------
+dmat <- riverdistancemat(smallset$seg,smallset$vert,Gulk)
+round(dmat)[1:7,1:7]  # only showing the first 7 rows & columns for clarity
+
+## ------------------------------------------------------------------------
 logi1 <- (smallset$seg==2)
 obsID <- paste0("id",smallset$id,"-flight",smallset$flight)  # constructing observation labels
 riverdistancemat(seg=smallset$seg, vert=smallset$vert, rivers=Gulk, logical=logi1, ID=obsID)
@@ -253,7 +257,7 @@ data(Kenai3)
 Kenai3split <- addverts(Kenai3, mindist=200)
 
 par(mfrow=c(1,2))
-zoomtoseg(seg=c(47,74,78), rivers=Kenai3, main="segment 71 vertices")
+zoomtoseg(seg=c(47,74,78), rivers=Kenai3, main="segment 74 vertices")
 points(Kenai3$lines[[74]]) 
 
 zoomtoseg(seg=c(47,74,78), rivers=Kenai3split, main="adding points every 200m")

@@ -89,36 +89,7 @@ splitsegments <- function(rivers,tolerance=NULL) {
   lines <- newlines
   length <- length(lines)
   
-  # defining a connectivity matrix...
-  # connection type 1: beginning - beginning
-  # connection type 2: beginning - end
-  # connection type 3: end - beginning
-  # connection type 4: end - end
-  connections <- matrix(NA,nrow=length,ncol=length)
-  for(i in 1:length) {
-    for(j in 1:length) {
-      i.max <- dim(lines[[i]])[1]
-      j.max <- dim(lines[[j]])[1]
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 1
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 2
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 3
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 4
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 5
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 6
-      }
-    }
-  }
+  connections <- calculateconnections(lines=lines,tolerance=tolerance)
   
   # making a vector of total segment lengths
   lengths <- rep(NA,length)
@@ -195,37 +166,8 @@ splitsegmentat <- function(seg, vert, rivers) {
     mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
   }
   
-  # defining a connectivity matrix...
-  # connection type 1: beginning - beginning
-  # connection type 2: beginning - end
-  # connection type 3: end - beginning
-  # connection type 4: end - end
   tolerance <- rivers$tolerance
-  connections <- matrix(NA,nrow=length,ncol=length)
-  for(i in 1:length) {
-    for(j in 1:length) {
-      i.max <- dim(lines[[i]])[1]
-      j.max <- dim(lines[[j]])[1]
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 1
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 2
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 3
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 4
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 5
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 6
-      }
-    }
-  }
+  connections <- calculateconnections(lines=lines,tolerance=tolerance)
   
   # making a vector of total segment lengths
   lengths <- rep(NA,length)

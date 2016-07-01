@@ -4,7 +4,8 @@
 \alias{connectsegs}
 \title{Connect Segments}
 \usage{
-connectsegs(connect, connectto, nearestvert = F, rivers)
+connectsegs(connect, connectto, nearestvert = FALSE, rivers,
+  calcconnections = TRUE)
 }
 \arguments{
 \item{connect}{The segment to connect to the network.  Typically, this is the
@@ -18,6 +19,9 @@ segment (\code{FALSE}), or connect at the nearest endpoint (\code{TRUE}).
 Defaults to \code{TRUE}.}
 
 \item{rivers}{The river network object to use.}
+
+\item{calcconnections}{Whether to recalculate all connections. 
+Defaults to \code{TRUE}.  Setting to \code{FALSE} is not recommended unless many connections are to be made, in which case connections can be calculated afterward.}
 }
 \value{
 A new river network object with the specified segments connected (see

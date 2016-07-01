@@ -15,7 +15,10 @@ removeduplicates <- function(rivers) {
   trim.i <- 1
   trim <- NULL
   for(i in 1:length(rivers$lines)) {
-    for(j in 1:length(rivers$lines)) {
+    lengthsequal <- (rivers$lengths==rivers$lengths[i])
+    lengthsequal[i] <- F
+    whichtocheck <- (1:length(rivers$lines))[lengthsequal]
+    for(j in whichtocheck) {
       if(i!=j&length(rivers$lines[[i]])==length(rivers$lines[[j]])) {
         if(all(rivers$lines[[i]]==rivers$lines[[j]]) | all(rivers$lines[[i]]==(rivers$lines[[j]][(dim(rivers$lines[[j]])[1]):1,]))) {
           trim[trim.i] <- max(c(i,j))
@@ -260,7 +263,8 @@ cleanup <- function(rivers) {
         cat("No unconnected segments detected.",'\n')
       }
       if(whattodo=="c" | whattodo=="C") {
-        plot(rivers4)
+        plot(rivers4,lwd=2)
+        topologydots(rivers4,add=T)
         connect1 <- as.numeric(readline("Enter the number of the segment you'd like to connect: "))
         connect2 <- as.numeric(readline("Enter the number of the segment you'd like to connect it to: "))
         howtodo <- 0
@@ -277,7 +281,7 @@ cleanup <- function(rivers) {
         xmax <- max(tozoomto[,1],na.rm=T)
         ymin <- min(tozoomto[,2],na.rm=T)
         ymax <- max(tozoomto[,2],na.rm=T)
-        plot(rivers4a,xlim=c(xmin,xmax),ylim=c(ymin,ymax))
+        plot(rivers4a,xlim=c(xmin,xmax),ylim=c(ymin,ymax),lwd=2)
         topologydots(rivers=rivers4a,add=TRUE)
         whatnow <- 0
         while(!any(whatnow==c("y","Y","n","N"))) {
@@ -399,6 +403,8 @@ cleanup <- function(rivers) {
 #' @param nearestvert Whether to connect at the nearest vertex and split the
 #'   segment (\code{FALSE}), or connect at the nearest endpoint (\code{TRUE}). 
 #'   Defaults to \code{TRUE}.
+#' @param calcconnections Whether to recalculate all connections. 
+#'   Defaults to \code{TRUE}.  Setting to \code{FALSE} is not recommended unless many connections are to be made, in which case connections can be calculated afterward.
 #' @param rivers The river network object to use.
 #' @return A new river network object with the specified segments connected (see
 #'   \link{rivernetwork})
@@ -415,7 +421,7 @@ cleanup <- function(rivers) {
 #' plot(Koyukuk0.1,ylim=c(1930500,1931500), xlim=c(194900,195100))
 #' topologydots(Koyukuk0.1, add=TRUE)
 #' @export
-connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
+connectsegs <- function(connect,connectto,nearestvert=FALSE,rivers,calcconnections=TRUE) {
   if(length(whoconnected(connect,rivers))>0){
     if(any(whoconnected(connect,rivers)==connectto)) stop("Segments are already connected.")
   }
@@ -444,30 +450,7 @@ connectsegs <- function(connect,connectto,nearestvert=F,rivers) {
     
     # updating the connectivity matrix 
     length <- length(rivers$lines)
-    for(i in 1:length) {
-      for(j in 1:length) {
-        i.max <- dim(rivers$lines[[i]])[1]
-        j.max <- dim(rivers$lines[[j]])[1]
-        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][1,])<rivers$tolerance & i!=j) {
-          rivers$connections[i,j] <- 1
-        }
-        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
-          rivers$connections[i,j] <- 2
-        }
-        if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][1,])<rivers$tolerance & i!=j) {
-          rivers$connections[i,j] <- 3
-        }
-        if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
-          rivers$connections[i,j] <- 4
-        }
-        if(pdist(rivers$lines[[i]][1,],rivers$lines[[j]][1,])<rivers$tolerance & pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) { 
-          rivers$connections[i,j] <- 5
-        }
-        if(pdist(rivers$lines[[i]][i.max,],rivers$lines[[j]][1,])<rivers$tolerance & pdist(rivers$lines[[i]][1,],rivers$lines[[j]][j.max,])<rivers$tolerance & i!=j) {
-          rivers$connections[i,j] <- 6
-        }  
-      }
-    }
+    if(calcconnections) rivers$connections <- calculateconnections(lines=rivers$lines,tolerance=rivers$tolerance)
     if(any(rivers$connections %in% 5:6)) rivers$braided <- TRUE
   }
   
@@ -532,12 +515,15 @@ removemicrosegs <- function(rivers) {
     for(jj in connectedto) {
       for(jjj in connectedto) {
         if(jj!=jjj & !any(whoconnected(seg=jj,rivers=rivers)==jjj)) {
-          rivers <- connectsegs(connect=jj,connectto=jjj,rivers=rivers)
+          rivers <- connectsegs(connect=jj,connectto=jjj,rivers=rivers,calcconnections=F)
         }
       }
     }
   }
-  if(length(problems)>0) suppressMessages(rivers <- trimriver(trim=problems,rivers=rivers))
+  if(length(problems)>0) {
+    rivers$connections <- calculateconnections(lines=rivers$lines,tolerance=rivers$tolerance)  
+    suppressMessages(rivers <- trimriver(trim=problems,rivers=rivers))
+  }
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
 }

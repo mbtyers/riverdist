@@ -55,6 +55,49 @@ addcumuldist <- function(rivers) {
 }
 
 
+#' Calculate the Connectivity Matrix for a River Network
+#' @description Calculates the connectivity matrix for a river network, during import and editing.  Called internally.
+#' @param lines A list of coordinate matrices, each corresponding to a line segment.
+#' @param tolerance The spatial tolerance for establishing connectivity.
+#' @return A matrix with topological information.  See the \code{$connections} element of the \link{rivernetwork-class}.
+#' @author Matt Tyers
+#' @examples
+#' Gulk_connections <- calculateconnections(lines=Gulk$lines, tolerance=Gulk$tolerance)
+#' @export
+calculateconnections <- function(lines,tolerance) {
+  length <- length(lines)
+  # defining a connectivity matrix...
+  # connection type 1: beginning - beginning
+  # connection type 2: beginning - end
+  # connection type 3: end - beginning
+  # connection type 4: end - end
+  # connection type 5: beginning - beginning and end - end
+  # connection type 6: beginning - end and end - beginning
+  connections <- matrix(NA,nrow=length,ncol=length)
+  begmat <- matrix(unlist(sapply(lines,function(xy) xy[1,],simplify=F)),ncol=2,byrow=T)
+  endmat <- matrix(unlist(sapply(lines,function(xy) xy[nrow(xy),],simplify=F)),ncol=2,byrow=T)
+  pdist2 <- function(p1,p2mat) {
+    dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
+    return(dist)
+  }  
+  
+  for(i in 1:length) {
+    mat1 <- pdist2(begmat[i,],begmat)
+    mat2 <- pdist2(begmat[i,],endmat)
+    mat3 <- pdist2(endmat[i,],begmat)
+    mat4 <- pdist2(endmat[i,],endmat)
+    connections[i,mat1<tolerance] <- 1
+    connections[i,mat2<tolerance] <- 2
+    connections[i,mat3<tolerance] <- 3
+    connections[i,mat4<tolerance] <- 4
+    connections[i,(mat1<tolerance & mat4<tolerance)] <- 5
+    connections[i,(mat2<tolerance & mat3<tolerance)] <- 6
+  }
+  diag(connections) <- NA
+  return(connections)
+}
+
+
 #' Create a River Network Object from a Shapefile
 #' @description Uses \link[rgdal]{readOGR} in package 'rgdal' to read a river 
 #'   shapefile, and establishes connectivity of segment endpoints based on 
@@ -150,41 +193,8 @@ line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyproje
   rivID <- 1:length
   lineID <- data.frame(rivID,sp_line,sp_seg)
   
-  # defining a connectivity matrix...
-  # connection type 1: beginning - beginning
-  # connection type 2: beginning - end
-  # connection type 3: end - beginning
-  # connection type 4: end - end
-  connections <- matrix(NA,nrow=length,ncol=length)
-  if(interactive()) {
-    cat('\n',"Calculating connections...",'\n',"If this step is very time-consuming, a spatial dissolve in GIS before importing to R is recommended.",'\n')
-    pb <- txtProgressBar(style=3)
-  }
-  for(i in 1:length) {
-    for(j in 1:length) {
-      i.max <- dim(lines[[i]])[1]
-      j.max <- dim(lines[[j]])[1]
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 1
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 2
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 3
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 4
-      }
-      if(pdist(lines[[i]][1,],lines[[j]][1,])<tolerance & pdist(lines[[i]][i.max,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 5
-      }
-      if(pdist(lines[[i]][i.max,],lines[[j]][1,])<tolerance & pdist(lines[[i]][1,],lines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 6
-      }
-      if(interactive()) setTxtProgressBar(pb=pb, value=(i/length + j/length/length))
-    }
-  }
+  connections <- calculateconnections(lines=lines, tolerance=tolerance)
+  
   if(any(connections %in% 5:6)) braided <- TRUE
   
   # making a vector of total segment lengths

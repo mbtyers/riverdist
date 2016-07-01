@@ -234,6 +234,11 @@ homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk,
 
 A matrix of the river network distance between every observation and every other observation can also be calculated using `riverdistancemat()`.  A use for this function might be if the user wishes to calculate all distances at once, and subset later.  
 
+```{r}
+dmat <- riverdistancemat(smallset$seg,smallset$vert,Gulk)
+round(dmat)[1:7,1:7]  # only showing the first 7 rows & columns for clarity
+```
+
 The `logical` argument can be used for subsetting, if the full network distance matrix is not needed.  This capability is shown below, calculating the distance matrix only for observations occurring on segment number 2.  The `ID` argument can be used with a vector of observation labels, to display row and column labels that may be easier to interpret than observation indices.
 
 ```{r}
@@ -675,14 +680,14 @@ abstreams2 <- removemicrosegs(abstreams0)
 
 In some cases, such as when a river network contains a lake, the shapefile will contain long straight-line sections, with vertices retained only for the beginning and end.  If point data exist in these regions, when they are converted to river locations, they will be snapped to the nearest vertex - in this case, one of the endpoints of the straight stretch.  Since it is likely that a greater degree of precision is desired in distance calculations, `addverts()` provides a method of inserting additional vertices, wherever the river network contains vertices that are spaced at a greater distance than a specified threshold.
 
-The example below first shows how the Skilak Lake section of the Kenai River network was originally read from a shapefile, with the vertices of segment 71 overlayed. The second plot shows the same section with the vertices of segment 71 overlayed, after adding vertices every 200 meters to the full river network.
+The example below first shows how the Skilak Lake section of the Kenai River network was originally read from a shapefile, with the vertices of segment 74 overlayed. The second plot shows the same section with the vertices of segment 74 overlayed, after adding vertices every 200 meters to the full river network.
 
 ```{r,fig.width=7.5,fig.height=4, warning=FALSE, message=FALSE}
 data(Kenai3)
 Kenai3split <- addverts(Kenai3, mindist=200)
 
 par(mfrow=c(1,2))
-zoomtoseg(seg=c(47,74,78), rivers=Kenai3, main="segment 71 vertices")
+zoomtoseg(seg=c(47,74,78), rivers=Kenai3, main="segment 74 vertices")
 points(Kenai3$lines[[74]]) 
 
 zoomtoseg(seg=c(47,74,78), rivers=Kenai3split, main="adding points every 200m")

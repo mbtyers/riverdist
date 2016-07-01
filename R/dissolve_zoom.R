@@ -87,7 +87,7 @@ dissolve <- function(rivers) {
     newlines[[run.i]] <- lines[[runs[[run.i]][1]]]
     if(length(runs[[run.i]]) > 1) {
       for(i in 2:length(runs[[run.i]])) {
-        if(connections[runs[[run.i]][i-1],runs[[run.i]][i]]==1) {    ###########
+        if(connections[runs[[run.i]][i-1],runs[[run.i]][i]]==1) {  
           len <- dim(newlines[[run.i]])[1]
           newlines[[run.i]] <- rbind(newlines[[run.i]][len:1,],lines[[runs[[run.i]][i]]])
         }
@@ -108,31 +108,7 @@ dissolve <- function(rivers) {
   
   # updating the connectivity matrix with the new segments
   length <- length(newlines)
-  connections <- matrix(NA,nrow=length,ncol=length)
-  for(i in 1:length) {
-    for(j in 1:length) {
-      i.max <- dim(newlines[[i]])[1]
-      j.max <- dim(newlines[[j]])[1]
-      if(pdist(newlines[[i]][1,],newlines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 1
-      }
-      if(pdist(newlines[[i]][1,],newlines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 2
-      }
-      if(pdist(newlines[[i]][i.max,],newlines[[j]][1,])<tolerance & i!=j) {
-        connections[i,j] <- 3
-      }
-      if(pdist(newlines[[i]][i.max,],newlines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 4
-      }
-      if(pdist(newlines[[i]][1,],newlines[[j]][1,])<tolerance & pdist(newlines[[i]][i.max,],newlines[[j]][j.max,])<tolerance & i!=j) { 
-        connections[i,j] <- 5
-      }
-      if(pdist(newlines[[i]][i.max,],newlines[[j]][1,])<tolerance & pdist(newlines[[i]][1,],newlines[[j]][j.max,])<tolerance & i!=j) {
-        connections[i,j] <- 6
-      }
-    }
-  }
+  connections <- calculateconnections(lines=newlines, tolerance=tolerance)
   
   # updating lengths
   lengths <- rep(NA,length)

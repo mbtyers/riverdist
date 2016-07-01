@@ -6,14 +6,19 @@
 River Network Distance Computation and Applications
 }
 \description{
-Reads river network shapefiles and computes network distances.  Also included are a variety of tools designed for fisheries research.
+Reads river network shape files and computes network distances.
+    Also included are a variety of analysical and graphical tools designed 
+    for fisheries research, such as minimum homerange, kernel density 
+    estimation, and clustering analysis using empirical k-functions with 
+    a bootstrap envelope.  Tools are also provided for editing the river 
+    networks, meaning there is no reliance on GIS software.
 }
 \details{
 \tabular{ll}{
 Package: \tab riverdist\cr
 Type: \tab Package\cr
-Version: \tab 0.11.6.9003\cr
-Date: \tab 2016-06-30\cr
+Version: \tab 0.11.6.9004\cr
+Date: \tab 2016-07-01\cr
 License: \tab GPL-2\cr
 }
 The riverdist package provides tools for distance calculation along a river network.  The river network is imported from a projected shapefile.  Spatial point data may be imported from a shapefile as well, or directly from coordinates.

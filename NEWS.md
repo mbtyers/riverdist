@@ -12,4 +12,4 @@
 
 * New connection types were added, to handle special cases in braided networks.
 
-* Error handling in `line2network()` was improved.
+* Error handling in `line2network()` was improved, and more complex networks can now be read in a manageable amount of time.

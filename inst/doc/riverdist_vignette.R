@@ -26,12 +26,14 @@ head(fakefish_riv)  # a look at the first few rows of the output
 hist(fakefish_riv$snapdist, main="snapping distance (m)")
 
 ## ----eval=FALSE----------------------------------------------------------
-#  segvert_from_shp <- pointshp2segvert(path=".", layer="MyPointShapefile", rivers=MyRivernetwork)
+#  segvert_from_shp <- pointshp2segvert(path=".", layer="MyPointShapefile",
+#                                       rivers=MyRivernetwork)
 
 ## ----fig.width=5,fig.height=5--------------------------------------------
 zoomtoseg(seg=c(11, 14), rivers=Gulk)
 points(fakefish$x, fakefish$y, pch=16, col="red")
-riverpoints(seg=fakefish_riv$seg, vert=fakefish_riv$vert, rivers=Gulk, pch=15, col="blue")
+riverpoints(seg=fakefish_riv$seg, vert=fakefish_riv$vert, rivers=Gulk, pch=15, 
+            col="blue")
 
 ## ----fig.width=5,fig.height=5--------------------------------------------
 # starting location: segment 7, vertex 49
@@ -52,16 +54,21 @@ riverdistancematbysurvey(indiv=1, unique=smallset$id, survey=smallset$flight,
 ## ----fig.width=7,fig.height=3.5------------------------------------------
 # calculating observed minimum home range for all individuals
 par(mfrow=c(1,3))
-homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk, map=TRUE)
+homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk, 
+          map=TRUE)
 
 ## ------------------------------------------------------------------------
 dmat <- riverdistancemat(smallset$seg,smallset$vert,Gulk)
 round(dmat)[1:7,1:7]  # only showing the first 7 rows & columns for clarity
 
 ## ------------------------------------------------------------------------
-logi1 <- (smallset$seg==2)
-obsID <- paste0("id",smallset$id,"-flight",smallset$flight)  # constructing observation labels
-riverdistancemat(seg=smallset$seg, vert=smallset$vert, rivers=Gulk, logical=logi1, ID=obsID)
+logi1 <- (smallset$seg==2) 
+
+# constructing observation labels
+obsID <- paste0("id",smallset$id,"-flight",smallset$flight) 
+
+riverdistancemat(seg=smallset$seg, vert=smallset$vert, rivers=Gulk, logical=logi1, 
+                 ID=obsID)
 
 ## ------------------------------------------------------------------------
 streamlocs.seg <- c(2,2,2)
@@ -83,11 +90,13 @@ Gulk1 <- setmouth(seg=1, vert=1, rivers=Gulk)
 zoomtoseg(seg=c(6,3), rivers=Gulk)
 riverpoints(seg=c(6,4), vert=c(250,250), col=4, pch=15, rivers=Gulk1)
 #riverdistance(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, map=TRUE)
-text(c(859122.4, 872104.1), c(6964127.4,6969741.0), pos=c(3, 4), labels=c("beginning", "end"))
+text(c(859122.4, 872104.1), c(6964127.4,6969741.0), pos=c(3, 4), 
+     labels=c("beginning", "end"))
 riverdirection(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1)
 upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, net=FALSE)
 upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, net=TRUE)
-upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, flowconnected=TRUE)
+upstream(startseg=6, endseg=4, startvert=250, endvert=250, rivers=Gulk1, 
+         flowconnected=TRUE)
 
 ## ------------------------------------------------------------------------
 data(abstreams)
@@ -193,7 +202,8 @@ Kenai3.buf3 <- trimtopoints(x=x, y=y, rivers=Kenai3, method="buffer", dist=5000)
 
 plot(x=Kenai3, main="original")
 points(x, y, pch=15, col=4)
-legend(par("usr")[1], par("usr")[4], legend="points to buffer around", pch=15, col=4, cex=.6)
+legend(par("usr")[1], par("usr")[4], legend="points to buffer around", pch=15, 
+       col=4, cex=.6)
 
 ## ----fig.width=7.5,fig.height=3.5----------------------------------------
 
@@ -218,8 +228,8 @@ plot(x=Koy_subset_trim, main="unconnected segments removed")
 
 ## ----fig.width=7.5,fig.height=5, warning=FALSE, message=FALSE------------
 data(Kenai2)
-Kenai2_sub <- trimriver(trimto=c(26,157,141,69,3,160,2,35,102,18,64,86,49,103,61
-                                 ,43,183,72,47,176), rivers=Kenai2)
+Kenai2_sub <- trimriver(trimto=c(26,157,141,69,3,160,2,35,102,18,64,86,49,103,61,
+                                 43,183,72,47,176), rivers=Kenai2)
 
 Kenai2_sub_dissolve <- dissolve(rivers=Kenai2_sub)
 

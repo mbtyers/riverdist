@@ -67,7 +67,7 @@ cleanup <- function(rivers) {
   cat("Cleanup started, with",length(rivers$lines),"segments.",'\n')
   plot(rivers)
   cat('\n',"Removing duplicate line segments...",'\n')
-  rivers1 <- removeduplicates(rivers=rivers)
+  suppressWarnings(rivers1 <- removeduplicates(rivers=rivers))
   cat("Removed",(length(rivers$lines)-length(rivers1$lines)),"duplicated segments.",'\n')
   if((length(rivers$lines)-length(rivers1$lines))>0) plot(rivers1)
   cat('\n',"Checking if dissolve is recommended...",'\n')

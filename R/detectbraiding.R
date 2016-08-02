@@ -152,7 +152,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
   }
   }
   
-  if(interactive() & progress) setTxtProgressBar(pb=pb, value=1)
+  if(interactive() & progress & length>1) setTxtProgressBar(pb=pb, value=1)
   rivers$braided <- braiding
   if(toreturn=="logical") return(braiding)
   if(toreturn=="rivers") return(rivers)

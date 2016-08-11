@@ -1,6 +1,6 @@
 Package: riverdist
 Type: Package
-Title: River Network Distance Computation, and Applications
+Title: River Network Distance Computation and Applications
 Version: 0.12.2
 Date: 2016-08-11
 Author: Matt Tyers [aut, cre]

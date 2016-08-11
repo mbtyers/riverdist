@@ -26,6 +26,6 @@ Suggests:
     testthat
 VignetteBuilder: knitr
 LazyData: TRUE
-URL: http://github.com/mbtyers/riverdist
+URL: https://cran.r-project.org/web/packages/riverdist/index.html
 BugReports: http://github.com/mbtyers/riverdist/issues
 RoxygenNote: 5.0.1

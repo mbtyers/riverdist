@@ -1,10 +1,10 @@
-# 'riverdist' 0.12.1 and 0.12.2
+# 'riverdist' 0.12.1 and 0.12.2 (Aug 11, 2016)
 
 ### Bug fixes
 
 * A bug in the braiding check algorithm used in `cleanup()` was identified and fixed.
 
-# 'riverdist' 0.12.0
+# 'riverdist' 0.12.0 (July 5, 2016)
 
 ### Major changes
 
@@ -19,3 +19,5 @@
 * New connection types were added, to handle special cases in braided networks.
 
 * Error handling in `line2network()` was improved, and more complex networks can now be read in a manageable amount of time.
+
+# 'riverdist' 0.11.0 (initial release June 1, 2016)

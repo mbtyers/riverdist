@@ -975,18 +975,6 @@ plotseq <- function(seqbysurvey,type="boxplot",xlab="",ylab="",main="",cex.axisX
   }
   if(is.character(seqbysurvey[1,1])|is.factor(seqbysurvey[1,1])) {
     stop("Plotting methods do not yet exist for matrices returned from riverdirectionseq().")
-#     colname <- NULL
-#     contents <- NULL
-#     for(i in 1:(dim(seqbysurvey)[2])) {
-#       colname <- c(colname,rep(names(seqbysurvey)[i],(dim(seqbysurvey)[1])))
-#       contents <- c(contents,seqbysurvey[,i])
-#     }
-#     contents <- as.character(contents)
-#     contents[contents=="down"] <- "3 down"
-#     contents[contents=="0"] <- "2 0"
-#     contents[contents=="up"] <- "1 up"
-#     contents <- as.factor(contents)
-#     plot(table(colname,contents))
   }
 }
 

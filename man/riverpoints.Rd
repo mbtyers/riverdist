@@ -4,7 +4,7 @@
 \alias{riverpoints}
 \title{Draw Points from River Locations}
 \usage{
-riverpoints(seg, vert, rivers, pch = 1, col = 1, ...)
+riverpoints(seg, vert, rivers, pch = 1, col = 1, jitter = 0, ...)
 }
 \arguments{
 \item{seg}{A vector of segments}
@@ -13,9 +13,11 @@ riverpoints(seg, vert, rivers, pch = 1, col = 1, ...)
 
 \item{rivers}{The river network object to use}
 
-\item{pch}{Point character}
+\item{pch}{Point character, as a vector or single value}
 
-\item{col}{Point color}
+\item{col}{Point color, as a vector or single value}
+
+\item{jitter}{Maximum amount of random noise to add to "jitter" points if desired, so points do not overlap one another}
 
 \item{...}{Additional arguments for \link{points}}
 }
@@ -28,6 +30,10 @@ data(fakefish,Gulk)
 plot(x=Gulk, xlim=c(862000,882000), ylim=c(6978000,6993000))
 points(x=fakefish$x, y=fakefish$y, pch=16, col=2)
 riverpoints(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, pch=15, col=4)
+
+plot(x=Gulk, empty=TRUE)
+with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk, 
+       pch=16, col=flight, jitter=1000))
 }
 \author{
 Matt Tyers

@@ -296,6 +296,7 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #'   segments will be drawn in solid lines with differing colors.  If
 #'   \code{color==FALSE}, segments will be drawn in black with differing line
 #'   types.
+#' @param empty Creates an empty plot if set to \code{TRUE}.  Suppresses differentiation by line type if \code{color==FALSE}, and suppresses segment number labels.  Defaults to \code{FALSE}.
 #' @author Matt Tyers
 #' @note This function is intended to provide basic visual checks for the user,
 #'   not for any real mapping.
@@ -310,7 +311,7 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #' @importFrom stats cor
 #' @importFrom graphics axTicks
 #' @export
-plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,xlab="",ylab="",...) {
+plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
   rivers <- x
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- rivers$lines
@@ -331,9 +332,10 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
   plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,...=...)
   midptx <- midpty <- NA
   for(j in 1:length) {
-    if(!color) lines(lines[[j]],col=1,lty=j,lwd=lwd)
+    if(!color&!empty) lines(lines[[j]],col=1,lty=j,lwd=lwd)
     linecolor <- rgb((sin(j)+1)/2.3,(cos(7*j)+1)/2.3,(sin(3*(length-j))+1)/2.3)
-    if(color) lines(lines[[j]],col=linecolor,lty=1,lwd=lwd)
+    if(color&!empty) lines(lines[[j]],col=linecolor,lty=1,lwd=lwd)
+    if(color&empty) lines(lines[[j]],col=1,lty=1,lwd=lwd)
     linelength <- dim(lines[[j]])[1]
     
     xplot <- lines[[j]][,1][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
@@ -346,7 +348,7 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
     if(!offset) direction <- NULL
     xtext <- ifelse(length(xplot)>0,xplot[middle],NA)
     ytext <- ifelse(length(yplot)>0,yplot[middle],NA)
-    if(segmentnum) text(x=xtext,y=ytext,labels=j,pos=direction,cex=cex,col=ifelse(color,linecolor,1))
+    if(segmentnum&!empty) text(x=xtext,y=ytext,labels=j,pos=direction,cex=cex,col=ifelse(color,linecolor,1))
   }
   if(scale) {
     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
@@ -544,8 +546,9 @@ xy2segvert <- function(x,y,rivers) {
 #' @param seg A vector of segments
 #' @param vert A vector of vertices
 #' @param rivers The river network object to use
-#' @param pch Point character
-#' @param col Point color
+#' @param pch Point character, as a vector or single value
+#' @param col Point color, as a vector or single value
+#' @param jitter Maximum amount of random noise to add to "jitter" points if desired, so points do not overlap one another
 #' @param ... Additional arguments for \link{points}
 #' @author Matt Tyers
 #' @examples
@@ -554,17 +557,32 @@ xy2segvert <- function(x,y,rivers) {
 #' plot(x=Gulk, xlim=c(862000,882000), ylim=c(6978000,6993000))
 #' points(x=fakefish$x, y=fakefish$y, pch=16, col=2)
 #' riverpoints(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, pch=15, col=4)
+#' 
+#' plot(x=Gulk, empty=TRUE)
+#' with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk, 
+#'        pch=16, col=flight, jitter=1000))
 #' @importFrom graphics points
+#' @importFrom stats runif
 #' @export
-riverpoints <- function(seg,vert,rivers,pch=1,col=1,...) {
+riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(length(pch)==1) pch <- rep(pch,length(seg))
+  if(length(col)==1) col <- rep(col,length(seg))
   lines <- rivers$lines
   if(max(seg,na.rm=T)>length(lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
   
   for(i in 1:length(seg)) {
+    if(jitter!=0) {
+      jitterx <- runif(length(lines[[seg[i]]][vert[i],1]),min=-jitter,max=jitter)
+      jittery <- runif(length(lines[[seg[i]]][vert[i],2]),min=-jitter,max=jitter)
+    }
+    else {
+      jitterx <- 0
+      jittery <- 0
+    }
     if(vert[i]>dim(lines[[seg[i]]])[1] | vert[i]<1) stop("Invalid vertex numbers specified.")
-    points(lines[[seg[i]]][vert[i],1],
-           lines[[seg[i]]][vert[i],2],pch=pch,col=col,...=...)
+    points(lines[[seg[i]]][vert[i],1] + jitterx,
+           lines[[seg[i]]][vert[i],2] + jittery, pch=pch[i],col=col[i],...=...)
   }
 }
 

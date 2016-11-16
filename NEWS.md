@@ -1,3 +1,15 @@
+# 'riverdist' 0.12.2.9000 (development version - will be 0.12.3)
+
+### Added capabilities
+
+* Making an empty river plot (using `empty=TRUE`)
+
+* Jittering `riverpoints()` using `jitter` argument
+
+### Bug fixes
+
+* Allowing vectors of `pch` and `col` in `riverpoints()`
+
 # 'riverdist' 0.12.1 and 0.12.2 (Aug 11, 2016)
 
 ### Bug fixes

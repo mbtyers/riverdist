@@ -6,6 +6,10 @@
 
 * Jittering `riverpoints()` using `jitter` argument
 
+* Optimization in `riverpoints()` and `xy2segvert()`: both were speeded up by a factor of 10
+
+* Optimization in `plot.rivernetwork()`: speeded up by a factor of 2
+
 ### Bug fixes
 
 * Allowing vectors of `pch` and `col` in `riverpoints()`

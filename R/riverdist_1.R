@@ -312,75 +312,230 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #' @importFrom graphics axTicks
 #' @export
 plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
-  rivers <- x
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  lines <- rivers$lines
+  if(class(x)!="rivernetwork") stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  lines <- x$lines
   length <- length(lines)
-  xmin <- min(lines[[1]][,1])
-  xmax <- max(lines[[1]][,1])
-  ymin <- min(lines[[1]][,2])
-  ymax <- max(lines[[1]][,2])
-  if(length>1) {
-    for(j in 2:length) {
-      if(min(lines[[j]][,1])<xmin) xmin <- min(lines[[j]][,1])
-      if(max(lines[[j]][,1])>xmax) xmax <- max(lines[[j]][,1])
-      if(min(lines[[j]][,2])<ymin) ymin <- min(lines[[j]][,2])
-      if(max(lines[[j]][,2])>ymax) ymax <- max(lines[[j]][,2])
-      # print(c(j,xmin,xmax,ymin,ymax))
-    }
-  }
+  allx <- unlist(lapply(lines,FUN='[',TRUE,1))
+  ally <- unlist(lapply(lines,FUN='[',TRUE,2))
+  xmax <- max(allx, na.rm=T)
+  xmin <- min(allx, na.rm=T)
+  ymax <- max(ally, na.rm=T)
+  ymin <- min(ally, na.rm=T)
   plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,...=...)
+  parusr <- par("usr")
   midptx <- midpty <- NA
+  if(color&!empty) {
+    linecolors <- rgb((sin(1:length)+1)/2.3,(cos(7*1:length)+1)/2.3,(sin(3*(length-(1:length)))+1)/2.3)
+    ltys <- rep(1,length)
+  }
+  if(!color&!empty) {
+    linecolors <- rep(1,length)
+    ltys <- 1:length
+  }
+  if(empty) {
+    ltys <- linecolors <- rep(1,length)
+  }
+  
+  xtext <- ytext <- direction <- rep(NA,length)
   for(j in 1:length) {
-    if(!color&!empty) lines(lines[[j]],col=1,lty=j,lwd=lwd)
-    linecolor <- rgb((sin(j)+1)/2.3,(cos(7*j)+1)/2.3,(sin(3*(length-j))+1)/2.3)
-    if(color&!empty) lines(lines[[j]],col=linecolor,lty=1,lwd=lwd)
-    if(color&empty) lines(lines[[j]],col=1,lty=1,lwd=lwd)
-    linelength <- dim(lines[[j]])[1]
+    lines(lines[[j]],col=linecolors[j],lty=ltys[j],lwd=lwd)
     
-    xplot <- lines[[j]][,1][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
-    yplot <- lines[[j]][,2][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
+    xplot <- lines[[j]][,1][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
+    yplot <- lines[[j]][,2][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
     if(length(xplot)>0) midptx[j] <- mean(xplot)
     if(length(yplot)>0) midpty[j] <- mean(yplot)
     if(length(xplot)==0 | length(yplot)==0) midptx[j] <- midpty[j] <-NA
     middle <- floor(length(xplot)/2)
-    direction <- 3+(abs(xplot[floor(length(xplot)*.25)]-xplot[floor(length(xplot)*.75)]) < abs(yplot[floor(length(yplot)*.25)]-yplot[floor(length(yplot)*.75)]))
-    if(!offset) direction <- NULL
-    xtext <- ifelse(length(xplot)>0,xplot[middle],NA)
-    ytext <- ifelse(length(yplot)>0,yplot[middle],NA)
-    if(segmentnum&!empty) text(x=xtext,y=ytext,labels=j,pos=direction,cex=cex,col=ifelse(color,linecolor,1))
+    directionj <- 3+(abs(xplot[floor(length(xplot)*.25)]-xplot[floor(length(xplot)*.75)]) < abs(yplot[floor(length(yplot)*.25)]-yplot[floor(length(yplot)*.75)]))
+    direction[j] <- ifelse(length(directionj)==0,1,directionj)
+    xtext[j] <- ifelse(length(xplot)>0,xplot[middle],NA)
+    ytext[j] <- ifelse(length(yplot)>0,yplot[middle],NA)
   }
+  if(offset) text(xtext,ytext,labels=1:length,pos=direction,cex=cex,col=linecolors)
+  else text(xtext,ytext,labels=1:length,cex=cex,col=linecolors)
   if(scale) {
     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
     if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
+    axticks1 <- axTicks(1)
     if(corthing<=0) {
-      if(length(axTicks(1))>5) {
-        scalex <- axTicks(1)[c(1,3)]
-        labx <- axTicks(1)[2]
+      if(length(axticks1)>5) {
+        scalex <- axticks1[c(1,3)]
+        labx <- axticks1[2]
       }
-      if(length(axTicks(1))<=5) {
-        scalex <- axTicks(1)[c(1,2)]
-        labx <- mean(axTicks(1)[c(1,2)])
+      if(length(axticks1)<=5) {
+        scalex <- axticks1[c(1,2)]
+        labx <- mean(axticks1[c(1,2)])
       }
       scaley <- axTicks(2)[1]
     }
     if(corthing>0) {
-      if(length(axTicks(1))>5) {
-        scalex <- axTicks(1)[c(length(axTicks(1))-2,length(axTicks(1)))]
-        labx <- axTicks(1)[length(axTicks(1))-1]
+      if(length(axticks1)>5) {
+        scalex <- axticks1[c(length(axticks1)-2,length(axticks1))]
+        labx <- axticks1[length(axticks1)-1]
       }
-      if(length(axTicks(1))<=5) {
-        scalex <- axTicks(1)[c(length(axTicks(1))-1,length(axTicks(1)))]
-        labx <- mean(axTicks(1)[c(length(axTicks(1))-1,length(axTicks(1)))])
+      if(length(axticks1)<=5) {
+        scalex <- axticks1[c(length(axticks1)-1,length(axticks1))]
+        labx <- mean(axticks1[c(length(axticks1)-1,length(axticks1))])
       }
       scaley <- axTicks(2)[1]
     }
     lines(scalex,rep(scaley,2))
-    if(rivers$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
-    if(rivers$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),rivers$units),pos=3,cex=cex)
+    if(x$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
+    if(x$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),x$units),pos=3,cex=cex)
   }
 }
 
+# plotrivernetwork_OLD <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
+#   rivers <- x
+#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   lines <- rivers$lines
+#   length <- length(lines)
+#   xmin <- min(lines[[1]][,1])
+#   xmax <- max(lines[[1]][,1])
+#   ymin <- min(lines[[1]][,2])
+#   ymax <- max(lines[[1]][,2])
+#   if(length>1) {
+#     for(j in 2:length) {
+#       if(min(lines[[j]][,1])<xmin) xmin <- min(lines[[j]][,1])
+#       if(max(lines[[j]][,1])>xmax) xmax <- max(lines[[j]][,1])
+#       if(min(lines[[j]][,2])<ymin) ymin <- min(lines[[j]][,2])
+#       if(max(lines[[j]][,2])>ymax) ymax <- max(lines[[j]][,2])
+#       # print(c(j,xmin,xmax,ymin,ymax))
+#     }
+#   }
+#   plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,...=...)
+#   midptx <- midpty <- NA
+#   for(j in 1:length) {
+#     if(!color&!empty) lines(lines[[j]],col=1,lty=j,lwd=lwd)
+#     linecolor <- rgb((sin(j)+1)/2.3,(cos(7*j)+1)/2.3,(sin(3*(length-j))+1)/2.3)
+#     if(color&!empty) lines(lines[[j]],col=linecolor,lty=1,lwd=lwd)
+#     if(color&empty) lines(lines[[j]],col=1,lty=1,lwd=lwd)
+#     linelength <- dim(lines[[j]])[1]
+#     
+#     xplot <- lines[[j]][,1][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
+#     yplot <- lines[[j]][,2][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
+#     if(length(xplot)>0) midptx[j] <- mean(xplot)
+#     if(length(yplot)>0) midpty[j] <- mean(yplot)
+#     if(length(xplot)==0 | length(yplot)==0) midptx[j] <- midpty[j] <-NA
+#     middle <- floor(length(xplot)/2)
+#     direction <- 3+(abs(xplot[floor(length(xplot)*.25)]-xplot[floor(length(xplot)*.75)]) < abs(yplot[floor(length(yplot)*.25)]-yplot[floor(length(yplot)*.75)]))
+#     if(!offset) direction <- NULL
+#     xtext <- ifelse(length(xplot)>0,xplot[middle],NA)
+#     ytext <- ifelse(length(yplot)>0,yplot[middle],NA)
+#     if(segmentnum&!empty) text(x=xtext,y=ytext,labels=j,pos=direction,cex=cex,col=ifelse(color,linecolor,1))
+#   }
+#   if(scale) {
+#     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
+#     if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
+#     if(corthing<=0) {
+#       if(length(axTicks(1))>5) {
+#         scalex <- axTicks(1)[c(1,3)]
+#         labx <- axTicks(1)[2]
+#       }
+#       if(length(axTicks(1))<=5) {
+#         scalex <- axTicks(1)[c(1,2)]
+#         labx <- mean(axTicks(1)[c(1,2)])
+#       }
+#       scaley <- axTicks(2)[1]
+#     }
+#     if(corthing>0) {
+#       if(length(axTicks(1))>5) {
+#         scalex <- axTicks(1)[c(length(axTicks(1))-2,length(axTicks(1)))]
+#         labx <- axTicks(1)[length(axTicks(1))-1]
+#       }
+#       if(length(axTicks(1))<=5) {
+#         scalex <- axTicks(1)[c(length(axTicks(1))-1,length(axTicks(1)))]
+#         labx <- mean(axTicks(1)[c(length(axTicks(1))-1,length(axTicks(1)))])
+#       }
+#       scaley <- axTicks(2)[1]
+#     }
+#     lines(scalex,rep(scaley,2))
+#     if(rivers$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
+#     if(rivers$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),rivers$units),pos=3,cex=cex)
+#   }
+# }
+
+
+plotrivernetwork2 <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
+  if(class(x)!="rivernetwork") stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  lines <- x$lines
+  length <- length(lines)
+  allx <- unlist(lapply(lines,FUN='[',TRUE,1))
+  ally <- unlist(lapply(lines,FUN='[',TRUE,2))
+  xmax <- max(allx, na.rm=T)
+  xmin <- min(allx, na.rm=T)
+  ymax <- max(ally, na.rm=T)
+  ymin <- min(ally, na.rm=T)
+  plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,...=...)
+  parusr <- par("usr")
+  midptx <- midpty <- NA
+  if(color&!empty) {
+    linecolors <- rgb((sin(1:length)+1)/2.3,(cos(7*1:length)+1)/2.3,(sin(3*(length-(1:length)))+1)/2.3)
+    ltys <- rep(1,length)
+  }
+  if(!color&!empty) {
+    linecolors <- rep(1,length)
+    ltys <- 1:length
+  }
+  if(empty) {
+    ltys <- linecolors <- rep(1,length)
+  }
+  
+  xtext <- ytext <- direction <- rep(NA,length)
+  for(j in 1:length) {
+    lines(lines[[j]],col=linecolors[j],lty=ltys[j],lwd=lwd)
+    
+    xplot <- lines[[j]][,1][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
+    yplot <- lines[[j]][,2][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
+    if(length(xplot)>0) midptx[j] <- mean(xplot)
+    if(length(yplot)>0) midpty[j] <- mean(yplot)
+    if(length(xplot)==0 | length(yplot)==0) midptx[j] <- midpty[j] <-NA
+    middle <- floor(length(xplot)/2)
+    direction[j] <- 3+(abs(xplot[floor(length(xplot)*.25)]-xplot[floor(length(xplot)*.75)]) < abs(yplot[floor(length(yplot)*.25)]-yplot[floor(length(yplot)*.75)]))
+    xtext[j] <- ifelse(length(xplot)>0,xplot[middle],NA)
+    ytext[j] <- ifelse(length(yplot)>0,yplot[middle],NA)
+  }
+  if(offset) text(xtext,ytext,labels=1:length,pos=direction,cex=cex,col=linecolors)
+  else text(xtext,ytext,labels=1:length,cex=cex,col=linecolors)
+  if(scale) {
+    if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
+    if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
+    axticks1 <- axTicks(1)
+    if(corthing<=0) {
+      if(length(axticks1)>5) {
+        scalex <- axticks1[c(1,3)]
+        labx <- axticks1[2]
+      }
+      if(length(axticks1)<=5) {
+        scalex <- axticks1[c(1,2)]
+        labx <- mean(axticks1[c(1,2)])
+      }
+      scaley <- axTicks(2)[1]
+    }
+    if(corthing>0) {
+      if(length(axticks1)>5) {
+        scalex <- axticks1[c(length(axticks1)-2,length(axticks1))]
+        labx <- axticks1[length(axticks1)-1]
+      }
+      if(length(axticks1)<=5) {
+        scalex <- axticks1[c(length(axticks1)-1,length(axticks1))]
+        labx <- mean(axticks1[c(length(axticks1)-1,length(axticks1))])
+      }
+      scaley <- axTicks(2)[1]
+    }
+    lines(scalex,rep(scaley,2))
+    if(x$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
+    if(x$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),x$units),pos=3,cex=cex)
+  }
+}
+
+# plotrivernetwork2(abstreams)
+# 
+# par(mfrow=c(5,5))
+# system.time(plot(abstreams))
+# system.time(plotrivernetwork2(abstreams))
+# microbenchmark(plot(abstreams))
+# microbenchmark(plotrivernetwork2(abstreams))
 
 
 #' Highlight Segments
@@ -514,32 +669,77 @@ whoconnected <- function(seg,rivers) {
 xy2segvert <- function(x,y,rivers) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
-  seg <- rep(NA,length(x))
-  vert <- rep(NA,length(x))
-  snapdist <- rep(NA,length(x))
-  lines <- rivers$lines
   
-  pdist2 <- function(p1,p2mat) {
-    dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
+  lengthlength <- length(unlist(lines))/2
+  
+  whichseg <- whichvert <- allx <- ally <- rep(NA,lengthlength)
+  istart <- 1
+  for(i in 1:length(rivers$lines)) {
+    linelength <- dim(rivers$lines[[i]])[1]
+    whichseg[istart:(istart+linelength-1)] <- i
+    whichvert[istart:(istart+linelength-1)] <- 1:linelength
+    allx[istart:(istart+linelength-1)] <- rivers$lines[[i]][,1]
+    ally[istart:(istart+linelength-1)] <- rivers$lines[[i]][,2]
+    istart <- istart+linelength
+  }
+  
+  pdist2 <- function(p1,p2x,p2y) {
+    dist <- sqrt((p1[1]-p2x)^2 + (p1[2]-p2y)^2)
     return(dist)
   }
   
-  for(i in 1:length(x)) {
-    min.dist1 <- 1000000
-    for(river.i in 1:length(lines)) {
-      dists <- pdist2(c(x[i],y[i]),lines[[river.i]])
-      min.i <- min(dists)
-      if(min.i < min.dist1) {
-        min.dist1 <- min.i
-        seg[i] <- river.i
-        vert[i] <- which(dists==min.i)[1]  # if there's a tie, accept the first vertex
-        snapdist[i] <- pdist(c(x[i],y[i]),lines[[river.i]][vert[i],])
-      }
-    }
-  }
+  min.i <- mapply(function(x,y) which.min(pdist2(c(x,y),allx,ally))[1],x,y)  # if there's a tie, accept the first vertex
+  seg <- whichseg[min.i]
+  vert <- whichvert[min.i]
+  snapdist <- sqrt((x-allx[min.i])^2 + (y-ally[min.i])^2)
   out <- data.frame(seg,vert,snapdist)
   return(out)
 }
+
+# 
+# xy2segvert_OLD <- function(x,y,rivers) {
+#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
+#   seg <- rep(NA,length(x))
+#   vert <- rep(NA,length(x))
+#   snapdist <- rep(NA,length(x))
+#   lines <- rivers$lines
+#   
+#   pdist2 <- function(p1,p2mat) {
+#     dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
+#     return(dist)
+#   }
+#   
+#   for(i in 1:length(x)) {
+#     min.dist1 <- 1000000
+#     for(river.i in 1:length(lines)) {
+#       dists <- pdist2(c(x[i],y[i]),lines[[river.i]])
+#       min.i <- min(dists)
+#       if(min.i < min.dist1) {
+#         min.dist1 <- min.i
+#         seg[i] <- river.i
+#         vert[i] <- which(dists==min.i)[1]  # if there's a tie, accept the first vertex
+#         snapdist[i] <- pdist(c(x[i],y[i]),lines[[river.i]][vert[i],])
+#       }
+#     }
+#   }
+#   out <- data.frame(seg,vert,snapdist)
+#   return(out)
+# }
+# 
+# rivtest <- Kenai3
+# abpts <- xysim(5000,rivtest)
+# asdf <- xy2segvert2(x=abpts$x,y=abpts$y,rivers=rivtest)
+# 
+# system.time(asdf1 <- xy2segvert(x=abpts$x,y=abpts$y,rivers=rivtest))
+# system.time(asdf2 <- xy2segvert2(x=abpts$x,y=abpts$y,rivers=rivtest))
+# 
+# microbenchmark(asdf1 <- xy2segvert(x=abpts$x,y=abpts$y,rivers=rivtest))
+# microbenchmark(asdf2 <- xy2segvert2(x=abpts$x,y=abpts$y,rivers=rivtest))
+# all.equal(asdf1,asdf2)
+# 
+
+
 
 #' Draw Points from River Locations
 #' @description Adds points to an active plot.  Works like \link[graphics]{points} but with river locations (segments and vertices) rather than xy coordinates.
@@ -566,25 +766,55 @@ xy2segvert <- function(x,y,rivers) {
 #' @export
 riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  if(length(pch)==1) pch <- rep(pch,length(seg))
-  if(length(col)==1) col <- rep(col,length(seg))
   lines <- rivers$lines
   if(max(seg,na.rm=T)>length(lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
   
+  x <- y <- rep(NA,length(seg))
   for(i in 1:length(seg)) {
-    if(jitter!=0) {
-      jitterx <- runif(length(lines[[seg[i]]][vert[i],1]),min=-jitter,max=jitter)
-      jittery <- runif(length(lines[[seg[i]]][vert[i],2]),min=-jitter,max=jitter)
-    }
-    else {
-      jitterx <- 0
-      jittery <- 0
-    }
-    if(vert[i]>dim(lines[[seg[i]]])[1] | vert[i]<1) stop("Invalid vertex numbers specified.")
-    points(lines[[seg[i]]][vert[i],1] + jitterx,
-           lines[[seg[i]]][vert[i],2] + jittery, pch=pch[i],col=col[i],...=...)
+    x[i] <- lines[[seg[i]]][vert[i],1]
+    y[i] <- lines[[seg[i]]][vert[i],2]
   }
+  if(jitter!=0) {
+    x <- x+runif(length(x),min=-jitter,max=jitter)
+    y <- y+runif(length(x),min=-jitter,max=jitter)
+  }
+  points(x,y,pch=pch,col=col,...=...)
 }
+
+# riverpoints_OLD <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
+#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(length(pch)==1) pch <- rep(pch,length(seg))
+#   if(length(col)==1) col <- rep(col,length(seg))
+#   lines <- rivers$lines
+#   if(max(seg,na.rm=T)>length(lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
+#   
+#   for(i in 1:length(seg)) {
+#     if(jitter!=0) {
+#       jitterx <- runif(length(lines[[seg[i]]][vert[i],1]),min=-jitter,max=jitter)
+#       jittery <- runif(length(lines[[seg[i]]][vert[i],2]),min=-jitter,max=jitter)
+#     }
+#     else {
+#       jitterx <- 0
+#       jittery <- 0
+#     }
+#     if(vert[i]>dim(lines[[seg[i]]])[1] | vert[i]<1) stop("Invalid vertex numbers specified.")
+#     points(lines[[seg[i]]][vert[i],1] + jitterx,
+#            lines[[seg[i]]][vert[i],2] + jittery, pch=pch[i],col=col[i],...=...)
+#   }
+# }
+
+
+# 
+# plot(rivtest)
+# system.time(riverpoints(asdf2$seg,asdf2$vert,rivtest))
+# system.time(riverpoints2(asdf2$seg,asdf2$vert,rivtest,pch=16,col=4))
+# 
+# microbenchmark(riverpoints(asdf2$seg,asdf2$vert,rivtest))
+# microbenchmark(riverpoints2(asdf2$seg,asdf2$vert,rivtest))
+
+
+
+
 
 #' Trim a River Network Object to Specified Segments
 #' @description Removes line segments from a river network object.  User can specify which segments to remove (\code{trim}) or which segments to keep (\code{trimto}).

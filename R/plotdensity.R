@@ -242,7 +242,7 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
       if(max(lines[[j]][,2])>ymax) ymax <- max(lines[[j]][,2])
     }
   }
-    
+  
   nsize <- NA
   isurvey <- 1
   for(surveyi in sort(unique(survey))) {
@@ -334,7 +334,7 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
     iisurvey <- iisurvey+1
   }
 }
- 
+
 
 
 #' Plot Points Used for Kernel Density

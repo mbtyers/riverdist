@@ -814,8 +814,6 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
 
 
 
-
-
 #' Trim a River Network Object to Specified Segments
 #' @description Removes line segments from a river network object.  User can specify which segments to remove (\code{trim}) or which segments to keep (\code{trimto}).
 #' @param trim Vector of line segments to remove

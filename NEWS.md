@@ -1,4 +1,4 @@
-# 'riverdist' 0.12.2.9000 (development version - will be 0.12.3)
+# 'riverdist' 0.13.0
 
 ### Added capabilities
 

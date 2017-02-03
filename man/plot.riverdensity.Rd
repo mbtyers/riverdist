@@ -9,7 +9,7 @@
   bycol = TRUE, bylwd = TRUE, maxlwd = 10, pwr = 0.7, scalebyN = TRUE,
   ramp = "grey", lwd = 1, linecol = "black", denscol = "black",
   alpha = 1, dark = 1, showN = TRUE, main = NULL, xlab = "",
-  ylab = "", add = FALSE, ...)
+  ylab = "", add = FALSE, scalebar = T, ...)
 }
 \arguments{
 \item{x}{A river density object created by \link{makeriverdensity}.}

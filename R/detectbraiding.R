@@ -148,7 +148,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
     if(i==length(checkthese)) finished <- T
     i<-i+1
     #print(i)
-    if(interactive() & progress) setTxtProgressBar(pb=pb, value=i/length)
+    if(interactive() & progress) setTxtProgressBar(pb=pb, value=i/(length(checkthese)))
   }
   }
   

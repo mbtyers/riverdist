@@ -54,6 +54,7 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
   if(is.null(resolution)) resolution <- sum(rivers$lengths)/500
   if(is.null(bw)) bw <- 10*resolution     
   if(is.null(survey)) survey <- 0
+  if(!is.factor(survey)) survey <- as.factor(survey)
   
   # prediction grid
   densverts <- list()
@@ -84,7 +85,8 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
   
   isurvey <- 1
   if(interactive()) pb <- txtProgressBar(style=3)          
-  for(surveyi in sort(unique(survey))) {
+  # for(surveyi in sort(unique(survey))) {         
+  for(surveyi in levels(survey)) {
     densities[[isurvey]] <- list()
     for(segi in 1:length(rivers$lines)) {
       segilength <- dim(rivers$lines[[segi]])[1]
@@ -214,7 +216,7 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 #' plot(x=Gulk_dens)
 #' @export
-plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,...) {
+plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,scalebar=T,...) {
   if(class(x)!="riverdensity") stop("Argument x must be an object returned from makeriverdensity().")
   if(dark>1 | dark<0) dark <-1
   if(alpha>1 | alpha<0) alpha <-1
@@ -224,9 +226,11 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
   seg <- x$pointsegs
   vert <- x$pointverts
   survey <- x$survey
+  if(!is.factor(survey)) survey <- as.factor(survey)
   rivers <- x$rivers
   if(length(main)==1) main <- rep(main,length(unique(survey)))
-  if(is.null(main) & length(unique(survey))>1) main <- sort(unique(as.character(survey)))
+  # if(is.null(main) & length(unique(survey))>1) main <- sort(unique(as.character(survey)))
+  if(is.null(main) & length(unique(survey))>1) main <- levels(survey)
   
   lines <- rivers$lines
   length <- length(lines)
@@ -245,18 +249,21 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
   
   nsize <- NA
   isurvey <- 1
-  for(surveyi in sort(unique(survey))) {
+  # for(surveyi in sort(unique(survey))) {
+  for(surveyi in levels(survey)) {
     nsize[isurvey] <- length(seg[survey==surveyi])
     isurvey <- isurvey+1
   }
   
   iisurvey <- 1
   if(is.null(whichplots)) whichplots <- 1:length(unique(survey))
-  whichplotsurvey <- (sort(unique(survey)))[whichplots]
+  # whichplotsurvey <- (sort(unique(survey)))[whichplots]
+  whichplotsurvey <- (levels(survey))[whichplots]
   
   if(!scalebyN){ 
     isurvey <- 1
-    for(surveyi in sort(unique(survey))) {
+    # for(surveyi in sort(unique(survey))) {
+    for(surveyi in levels(survey)) {
       for(segi in 1:length(rivers$lines)) {
         densities[[isurvey]][[segi]] <- densities[[isurvey]][[segi]]*max(nsize[whichplots])/nsize[isurvey]
       }
@@ -268,7 +275,7 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
     isurvey <- whichplots[iisurvey]
     if(showN) mainforplot <- paste0(main[isurvey],"  (n=",length(seg[survey==surveyi]),")")
     if(!showN) mainforplot <- main[isurvey]
-    if(!add) plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,main=mainforplot)#,...=...)
+    if(!add) plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,main=mainforplot,...=...)
     
     for(segi in 1:length(rivers$lines)) {
       quants <- (densities[[isurvey]][[segi]]/max(unlist(densities)))^pwr
@@ -331,6 +338,7 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
       }
     }
     if(points) riverpoints(seg=seg[survey==surveyi],vert=vert[survey==surveyi],rivers=rivers,pch=21,bg=0,col=denscol)
+    if(scalebar) scalebar(rivers)
     iisurvey <- iisurvey+1
   }
 }

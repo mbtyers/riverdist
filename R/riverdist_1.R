@@ -385,6 +385,51 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
   }
 }
 
+
+scalebar <- function(rivers,cex=.6) {
+  lines <- rivers$lines
+  length <- length(lines)
+  
+  midptx <- midpty <- rep(NA,length)
+  parusr <- par("usr")
+  for(j in 1:length) {
+    xplot <- lines[[j]][,1][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
+    yplot <- lines[[j]][,2][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
+    if(length(xplot)>0) midptx[j] <- mean(xplot)
+    if(length(yplot)>0) midpty[j] <- mean(yplot)
+  }
+  
+  if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
+  if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
+  axticks1 <- axTicks(1)
+  if(corthing<=0) {
+    if(length(axticks1)>5) {
+      scalex <- axticks1[c(1,3)]
+      labx <- axticks1[2]
+    }
+    if(length(axticks1)<=5) {
+      scalex <- axticks1[c(1,2)]
+      labx <- mean(axticks1[c(1,2)])
+    }
+    scaley <- axTicks(2)[1]
+  }
+  if(corthing>0) {
+    if(length(axticks1)>5) {
+      scalex <- axticks1[c(length(axticks1)-2,length(axticks1))]
+      labx <- axticks1[length(axticks1)-1]
+    }
+    if(length(axticks1)<=5) {
+      scalex <- axticks1[c(length(axticks1)-1,length(axticks1))]
+      labx <- mean(axticks1[c(length(axticks1)-1,length(axticks1))])
+    }
+    scaley <- axTicks(2)[1]
+  }
+  lines(scalex,rep(scaley,2))
+  if(rivers$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
+  if(rivers$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),x$units),pos=3,cex=cex)
+}
+
+
 # plotrivernetwork_OLD <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
 #   rivers <- x
 #   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")

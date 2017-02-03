@@ -1,4 +1,14 @@
-# 'riverdist' 0.13.0
+# 'riverdist' 0.13.1 (Feb 3, 2017)
+
+### Added capabilities
+
+* Including a scale bar in `plot.riverdensity()` with `scalebar=T`
+
+### Bug fixes
+
+* Producing plots in `plot.riverdensity()` in the correct order, if `survey` is a factor variable with levels in a different order than alphabetic
+
+# 'riverdist' 0.13.0 (Dec 21, 2016)
 
 ### Added capabilities
 

@@ -9,7 +9,7 @@
   bycol = TRUE, bylwd = TRUE, maxlwd = 10, pwr = 0.7, scalebyN = TRUE,
   ramp = "grey", lwd = 1, linecol = "black", denscol = "black",
   alpha = 1, dark = 1, showN = TRUE, main = NULL, xlab = "",
-  ylab = "", add = FALSE, scalebar = T, ...)
+  ylab = "", add = FALSE, scalebar = TRUE, ...)
 }
 \arguments{
 \item{x}{A river density object created by \link{makeriverdensity}.}
@@ -82,6 +82,8 @@ size if \code{showN} is set to \code{TRUE}.}
 
 \item{add}{Whether to produce a new plot (\code{FALSE}), or add to an 
 existing plot (\code{TRUE}).  Defaults to \code{FALSE}.}
+
+\item{scalebar}{Whether to add a scale bar to plot(s).  Defaults to \code{TRUE}.}
 
 \item{...}{Additional plotting parameters.}
 }

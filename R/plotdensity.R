@@ -197,6 +197,7 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' @param ylab Y-axis label
 #' @param add Whether to produce a new plot (\code{FALSE}), or add to an 
 #'   existing plot (\code{TRUE}).  Defaults to \code{FALSE}.
+#' @param scalebar Whether to add a scale bar to plot(s).  Defaults to \code{TRUE}.
 #' @param ... Additional plotting parameters.
 #' @seealso \link{makeriverdensity}, \link{plotriverdensitypoints}
 #' @method plot riverdensity
@@ -216,7 +217,7 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 #' plot(x=Gulk_dens)
 #' @export
-plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,scalebar=T,...) {
+plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,scalebar=TRUE,...) {
   if(class(x)!="riverdensity") stop("Argument x must be an object returned from makeriverdensity().")
   if(dark>1 | dark<0) dark <-1
   if(alpha>1 | alpha<0) alpha <-1

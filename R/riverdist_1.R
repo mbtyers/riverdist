@@ -426,7 +426,7 @@ scalebar <- function(rivers,cex=.6) {
   }
   lines(scalex,rep(scaley,2))
   if(rivers$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
-  if(rivers$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),x$units),pos=3,cex=cex)
+  if(rivers$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),rivers$units),pos=3,cex=cex)
 }
 
 

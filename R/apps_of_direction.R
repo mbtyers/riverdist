@@ -770,11 +770,11 @@ upstreammat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected=FALSE
 }
 
 #' Distance From Mouth
-#' @description Calculates distance from a river location (given as segment and
+#' @description Calculates distance from river locations (given as vectors of segment and
 #'   vertex) and the specified mouth of the river network.  The mouth must first
 #'   be specified (see \link{setmouth}).
-#' @param seg Segment of the point in question
-#' @param vert Vertex of the point in question
+#' @param seg Vector of segments
+#' @param vert Vector of vertices
 #' @param rivers The river network object to use
 #' @param stopiferror Whether or not to exit with an error if a route cannot be
 #'   found.  If this is set to \code{FALSE} and a route cannot be found,
@@ -795,21 +795,23 @@ upstreammat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected=FALSE
 #' Gulk$mouth$mouth.vert <- 1
 #'
 #' mouthdist(seg=4, vert=40, rivers=Gulk)
+#' mouthdist(seg=c(4,5), vert=c(40,20), rivers=Gulk)
 #' @export
 mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  if(seg>length(rivers$lines) | seg<1) {
+  if(any(is.na(seg)) | max(seg)>length(rivers$lines) | min(seg)<1) {
     stop("Invalid segments specified.")
   }
-  if(vert>dim(rivers$lines[[seg]])[1] | vert<1) {
-    stop("Invalid vertex specified.")
-  }
+  # if(vert>dim(rivers$lines[[seg]])[1] | vert<1) {
+  #   stop("Invalid vertex specified.")
+  # }
   
   if(is.na(rivers$mouth$mouth.seg) | is.na(rivers$mouth$mouth.vert)) {
     stop("Error - Need to specify segment & vertex of origin",'\n')
   }
   dists <- rep(NA,length(seg))
   for(i in 1:length(seg)) {
+    if(any(is.na(vert)) | vert[i]>dim(rivers$lines[[seg[i]]])[1] | vert[i]<1) stop("Invalid vertex specified.")
     dists[i] <- riverdistance(startseg=seg[i],endseg=rivers$mouth$mouth.seg,startvert=vert[i],endvert=rivers$mouth$mouth.vert,
                               rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)
   }

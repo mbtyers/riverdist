@@ -211,8 +211,9 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 #' @importFrom graphics plot
 #' @importFrom graphics lines
 #' @export
-homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,...) {
+homerange <- function(unique=NULL,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,...) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(is.null(unique)) unique <- rep(1,length(seg))
   if((length(unique)!=length(seg))|(length(seg)!=length(vert))) stop("Input vectors must be the same length.")
   ID <- sort(unique(unique))
   range <- rep(0,length(ID))
@@ -370,6 +371,95 @@ homerange <- function(unique,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,
   thing2 <- subset(thing,range>0)
   return(thing2)
 }
+
+# 
+# asdfasdf <- function(seg,vert,prop=0.9,rivers,map=FALSE,algorithm=NULL,main=NULL) { #,...)
+#   howmany <- round(prop*length(seg),digits=0)
+#   whichpts <- combn(x=seq_along(seg),m=howmany,simplify=F)
+#   ranges <- rep(NA,length(whichpts))
+#   for(i in 1:length(whichpts)) {
+#     ranges[i] <- homerange(seg=seg[whichpts[[i]]],vert=vert[whichpts[[i]]],rivers=rivers)$range[1]
+#   }
+#   minrange <- which.min(ranges)
+#   minrangegroup <- whichpts[[minrange]]
+#   minrangegroup <- sort(minrangegroup)
+#   toreturn <- data.frame(index=minrangegroup,seg=seg[minrangegroup],vert=vert[minrangegroup])
+#   return(toreturn)
+# }
+# asdf <- asdfasdf(seg=fakefish$seg[1:20], vert=fakefish$vert[1:20], rivers=Gulk)
+# plot(Gulk)
+# riverpoints(seg=fakefish$seg[1:20], vert=fakefish$vert[1:20], rivers=Gulk,pch=16,col=2)
+# riverpoints(seg=asdf$seg,vert=asdf$vert,rivers=Gulk,pch=16)
+# 
+# # algorithm 2: identify the points on the ends, try removing all, remove the one that changes the most, until removal quota is met
+# # or just try removing each point until quota is met
+# ### DOESN'T WORK!!!
+# 
+# asdfasdf2 <- function(seg,vert,prop=0.9,rivers,map=FALSE,algorithm=NULL,main=NULL) { #,...)
+#   toremove <- round(x=(1-prop)*length(seg),digits=0)
+#   index <- 1:length(seg)
+#   for(i in 1:toremove) {
+#     ranges <- rep(NA,length(seg))
+#     for(j in 1:length(seg)) {
+#       ranges[j] <- homerange(seg=seg[-j],vert=vert[-j],rivers=rivers)$range[1]
+#     }
+#     themin <- which.min(ranges)
+#     seg <- seg[-themin]
+#     vert <- vert[-themin]
+#     index <- index[-themin]
+#   }
+#   
+#   toreturn <- data.frame(index,seg,vert)
+#   return(toreturn)
+# }
+# asdf <- asdfasdf2(seg=fakefish$seg[1:50], vert=fakefish$vert[1:50], rivers=Gulk)
+# plot(Gulk)
+# riverpoints(seg=fakefish$seg[1:50], vert=fakefish$vert[1:50], rivers=Gulk,pch=16,col=4)
+# riverpoints(seg=asdf$seg,vert=asdf$vert,rivers=Gulk,pch=16)
+# 
+# 
+# # remove points with the largest total distance to others??
+# 
+# asdfasdf3 <- function(seg,vert,prop=0.9,rivers,map=FALSE,algorithm=NULL,main=NULL) { #,...)
+#   tokeep <- round(x=prop*length(seg),digits=0)
+#   
+#   dmat <- riverdistancemat(seg=seg,vert=vert,rivers=rivers)
+#   dsums <- colSums(dmat)
+#   whichones <- order(dsums)[1:tokeep]
+#   
+#   toreturn <- data.frame(index=whichones,seg=seg[whichones],vert=vert[whichones])
+#   return(toreturn)
+# }
+# asdf <- asdfasdf3(seg=fakefish$seg[1:50], vert=fakefish$vert[1:50], rivers=Gulk)
+# plot(Gulk)
+# riverpoints(seg=fakefish$seg[1:50], vert=fakefish$vert[1:50], rivers=Gulk,pch=16,col=4)
+# riverpoints(seg=asdf$seg,vert=asdf$vert,rivers=Gulk,pch=16)
+# 
+# datasim <- function(n,rivers) {
+#   seg <- sample(1:length(rivers$lines),n,prob=rivers$lengths)
+#   vert <- NA
+#   for(i in 1:n) vert[i] <- sample(1:nrow(rivers$lines[[seg[i]]]),1)
+#   return(data.frame(seg,vert))
+# }
+# datasim(10,Gulk)
+# 
+# par(mfrow=c(1,2))
+# for(i in 1:20) {
+#   x <- datasim(10,Gulk)
+#   test1 <- sort(asdfasdf(x$seg,x$vert,prop=.9,rivers=Gulk)$index)
+#   test2 <- sort(asdfasdf3(x$seg,x$vert,prop=.9,rivers=Gulk)$index)
+#   print(all.equal(test1,test2))
+#   # plot(Gulk)
+#   # riverpoints(x$seg,x$vert,Gulk)
+#   # riverpoints(x$seg[test1],x$vert[test1],Gulk,pch=16)
+#   # plot(Gulk)
+#   # riverpoints(x$seg,x$vert,Gulk)
+#   # riverpoints(x$seg[test2],x$vert[test2],Gulk,pch=16)
+# }
+#   
+#   
+
+
 
 #' River Distance Matrix between Two Datasets
 #' @description Returns a matrix of distances between each river location in two datasets, with one expressed as rows and the other expressed as columns.

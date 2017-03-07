@@ -4,7 +4,7 @@
 \alias{homerange}
 \title{Home Range}
 \usage{
-homerange(unique, seg, vert, rivers, map = FALSE, algorithm = NULL,
+homerange(unique = NULL, seg, vert, rivers, map = FALSE, algorithm = NULL,
   main = NULL, ...)
 }
 \arguments{

@@ -1,3 +1,11 @@
+# 'riverdist' 0.13.1.9000 (development version - Mar 7, 2017)
+
+### Bug fixes
+
+* `mouthdist()` accepts vectors of segment and vertex coordinates
+
+* `segmentnum=` and `empty=` in `plot.rivernetwork()` and others re-implemented
+
 # 'riverdist' 0.13.1 (Feb 3, 2017)
 
 ### Added capabilities

@@ -334,6 +334,7 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
   }
   if(empty) {
     ltys <- linecolors <- rep(1,length)
+    segmentnum <- F
   }
   
   xtext <- ytext <- direction <- rep(NA,length)
@@ -351,8 +352,10 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
     xtext[j] <- ifelse(length(xplot)>0,xplot[middle],NA)
     ytext[j] <- ifelse(length(yplot)>0,yplot[middle],NA)
   }
-  if(offset) text(xtext,ytext,labels=1:length,pos=direction,cex=cex,col=linecolors)
-  else text(xtext,ytext,labels=1:length,cex=cex,col=linecolors)
+  if(segmentnum) {
+    if(offset) text(xtext,ytext,labels=1:length,pos=direction,cex=cex,col=linecolors)
+    else text(xtext,ytext,labels=1:length,cex=cex,col=linecolors)
+  }
   if(scale) {
     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
     if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])

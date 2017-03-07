@@ -7,9 +7,9 @@
 mouthdist(seg, vert, rivers, stopiferror = TRUE, algorithm = NULL)
 }
 \arguments{
-\item{seg}{Segment of the point in question}
+\item{seg}{Vector of segments}
 
-\item{vert}{Vertex of the point in question}
+\item{vert}{Vector of vertices}
 
 \item{rivers}{The river network object to use}
 
@@ -26,7 +26,7 @@ default), the function will automatically make a selection.  See
 Distance (numeric)
 }
 \description{
-Calculates distance from a river location (given as segment and
+Calculates distance from river locations (given as vectors of segment and
   vertex) and the specified mouth of the river network.  The mouth must first
   be specified (see \link{setmouth}).
 }
@@ -42,6 +42,7 @@ Gulk$mouth$mouth.seg <- 1
 Gulk$mouth$mouth.vert <- 1
 
 mouthdist(seg=4, vert=40, rivers=Gulk)
+mouthdist(seg=c(4,5), vert=c(40,20), rivers=Gulk)
 }
 \author{
 Matt Tyers

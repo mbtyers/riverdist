@@ -4,11 +4,13 @@
 \alias{homerange}
 \title{Home Range}
 \usage{
-homerange(unique = NULL, seg, vert, rivers, map = FALSE, algorithm = NULL,
-  main = NULL, ...)
+homerange(unique = NULL, survey = NULL, seg, vert, rivers, map = FALSE,
+  algorithm = NULL, main = NULL, ...)
 }
 \arguments{
-\item{unique}{A vector of unique identifiers for each fish.}
+\item{unique}{A vector of unique identifiers for each fish.  If the default (\code{NULL}) is used, the function will assume all observations come from a single individual.}
+
+\item{survey}{A vector of survey identifiers for each fish.  This argument is not needed for home range calculation, but can affect plotting (see \link{plot.homerange}).}
 
 \item{seg}{A vector of river locations (segment component).}
 
@@ -16,7 +18,7 @@ homerange(unique = NULL, seg, vert, rivers, map = FALSE, algorithm = NULL,
 
 \item{rivers}{The river network object to use.}
 
-\item{map}{Boolean (defaults to FALSE) Whether to produce sanity-check maps
+\item{map}{Deprecated, use \link{plot.homerange} for plotting instead.  Originally, whether to produce sanity-check maps
 of observed locations and calculated home range for each fish.}
 
 \item{algorithm}{Which route detection algorithm to use (\code{"Dijkstra"},
@@ -24,15 +26,15 @@ of observed locations and calculated home range for each fish.}
 default), the function will automatically make a selection.  See
 \link{detectroute} for more details.}
 
-\item{main}{Plot title, if \code{map} is set to \code{TRUE}.  If unspecified, the unique ID will be used for the title.}
+\item{main}{Deprecated, use \link{plot.homerange} for plotting instead.  Originally, plot title, if \code{map} is set to \code{TRUE}.  If unspecified, the unique ID will be used for the title.}
 
-\item{...}{Additional plotting arguments, if \code{map} is set to \code{TRUE}.}
+\item{...}{Deprecated, use \link{plot.homerange} for plotting instead.  Originally, additional plotting arguments, if \code{map} is set to \code{TRUE}.}
 }
 \value{
-A data frame with two columns: \code{$ID} is a list of unique fish
+An object of the \link{homerange-class}.  The \code{$ranges} element is a data frame with two columns: \code{$ID} is a list of unique fish
   (as specified by \code{unique=}), and \code{$range} is calculated minimum
   home range, in the units of the coordinate system (this will likely be
-  meters).
+  meters).  The other elements are used for plotting, see \link{homerange-class} for more details.
 }
 \description{
 Returns the minimum observed home range for multiple
@@ -44,13 +46,22 @@ Building routes from the river mouth to each river network segment and/or distan
 }
 \examples{
 data(Gulk, fakefish)
-homerange(unique=fakefish$fish.id, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
+ranges <- with(fakefish, homerange(unique=fish.id, survey=flight, seg=seg, vert=vert, rivers=Gulk))
+ranges
 
-# mapping shown just for fish 15
-homerange(unique=fakefish$fish.id[fakefish$fish.id==15], seg=fakefish$seg[fakefish$fish.id==15],
-          vert=fakefish$vert[fakefish$fish.id==15], rivers=Gulk, map=TRUE)
+# 19 plots will be produced, recommend calling par(mfrow=c(4,5))
+plot(ranges)
+plot(ranges,cumulative=TRUE,label=TRUE)
+
+homerangeoverlap(ranges)
+
+plothomerangeoverlap(ranges)
+with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk))
 }
 \author{
 Matt Tyers
+}
+\seealso{
+plot.homerange, homerangeoverlap, plothomerangeoverlap
 }
 

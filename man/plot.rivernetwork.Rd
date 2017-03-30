@@ -6,8 +6,8 @@
 \title{Plotting a River Network}
 \usage{
 \method{plot}{rivernetwork}(x, segmentnum = TRUE, offset = TRUE, lwd = 1,
-  cex = 0.6, scale = TRUE, color = TRUE, empty = FALSE, xlab = "",
-  ylab = "", ...)
+  cex = 0.6, scale = TRUE, color = TRUE, empty = FALSE, linecol = 1,
+  xlab = "", ylab = "", ...)
 }
 \arguments{
 \item{x}{The river network object to plot}
@@ -24,10 +24,12 @@
 
 \item{color}{How to differentiate segments.  If \code{color==TRUE} (default),
 segments will be drawn in solid lines with differing colors.  If
-\code{color==FALSE}, segments will be drawn in black with differing line
+\code{color==FALSE}, segments will be drawn in the same color with differing line
 types.}
 
 \item{empty}{Creates an empty plot if set to \code{TRUE}.  Suppresses differentiation by line type if \code{color==FALSE}, and suppresses segment number labels.  Defaults to \code{FALSE}.}
+
+\item{linecol}{Line color to use if \code{empty} is \code{TRUE} or \code{color} is \code{FALSE}.  Defaults to black.}
 
 \item{xlab}{Label for X-axis (defaults to "")}
 

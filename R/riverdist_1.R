@@ -289,14 +289,15 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #' @param lwd Line width
 #' @param cex Global character expansion factor for plotting
 #' @param scale Whether or not to give x- and y-axes the same scale
+#' @param color How to differentiate segments.  If \code{color==TRUE} (default),
+#'   segments will be drawn in solid lines with differing colors.  If
+#'   \code{color==FALSE}, segments will be drawn in the same color with differing line
+#'   types.
+#' @param empty Creates an empty plot if set to \code{TRUE}.  Suppresses differentiation by line type if \code{color==FALSE}, and suppresses segment number labels.  Defaults to \code{FALSE}.
+#' @param linecol Line color to use if \code{empty} is \code{TRUE} or \code{color} is \code{FALSE}.  Defaults to black.
 #' @param xlab Label for X-axis (defaults to "")
 #' @param ylab Label for Y-axis (defaults to "")
 #' @param ... Additional plotting arguments (see \link[graphics]{par})
-#' @param color How to differentiate segments.  If \code{color==TRUE} (default),
-#'   segments will be drawn in solid lines with differing colors.  If
-#'   \code{color==FALSE}, segments will be drawn in black with differing line
-#'   types.
-#' @param empty Creates an empty plot if set to \code{TRUE}.  Suppresses differentiation by line type if \code{color==FALSE}, and suppresses segment number labels.  Defaults to \code{FALSE}.
 #' @author Matt Tyers
 #' @note This function is intended to provide basic visual checks for the user,
 #'   not for any real mapping.
@@ -311,7 +312,7 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #' @importFrom stats cor
 #' @importFrom graphics axTicks
 #' @export
-plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
+plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,linecol=1,xlab="",ylab="",...) {
   if(class(x)!="rivernetwork") stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- x$lines
   length <- length(lines)
@@ -329,11 +330,12 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
     ltys <- rep(1,length)
   }
   if(!color&!empty) {
-    linecolors <- rep(1,length)
+    linecolors <- rep(linecol,length)
     ltys <- 1:length
   }
   if(empty) {
-    ltys <- linecolors <- rep(1,length)
+    linecolors <- rep(linecol,length)
+    ltys <- rep(1,length)
     segmentnum <- F
   }
   

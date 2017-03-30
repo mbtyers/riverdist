@@ -262,3 +262,20 @@ NULL
 #' @exportClass riverdensity
 #' @author Matt Tyers
 NULL
+
+#' The "homerange" Class
+#'
+#' A class that holds information computed from the \link{homerange} function.  Contains all information for plotting in \link{plot.homerange}.
+#'
+#'@section Elements:
+#'  \describe{
+#'    \item{\code{ranges}:}{Object of class \code{"data.frame"}. Contains a column of the identifiers for each individual, and a column of the associated home ranges.}
+#'    \item{\code{subseg_n}:}{List of the number of times each subsegment was traveled.  The first level of the list corresponds to individual, the second level to river segment.}
+#'    \item{\code{subseg_length}:}{List of lengths of each subsegment.}
+#'    \item{\code{seg, vert, unique, rivers}:}{All inputs from the original \link{homerange} call.}
+#'   }
+#' @name homerange-class
+#' @rdname homerange-class
+#' @exportClass homerange
+#' @author Matt Tyers
+NULL

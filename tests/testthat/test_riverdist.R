@@ -149,14 +149,31 @@ test_that("dissolve",{
   expect_equal(Kenai3flip,Kenai2flipdis)
 })
 
-hr <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk)
-hr_flip <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish_flip_verts,rivers=Gulk_flip)
+hr <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish$vert,survey=fakefish$flight,rivers=Gulk)
+hr_flip <- homerange(unique=fakefish$fish.id,seg=fakefish$seg,vert=fakefish_flip_verts,survey=fakefish$flight,rivers=Gulk_flip)
+hr_flipflip <- hr_flip
+for(i in 1:length(hr$subseg_n)) {
+  for(j in 1:length(hr$subseg_length)) {
+    hr_flipflip$subseg_n[[i]][[j]] <- hr_flipflip$subseg_n[[i]][[j]][length(hr_flipflip$subseg_n[[i]][[j]]):1]
+  }
+}
+for(j in 1:length(hr$subseg_length)) {
+  hr_flipflip$subseg_length[[j]] <- hr_flipflip$subseg_length[[j]][length(hr_flipflip$subseg_length[[j]]):1]
+}
+hr_overlap <- homerangeoverlap(hr)
 test_that("homerange",{
-  expect_equal(hr[,1], c(1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20))
-  expect_equal(hr[,2], c(165698.89,94833.30,232892.91,141143.68,138765.21,145436.14,113141.15,113860.33,101682.66,156097.77,97081.89,177000.52,179146.30,149433.33,139167.26,179123.34,70523.57,151396.99,174099.34),tolerance=0.01)
-  expect_equal(names(hr),c("ID","range"))
+  expect_equal(hr$ranges[,1], c(1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20))
+  expect_equal(hr$ranges[,2], c(165698.89,94833.30,232892.91,141143.68,138765.21,145436.14,113141.15,113860.33,101682.66,156097.77,97081.89,177000.52,179146.30,149433.33,139167.26,179123.34,70523.57,151396.99,174099.34),tolerance=0.01)
+  expect_equal(names(hr$ranges),c("ID","range"))
   expect_error(homerange(unique=1:10,seg=fakefish$seg,vert=fakefish$vert,rivers=Gulk))
-  expect_equal(hr,hr_flip)
+  expect_equal(hr$ranges,hr_flip$ranges)
+  expect_equal(hr$subseg_n,hr_flipflip$subseg_n)
+  expect_equal(hr$subseg_length,hr_flipflip$subseg_length)
+  expect_equal(sum(unlist(hr$subseg_n)),71171)
+  expect_equal(sum(unlist(hr$subseg_length)),371439.8,tolerance=0.1)
+  expect_equal(sum(hr_overlap$either),69995271,tolerance=0.1)
+  expect_equal(sum(hr_overlap$both),33384663,tolerance=0.1)
+  expect_equal(sum(hr_overlap$prop_both),177.729,tolerance=0.1)
 })
 
 test_that("isflowconnected",{

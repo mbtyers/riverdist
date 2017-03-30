@@ -17,7 +17,7 @@ Reads river network shape files and computes network distances.
 \tabular{ll}{
 Package: \tab riverdist\cr
 Type: \tab Package\cr
-Version: \tab 0.13.1.9000\cr
+Version: \tab 0.13.1.9001\cr
 Date: \tab 2017-03-07\cr
 License: \tab GPL-2\cr
 }

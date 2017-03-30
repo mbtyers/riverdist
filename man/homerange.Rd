@@ -62,6 +62,6 @@ with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk))
 Matt Tyers
 }
 \seealso{
-plot.homerange, homerangeoverlap, plothomerangeoverlap
+\link{plot.homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
 }
 

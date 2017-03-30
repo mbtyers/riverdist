@@ -53,9 +53,18 @@ riverdistancematbysurvey(indiv=1, unique=smallset$id, survey=smallset$flight,
 
 ## ----fig.width=7,fig.height=3.5------------------------------------------
 # calculating observed minimum home range for all individuals
+homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk)
+
+## ----fig.width=7,fig.height=3.5------------------------------------------
 par(mfrow=c(1,3))
-homerange(unique=smallset$id, seg=smallset$seg, vert=smallset$vert, rivers=Gulk, 
-          map=TRUE)
+ranges <- homerange(unique=smallset$id, survey=smallset$flight, 
+                    seg=smallset$seg, vert=smallset$vert, rivers=Gulk)
+plot(ranges)
+plot(ranges, cumulative=TRUE, label=TRUE, col=3)
+
+## ----fig.width=5,fig.height=5--------------------------------------------
+homerangeoverlap(ranges)
+plothomerangeoverlap(ranges)
 
 ## ------------------------------------------------------------------------
 dmat <- riverdistancemat(smallset$seg,smallset$vert,Gulk)

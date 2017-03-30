@@ -201,7 +201,7 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 #'   meters).  The other elements are used for plotting, see \link{homerange-class} for more details.
 #' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
-#' @seealso plot.homerange, homerangeoverlap, plothomerangeoverlap
+#' @seealso \link{plot.homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
@@ -616,7 +616,7 @@ homerange <- function (unique=NULL, survey=NULL, seg, vert, rivers, map = FALSE,
 #' @param label Whether to add survey labels to individual points, if used in \link{homerange}.  Defaults to \code{FALSE}.
 #' @param main Plot title.  If the default \code{NULL} is used, plots will be titled according to unique individual.
 #' @param ... Additional plotting parameters, see \link{plot.rivernetwork}.
-#' @seealso homerange, homerangeoverlap, plothomerangeoverlap
+#' @seealso \link{homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
@@ -676,7 +676,7 @@ plot.homerange <- function(x,cumulative=FALSE,lwd=3,maxlwd=10,col=4,pch=21,label
 #'   observations of each individual fish.
 #' @param x An object returned from \link{homerange}.
 #' @return A list of three matrices, with \code{$either} giving the distances represented by the union of home ranges of each pair of individuals, and \code{$both} giving the distances represented by the intersection of home ranges of each pair of individuals.  Element \code{$prop_both} gives the proportion of overlap, defined as intersection/union.
-#' @seealso homerange, plot.homerange, plothomerangeoverlap
+#' @seealso \link{homerange}, \link{plot.homerange}, \link{plothomerangeoverlap}
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)
@@ -720,7 +720,7 @@ homerangeoverlap <- function(x) {
 #' @param maxlwd Maximum line width to use, defaults to 10.
 #' @param col Line color to use, defaults to \code{"blue"}.
 #' @param ... Additional plotting parameters, see \link{plot.rivernetwork}.
-#' @seealso homerange, plot.homerange, homerangeoverlap
+#' @seealso \link{homerange}, \link{plot.homerange}, \link{homerangeoverlap}
 #' @author Matt Tyers
 #' @examples
 #' data(Gulk, fakefish)

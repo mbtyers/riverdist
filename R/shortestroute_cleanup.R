@@ -62,7 +62,7 @@ removeduplicates <- function(rivers) {
 #' @importFrom graphics plot
 #' @importFrom graphics text
 #' @export
-cleanup1 <- function(rivers) {
+cleanup <- function(rivers) {
   if(!interactive()) stop("The cleanup() function can only be used in an interactive environment.")
   cat("Cleanup started, with",length(rivers$lines),"segments.",'\n')
   plot(rivers)
@@ -531,7 +531,7 @@ cleanup1 <- function(rivers) {
   }
   
   cat('\n',"Checking for braiding...",'\n')
-  routes<-checkbraidedTF1(rivers5,toreturn="routes")           ##################################################################
+  routes<-checkbraidedTF(rivers5,toreturn="routes")           ##################################################################
   rivers5$braided <- !is.null(routes)
   braided <- rivers5$braided
   rivers6<-rivers5
@@ -565,7 +565,7 @@ cleanup1 <- function(rivers) {
       checkagain<-0
       while(!any(checkagain==c("y","Y","n","N"))) checkagain<-readline(prompt="Re-check for braiding? (y/n) ")
       if(checkagain=="Y" | checkagain=="y") {
-        routes<-checkbraidedTF1(rivers6,toreturn="routes")           ##################################################################
+        routes<-checkbraidedTF(rivers6,toreturn="routes")           ##################################################################
         rivers6$braided <- !is.null(routes)
         braided <- rivers6$braided
         if(braided) cat('\n',"Braiding still detected.",'\n')

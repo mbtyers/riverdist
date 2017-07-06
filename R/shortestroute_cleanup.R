@@ -254,7 +254,7 @@ cleanup1 <- function(rivers) {
     # origin41 <-which(order==origin)
     # 
     # for(i in 1:length(rivers41$lines)) {   ### this is SOOO SLOOOOWWWW ... only check endpts??
-    #   if(is.na(detectroute1(end=origin41,start=i,rivers=rivers41,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           ##################################################################
+    #   if(is.na(detectroute(end=origin41,start=i,rivers=rivers41,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           ##################################################################
     #     takeout[k] <- i
     #     k <- k+1
     #     # print(i)    ##############################################################################################
@@ -264,7 +264,7 @@ cleanup1 <- function(rivers) {
     
     # system.time({
     # for(i in 1:length(rivers4$lines)) {   ### this is SOOO SLOOOOWWWW ... only check endpts??
-    #   if(is.na(detectroute1(end=rivers4$mouth$mouth.seg,start=i,rivers=rivers4,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           ##################################################################
+    #   if(is.na(detectroute(end=rivers4$mouth$mouth.seg,start=i,rivers=rivers4,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           ##################################################################
     #     takeout[k] <- i
     #     k <- k+1
     #     # print(i)    ##############################################################################################
@@ -283,7 +283,7 @@ cleanup1 <- function(rivers) {
       while(!all(checked)) {   
         # i <- which.min(checked) 
         i <- ifelse(any(thesefirst),which.max(thesefirst),which.min(checked))
-        theroute <- detectroute1(end=rivers4$mouth$mouth.seg,start=i,rivers=rivers4,stopiferror=FALSE,algorithm="Dijkstra")
+        theroute <- detectroute(end=rivers4$mouth$mouth.seg,start=i,rivers=rivers4,stopiferror=FALSE,algorithm="Dijkstra")
         if(is.na(theroute[1])) { 
           takeout[i] <- T
           checked[i] <- T
@@ -320,7 +320,7 @@ cleanup1 <- function(rivers) {
         if(length(toplace)>1) {
           jinregion <- 2
           for(iinregion in 2:length(toplace)) {
-            thisroute <- detectroute1(start=toplace[1],end=toplace[iinregion],stopiferror=FALSE,algorithm="Dijkstra",rivers=rivers4)
+            thisroute <- detectroute(start=toplace[1],end=toplace[iinregion],stopiferror=FALSE,algorithm="Dijkstra",rivers=rivers4)
             num <- num+1  ## 867
             if(!is.na(thisroute[1])) {
               thisregion[jinregion] <- toplace[iinregion]
@@ -339,7 +339,7 @@ cleanup1 <- function(rivers) {
         #   toplaceTF <- tocheckTF <- rep(F,length(toplace))
         #   toplaceTF[1] <- tocheckTF[1] <- T
         #   while(!all(tocheckTF)) {
-        #     thisroute <- detectroute1(start=toplace[1],end=toplace[which.min(tocheckTF)],stopiferror=FALSE,algorithm="Dijkstra",rivers=rivers4)
+        #     thisroute <- detectroute(start=toplace[1],end=toplace[which.min(tocheckTF)],stopiferror=FALSE,algorithm="Dijkstra",rivers=rivers4)
         #     num <- num+1   ## 774
         #     if(!is.na(thisroute[1])) {
         #       # thisregion <- c(thisregion,thisroute)

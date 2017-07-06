@@ -128,7 +128,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
   i<-1
   if(interactive() & progress) pb <- txtProgressBar(style=3)
   while(!finished) {
-    theroute <- detectroute1(start=checkthese[i], end=mouthseg, rivers=rivers, stopiferror=F, algorithm="Dijkstra")           ##################################################################
+    theroute <- detectroute(start=checkthese[i], end=mouthseg, rivers=rivers, stopiferror=F, algorithm="Dijkstra")           ##################################################################
     if(length(theroute)>2) {
       jdone <- F
       j <- 2
@@ -136,7 +136,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
         rivers_except_not <- rivers
         rivers_except_not$connections[theroute[j],] <- NA
         rivers_except_not$connections[,theroute[j]] <- NA
-        trialroute <- detectroute1(start=checkthese[i], end=mouthseg, rivers=rivers_except_not, stopiferror=F, algorithm="Dijkstra")           ##################################################################
+        trialroute <- detectroute(start=checkthese[i], end=mouthseg, rivers=rivers_except_not, stopiferror=F, algorithm="Dijkstra")           ##################################################################
         if(!is.na(trialroute[1])) {
           braiding <- T
           if(toreturn!="allroutes") finished <- T  ###############

@@ -291,7 +291,7 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
 #' Sys.time() - tstart
 #' @importFrom graphics plot
 #' @export
-buildsegroutes1 <- function(rivers,lookup=NULL,verbose=FALSE) {
+buildsegroutes <- function(rivers,lookup=NULL,verbose=FALSE) {
   if(is.na(rivers$mouth$mouth.seg) | is.na(rivers$mouth$mouth.vert)) stop("need to supply the segment and vertex of origin")
   
   if(length(rivers$lines)==1) {

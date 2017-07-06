@@ -100,54 +100,61 @@ checkbraided <- function(rivers,startseg=NULL,endseg=NULL,progress=TRUE) {
 #' str(KilleyW.1)
 #' @export
 checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
-  if(toreturn != "rivers" & toreturn != "logical" & toreturn != "routes") stop("Invalid specification of argument 'toreturn'.  See help for more details.")
+  # if(toreturn != "rivers" & toreturn != "logical" & toreturn != "routes") stop("Invalid specification of argument 'toreturn'.  See help for more details.")
+  if(!(toreturn %in% c("rivers","logical","routes","allroutes"))) stop("Invalid specification of argument 'toreturn'.  See help for more details.")   #################
+  if(toreturn=="allroutes") {
+    allroutes <- list()
+    allroutesi <- 1
+  }
+  
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   connections <- rivers$connections
   length <- length(rivers$lines)
-  mouthseg <- rivers$mouth$mouth.seg
-  if(is.na(mouthseg)) stop("Mouth must be specified.")
+  mouthseg <- ifelse(!is.na(rivers$mouth$mouth.seg),rivers$mouth$mouth.seg,1)
+  # if(is.na(mouthseg)) stop("Mouth must be specified.")
   lines <- rivers$lines
   tolerance <- rivers$tolerance
   if(length==1) {
     braiding <- F
   } else{
     
-  n.top <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
-  }
-  n.bot <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==3 | connections[seg,]==4 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
-  }
+  ntop <- rowSums(connections==1,na.rm=T) + rowSums(connections==2,na.rm=T) + rowSums(connections==5,na.rm=T) + rowSums(connections==6,na.rm=T)
+  nbot <- rowSums(connections==3,na.rm=T) + rowSums(connections==4,na.rm=T) + rowSums(connections==5,na.rm=T) + rowSums(connections==6,na.rm=T)
   
-  invertrivers <- rivers
-  invertrivers$connections <- connections[length:1,length:1]
-  invertrivers$lines <- rivers$lines[length:1]
+  checkthese <- (1:length)[xor(ntop==0,nbot==0)]
   
-  ntop <- nbot <- NA
-  for(i in 1:length) {
-    ntop[i] <- n.top(i,connections = connections)
-    nbot[i] <- n.bot(i,connections = connections)
-  }
-  checkthese <- (1:length)[(ntop==0&nbot!=0) | (ntop!=0&nbot==0)]
   braiding <- F 
   finished <- F
   i<-1
   if(interactive() & progress) pb <- txtProgressBar(style=3)
   while(!finished) {
-    route1 <- detectroute(start=checkthese[i],end=mouthseg,rivers=rivers,algorithm="sequential")
-    route2 <- detectroute(start=(length-checkthese[i]+1),end=(length-mouthseg+1),rivers=invertrivers,algorithm="sequential")
-    route2 <- length-route2+1
-    if(length(route1) != length(route2)) {
-      braiding<-T
-      finished<-T
+    theroute <- detectroute1(start=checkthese[i], end=mouthseg, rivers=rivers, stopiferror=F, algorithm="Dijkstra")           ##################################################################
+    if(length(theroute)>2) {
+      jdone <- F
+      j <- 2
+      while(!jdone) {
+        rivers_except_not <- rivers
+        rivers_except_not$connections[theroute[j],] <- NA
+        rivers_except_not$connections[,theroute[j]] <- NA
+        trialroute <- detectroute1(start=checkthese[i], end=mouthseg, rivers=rivers_except_not, stopiferror=F, algorithm="Dijkstra")           ##################################################################
+        if(!is.na(trialroute[1])) {
+          braiding <- T
+          if(toreturn!="allroutes") finished <- T  ###############
+          else {
+            allroutes[[allroutesi]] <- c(setdiff(theroute,trialroute),setdiff(trialroute,theroute))
+            allroutesi <- allroutesi+1
+          }  #################
+          jdone <- T
+          route1 <- theroute
+          route2 <- trialroute
+        }
+        j <- j+1
+        if(j>=length(theroute)) jdone<-T
+      }
     }
-    if(length(route1) == length(route2)) if(any(route1 != route2)) {
-      braiding<-T
-      finished<-T
-    }
-    if(i==length(checkthese)) finished <- T
-    i<-i+1
-    #print(i)
+    if(i>=length(checkthese)) finished<-T
+    i <- i+1
+    
     if(interactive() & progress) setTxtProgressBar(pb=pb, value=i/(length(checkthese)))
   }
   }
@@ -159,6 +166,9 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
   if(toreturn=="routes") {
     if(braiding) return(list(route1=route1, route2=route2))
   }
+  if(toreturn=="allroutes") {   ##################
+    if(braiding) return(allroutes)
+  }  ############
 }
 
 #' Detect Multiple Routes

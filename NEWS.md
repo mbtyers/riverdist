@@ -1,3 +1,23 @@
+# 'riverdist' 0.14.0.9001 (development version - Jul 06, 2017)
+
+### Added capabilities
+
+* `cleanup_verts()` added, for editing of the vertices of individual segments
+
+* `cleanup()` improved
+
+* Better algorithm used for `checkbraidedTF()` - MUCH faster, and no longer hangs in a complex test case
+
+* `detectroute(..., algorithm="Dijkstra")` speeded up
+
+* `topologydots()` speeded up
+
+### Bug fixes
+
+* Better algorithm used for `checkbraidedTF()` - MUCH faster, and no longer hangs in a complex test case
+
+* `plot.rivernetwork()` no longer errors when only one segment is visible in plotting window
+
 # 'riverdist' 0.13.1.9001 (development version - Mar 30, 2017)
 
 ### Added capabilities

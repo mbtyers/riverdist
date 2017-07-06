@@ -362,7 +362,9 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
     if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
     axticks1 <- axTicks(1)
-    if(corthing<=0) {
+    if(is.na(corthing)) legendleft <- F   ######
+    else legendleft <- corthing<=0   ######
+    if(legendleft) {   ######
       if(length(axticks1)>5) {
         scalex <- axticks1[c(1,3)]
         labx <- axticks1[2]
@@ -373,7 +375,7 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
       }
       scaley <- axTicks(2)[1]
     }
-    if(corthing>0) {
+    if(!legendleft) {   ######
       if(length(axticks1)>5) {
         scalex <- axticks1[c(length(axticks1)-2,length(axticks1))]
         labx <- axticks1[length(axticks1)-1]
@@ -643,20 +645,41 @@ highlightseg <- function(seg,rivers,cex=0.8,lwd=3,add=FALSE,color=FALSE,...) {
 #' @importFrom graphics points
 #' @export
 topologydots <- function(rivers,add=FALSE,...) {
+  # if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  # if(!add) plot(rivers,color=F,...=...)
+  # connections <- rivers$connections
+  # lines <- rivers$lines
+  # connections[is.na(connections)==T]<-0
+  # for(i in 1:dim(connections)[2]) {
+  #   low <- 2
+  #   high <- 2
+  #   if(length(connections[i,][connections[i,]==1 | connections[i,]==2 | connections[i,]==5 | connections[i,]==6])>0) low <- 3
+  #   if(length(connections[i,][connections[i,]==3 | connections[i,]==4 | connections[i,]==5 | connections[i,]==6])>0) high <- 3
+  #   points(lines[[i]][1,1],lines[[i]][1,2],pch=16,col=low)
+  #   points(lines[[i]][dim(lines[[i]])[1],1],
+  #          lines[[i]][dim(lines[[i]])[1],2],pch=16,col=high)
+  # }
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(!add) plot(rivers,color=F,...=...)
   connections <- rivers$connections
   lines <- rivers$lines
   connections[is.na(connections)==T]<-0
+  low <- high <- rep(2,dim(connections)[2])
+  coordslow <- coordshigh <- matrix(NA,nrow=length(low),ncol=2)
+  con1 <- rowSums(connections==1)
+  con2 <- rowSums(connections==2)
+  con3 <- rowSums(connections==3)
+  con4 <- rowSums(connections==4)
+  con5 <- rowSums(connections==5)
+  con6 <- rowSums(connections==6)
+  low[con1+con2+con5+con6>0] <- 3
+  high[con3+con4+con5+con6>0] <- 3
   for(i in 1:dim(connections)[2]) {
-    low <- 2
-    high <- 2
-    if(length(connections[i,][connections[i,]==1 | connections[i,]==2 | connections[i,]==5 | connections[i,]==6])>0) low <- 3
-    if(length(connections[i,][connections[i,]==3 | connections[i,]==4 | connections[i,]==5 | connections[i,]==6])>0) high <- 3
-    points(lines[[i]][1,1],lines[[i]][1,2],pch=16,col=low)
-    points(lines[[i]][dim(lines[[i]])[1],1],
-           lines[[i]][dim(lines[[i]])[1],2],pch=16,col=high)
+    coordslow[i,] <- lines[[i]][1,]
+    coordshigh[i,] <- lines[[i]][dim(lines[[i]])[1],]
   }
+  points(coordslow, pch=16, col=low)
+  points(coordshigh, pch=16, col=high)
 }
 
 
@@ -1176,3 +1199,4 @@ removeunconnected <- function(rivers) {
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers2)
 }
+

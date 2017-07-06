@@ -132,6 +132,156 @@ splitsegments <- function(rivers,tolerance=NULL) {
   }
   rivers <- addcumuldist(rivers)
   if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
+  rivers$tolerance <- tolerance
+  
+  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
+  return(rivers)
+}
+
+
+splitsegments_append <- function(rivers,tolerance=NULL,splitthese=NULL,splitthemat=NULL,one2one=FALSE) {
+  
+  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  lines <- rivers$lines
+  
+  if(is.null(splitthese)) splitthese <- 1:length(lines)   ##############
+  if(is.null(splitthemat)) splitthemat <- 1:length(lines)   ##############
+  
+  if(is.null(tolerance)) tolerance <- rivers$tolerance
+  
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    mouthcoords <- rivers$lines[[rivers$mouth$mouth.seg]][rivers$mouth$mouth.vert,]
+  }
+  
+  pdist2 <- function(p1,p2mat) {
+    dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
+    return(dist)
+  }
+  
+  # first identifying where breaks should go
+  breaks <- list()
+  
+  for(segi in splitthese) {   ##############
+    segibreaks <- NULL
+    if(one2one) splitthemat1 <- splitthemat[splitthese==segi]
+    if(!one2one) splitthemat1 <- splitthemat
+    # for(segj in splitthemat1) {
+    #   distanceses1 <- pdist2(lines[[segj]][1,], lines[[segi]])
+    #   distanceses2 <- pdist2(lines[[segj]][dim(lines[[segj]])[1],], lines[[segi]])
+    #   newbreaks <- which(distanceses1<tolerance | distanceses2<tolerance)
+    #   segibreaks <- c(segibreaks,newbreaks)
+    # }
+    # breaks[[segi]] <- sort(unique(segibreaks))
+    # if(length(breaks[[segi]]>1)) {
+    #   for(ibreaks in 2:length(breaks[[segi]])) {
+    #     if(abs(breaks[[segi]][ibreaks]-breaks[[segi]][ibreaks-1])<=1) breaks[[segi]][ibreaks-1] <- 0 # eliminating sequential runs
+    #     if(breaks[[segi]][ibreaks] <= ibreaks) breaks[[segi]][ibreaks] <- 0
+    #   }
+    # }    
+    for(segj in splitthemat1) {
+      distanceses1 <- pdist2(lines[[segj]][1,], lines[[segi]])
+      distanceses2 <- pdist2(lines[[segj]][dim(lines[[segj]])[1],], lines[[segi]])
+      if(min(distanceses1)<=tolerance) {
+        newbreaks <- which.min(distanceses1)
+        segibreaks <- c(segibreaks,newbreaks)
+      }
+      if(min(distanceses2)<=tolerance) {
+        newbreaks <- which.min(distanceses2)
+        segibreaks <- c(segibreaks,newbreaks)
+      }
+      # newbreaks <- which(distanceses1<tolerance | distanceses2<tolerance)
+      # segibreaks <- c(segibreaks,newbreaks)
+    }
+    breaks[[segi]] <- sort(unique(segibreaks))
+    # if(length(breaks[[segi]]>1)) {
+    #   for(ibreaks in 2:length(breaks[[segi]])) {
+    #     if(abs(breaks[[segi]][ibreaks]-breaks[[segi]][ibreaks-1])<=1) breaks[[segi]][ibreaks-1] <- 0 # eliminating sequential runs
+    #     if(breaks[[segi]][ibreaks] <= ibreaks) breaks[[segi]][ibreaks] <- 0
+    #   }
+    # }
+    breaks[[segi]][breaks[[segi]]==1] <- 0
+    breaks[[segi]][breaks[[segi]]==dim(lines[[segi]])[1]] <- 0
+    breaks[[segi]] <- breaks[[segi]][breaks[[segi]]>0]
+    if(length(breaks[[segi]])==0) breaks[[segi]] <- NA
+  }
+  
+  # then breaking them into new segments
+  # newlines <- list()
+  newlines <- lines
+  # new.i <- 1
+  new.i <- length(lines)+1
+  # for(i in 1:length(lines)) {
+  for(i in unique(splitthese)) {
+    # if(is.na(breaks[[i]][1])) {
+    #   newlines[[new.i]] <- lines[[i]]
+    #   new.i <- new.i+1
+    # } 
+    if(!is.na(breaks[[i]][1])) {
+      # newlines[[new.i]] <- lines[[i]][1:breaks[[i]][1],]
+      # new.i <- new.i+1
+      newlines[[i]] <- lines[[i]][1:breaks[[i]][1],]
+      if(length(breaks[[i]])>1) {
+        for(j in 1:(length(breaks[[i]])-1)) {
+          newlines[[new.i]] <- lines[[i]][breaks[[i]][j]:breaks[[i]][j+1],]
+          new.i <- new.i+1
+        }
+      }
+      newlines[[new.i]] <- lines[[i]][breaks[[i]][length(breaks[[i]])]:dim(lines[[i]])[1],]
+      new.i <- new.i+1
+    }
+  }
+  
+  # updating connections matrix
+  lines <- newlines
+  length <- length(lines)
+  
+  connections <- calculateconnections(lines=lines,tolerance=tolerance)
+  
+  # making a vector of total segment lengths
+  lengths <- rep(NA,length)
+  for(i in 1:length) {
+    lengths[i] <- pdisttot(lines[[i]])
+  }
+  
+  # updating rivers object
+  rivers$connections <- connections
+  if(any(connections %in% 5:6)) rivers$braided <- TRUE
+  rivers$lines <- newlines
+  rivers$lengths <- lengths
+  rivers$names <- rep(NA,length(lines))
+  if(!is.na(rivers$mouth$mouth.seg) & !is.na(rivers$mouth$mouth.vert)) {
+    for(i in 1:length(rivers$lines)) {
+      for(j in 1:(dim(rivers$lines[[i]])[1])) {
+        if(all(mouthcoords==rivers$lines[[i]][j,])) {
+          rivers$mouth$mouth.seg <- i
+          rivers$mouth$mouth.vert <- j
+        }
+      }
+    }
+  }
+
+  Id <- 0
+  rivers$sp@data <- data.frame(Id)
+  rivers$sp@lines <- list(rivers$sp@lines[[1]])
+  rivers$sp@lines[[1]]@Lines <- list(rivers$sp@lines[[1]]@Lines[[1]])
+  for(i in 1:length) {
+    rivers$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers$lines[[i]])
+  }
+  
+  rivID <- 1:length
+  sp_line <- rep(1,length)
+  sp_seg <- 1:length
+  rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
+  
+
+  if(!is.null(rivers$segroutes)) {
+    rivers <- buildsegroutes(rivers,lookup=F)
+  }
+  rivers <- addcumuldist(rivers)
+  if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
+  rivers$tolerance <- tolerance
+  
+  
   
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)

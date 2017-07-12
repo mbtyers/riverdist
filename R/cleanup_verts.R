@@ -1,3 +1,24 @@
+#' Interactive Cleanup of the Vertices of Individual Segments
+#' @description A trial version of a function for deep-cleaning a river network.
+#' 
+#' Sometimes a shapefile contains errors that are not obvious at an initial check, typically vertices that should not be there.  
+#' 
+#' This function steps through each segment in sequence, and allows the user to interactively remove vertices.
+#' @param rivers The river network object to use
+#' @param startwith The segment (number) to start with, defaulting to \code{1}.  
+#' @note Stepping through a large and messy river network can be time-consuming.  To resume a cleanup session, use the \code{startwith=} argument and the last returned river network.  For example, if \code{rivers1 <- cleanup_verts(rivers)} were initially called and the user selected "save & close" at segment 100, cleanup can be resumed by calling \code{rivers2 <- cleanup_verts(rivers1, startwith=100)}.
+#' @return A new river network object, see
+#'   \link{rivernetwork}
+#' @seealso line2network
+#' @author Matt Tyers
+#' @examples
+#' data(abstreams0,Koyukuk0,Kenai1)
+#' 
+#' # abstreams_fixed1 <- cleanup_verts(abstreams0)
+#' # Koyukuk <- cleanup(Koyukuk0)
+#' # Kenai <- cleanup(Kenai1)
+#' @importFrom graphics plot
+#' @importFrom graphics text
 #' @export
 cleanup_verts <- function(rivers, startwith=1) {
   lines <- rivers$lines

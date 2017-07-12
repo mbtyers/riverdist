@@ -10,7 +10,7 @@ cleanup(rivers)
 \item{rivers}{The river network object to use}
 }
 \value{
-A new river network object with duplicated segments removed, see
+A new river network object, see
   \link{rivernetwork}
 }
 \description{

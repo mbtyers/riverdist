@@ -48,7 +48,7 @@ removeduplicates <- function(rivers) {
 #'   \link{connectsegs}, automatically runs \link{checkbraidedTF}, and prompts
 #'   the user whether to run \link{buildsegroutes} if no braiding is detected.
 #' @param rivers The river network object to use
-#' @return A new river network object with duplicated segments removed, see
+#' @return A new river network object, see
 #'   \link{rivernetwork}
 #' @seealso line2network
 #' @importFrom graphics hist

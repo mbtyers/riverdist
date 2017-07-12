@@ -4,6 +4,12 @@
 
 * `cleanup_verts()` added, for editing of the vertices of individual segments
 
+* `routelist()` now returns all complete routes (and faster)
+
+* `splitsegments()` can now split a subset of segments at specified locations
+
+* `connectsegs()` can now connect vectors of segments
+
 * `cleanup()` improved
 
 * Better algorithm used for `checkbraidedTF()` - MUCH faster, and no longer hangs in a complex test case

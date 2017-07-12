@@ -419,7 +419,7 @@ cleanup <- function(rivers) {
             if(any(howtodo==c("e","E"))) closestpt <- F
             if(closestpt) cat('\n',"Connecting and calculating new segment splits...",'\n')
             if(!closestpt) cat('\n',"Connecting...",'\n')
-            suppressMessages(rivers4a <- connectsegs_multiple(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))   ##### 
+            suppressMessages(rivers4a <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))   ##### 
             tozoomto <- rbind(rivers4$lines[[connect1]],rivers4$lines[[connect2]])
             xmin <- min(tozoomto[,1],na.rm=T)
             xmax <- max(tozoomto[,1],na.rm=T)
@@ -445,7 +445,7 @@ cleanup <- function(rivers) {
         }
       }
       
-      if(!is.null(connectthese)) suppressMessages(rivers4 <- connectsegs_multiple(connect=connectthese, connectto=tothese, nearestvert=closestptTF, rivers=rivers4))
+      if(!is.null(connectthese)) suppressMessages(rivers4 <- connectsegs(connect=connectthese, connectto=tothese, nearestvert=closestptTF, rivers=rivers4))
       if(!is.null(taketheseout)) suppressMessages(rivers4 <- trimriver(trim=taketheseout, rivers=rivers4))
       
       ##################
@@ -589,17 +589,88 @@ cleanup <- function(rivers) {
 
 
 
+# connectsegs <- function(connect,connectto,nearestvert=FALSE,rivers,calcconnections=TRUE) {
+#   if(length(whoconnected(connect,rivers))>0){
+#     if(any(whoconnected(connect,rivers)==connectto)) stop("Segments are already connected.")
+#   }
+#   l1 <- dim(rivers$lines[[connect]])[1]
+#   l2 <- dim(rivers$lines[[connectto]])[1]
+#   if(!nearestvert) {
+#     dists <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][1,])
+#     dists[2] <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][l2,])
+#     dists[3] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][1,])
+#     dists[4] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][l2,])
+#     if(min(dists)==dists[1]) {
+#       rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][1,],rivers$lines[[connect]])
+#     }
+#     if(min(dists)==dists[2]) {
+#       rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][l2,],rivers$lines[[connect]])
+#     }
+#     if(min(dists)==dists[3]) {
+#       rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][1,])
+#     }
+#     if(min(dists)==dists[4]) {
+#       rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][l2,])
+#     }
+#     
+#     rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
+#     rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(dists)
+#     
+#     # updating the connectivity matrix 
+#     length <- length(rivers$lines)
+#     if(calcconnections) rivers$connections <- calculateconnections(lines=rivers$lines,tolerance=rivers$tolerance)
+#     if(any(rivers$connections %in% 5:6)) rivers$braided <- TRUE
+#   }
+#   
+#   if(nearestvert) {
+#     dbeg <- dend <- 100000*max(rivers$lengths)
+#     whichbeg <- whichend <- NA
+#     for(i in 1:l2) {
+#       if(pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][i,])<=dbeg) {
+#         dbeg <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][i,])
+#         whichbeg <- i
+#       }
+#       if(pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][i,])<=dend) {
+#         dend <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][i,])
+#         whichend <- i
+#       }
+#     }
+#     if(dbeg < dend) {
+#       rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][whichbeg,],rivers$lines[[connect]])
+#     }
+#     if(dbeg > dend) {
+#       rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][whichend,])
+#     }
+#     
+#     rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
+#     rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(c(dbeg,dend))
+#     
+#     suppressMessages(rivers <- splitsegments(rivers))
+#   }
+#   
+#   if(!is.null(rivers$segroutes)) {
+#     rivers <- buildsegroutes(rivers,lookup=F)
+#   }
+#   rivers <- addcumuldist(rivers)
+#   if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
+#   
+#   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
+#   return(rivers)
+# }
+
+
+
 #' Connect Segments
 #' @description Provides a method to manually connect unconnected segments
 #'   within a river network.  The nearest endpoint (or vertex) of the second segment is
 #'   added as a new vertex to the first, and the network topology is then updated.
-#' @param connect The segment to connect to the network.  Typically, this is the
-#'   segment that is disconnected from the rest of the river network.
-#' @param connectto The segment to connect it to.  Typically, this is a segment
-#'   that is connected to the rest of the river network.
+#' @param connect The segment(s) to connect to the network.  Typically, this is the
+#'   segment that is disconnected from the rest of the river network.  A vector of segments may be used.
+#' @param connectto The segment(s) to connect it (them) to.  Typically, this is a segment
+#'   that is connected to the rest of the river network.  A vector of segments may be used, corresponding to that used in \code{connect=}.
 #' @param nearestvert Whether to connect at the nearest vertex and split the
 #'   segment (\code{FALSE}), or connect at the nearest endpoint (\code{TRUE}). 
-#'   Defaults to \code{TRUE}.
+#'   Defaults to \code{TRUE}.  A vector may be used, corresponding to those used in \code{connect=} and \code{connectto=}.
 #' @param calcconnections Whether to recalculate all connections. 
 #'   Defaults to \code{TRUE}.  Setting to \code{FALSE} is not recommended unless many connections are to be made, in which case connections can be calculated afterward.
 #' @param rivers The river network object to use.
@@ -617,79 +688,15 @@ cleanup <- function(rivers) {
 #' Koyukuk0.1 <- connectsegs(connect=21, connectto=20, rivers=Koyukuk0)
 #' plot(Koyukuk0.1,ylim=c(1930500,1931500), xlim=c(194900,195100))
 #' topologydots(Koyukuk0.1, add=TRUE)
+#' 
+#' # or the vector version
+#' zoomtoseg(seg=21:23, rivers=Koyukuk0)
+#' Koyukuk0.2 <- connectsegs(connect=c(20,21,22), connectto=c(21,22,23), 
+#'     nearestvert=c(FALSE,FALSE,TRUE), rivers=Koyukuk0)
+#' zoomtoseg(seg=21:23, rivers=Koyukuk0.2)
+#' topologydots(Koyukuk0.2, add=TRUE)
 #' @export
-connectsegs <- function(connect,connectto,nearestvert=FALSE,rivers,calcconnections=TRUE) {
-  if(length(whoconnected(connect,rivers))>0){
-    if(any(whoconnected(connect,rivers)==connectto)) stop("Segments are already connected.")
-  }
-  l1 <- dim(rivers$lines[[connect]])[1]
-  l2 <- dim(rivers$lines[[connectto]])[1]
-  if(!nearestvert) {
-    dists <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][1,])
-    dists[2] <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][l2,])
-    dists[3] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][1,])
-    dists[4] <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][l2,])
-    if(min(dists)==dists[1]) {
-      rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][1,],rivers$lines[[connect]])
-    }
-    if(min(dists)==dists[2]) {
-      rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][l2,],rivers$lines[[connect]])
-    }
-    if(min(dists)==dists[3]) {
-      rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][1,])
-    }
-    if(min(dists)==dists[4]) {
-      rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][l2,])
-    }
-    
-    rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
-    rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(dists)
-    
-    # updating the connectivity matrix 
-    length <- length(rivers$lines)
-    if(calcconnections) rivers$connections <- calculateconnections(lines=rivers$lines,tolerance=rivers$tolerance)
-    if(any(rivers$connections %in% 5:6)) rivers$braided <- TRUE
-  }
-  
-  if(nearestvert) {
-    dbeg <- dend <- 100000*max(rivers$lengths)
-    whichbeg <- whichend <- NA
-    for(i in 1:l2) {
-      if(pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][i,])<=dbeg) {
-        dbeg <- pdist(rivers$lines[[connect]][1,],rivers$lines[[connectto]][i,])
-        whichbeg <- i
-      }
-      if(pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][i,])<=dend) {
-        dend <- pdist(rivers$lines[[connect]][l1,],rivers$lines[[connectto]][i,])
-        whichend <- i
-      }
-    }
-    if(dbeg < dend) {
-      rivers$lines[[connect]] <- rbind(rivers$lines[[connectto]][whichbeg,],rivers$lines[[connect]])
-    }
-    if(dbeg > dend) {
-      rivers$lines[[connect]] <- rbind(rivers$lines[[connect]],rivers$lines[[connectto]][whichend,])
-    }
-    
-    rivers$sp@lines[[rivers$lineID[connect,2]]]@Lines[[rivers$lineID[connect,3]]]@coords <- rivers$lines[[connect]]
-    rivers$lengths[[connect]] <- rivers$lengths[[connect]]+min(c(dbeg,dend))
-    
-    suppressMessages(rivers <- splitsegments(rivers))
-  }
-  
-  if(!is.null(rivers$segroutes)) {
-    rivers <- buildsegroutes(rivers,lookup=F)
-  }
-  rivers <- addcumuldist(rivers)
-  if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
-  
-  message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
-  return(rivers)
-}
-
-
-
-connectsegs_multiple <- function(connect,connectto,nearestvert,rivers,calcconnections=TRUE) {
+connectsegs <- function(connect,connectto,nearestvert=TRUE,rivers,calcconnections=TRUE) {
   pdist2 <- function(p1,p2mat) {
     dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
     return(dist)
@@ -754,7 +761,7 @@ connectsegs_multiple <- function(connect,connectto,nearestvert,rivers,calcconnec
   }
   
   # updating the connectivity matrix
-  if(any(nearestvert)) suppressMessages(rivers <- splitsegments_append(rivers,splitthese=connectto,splitthemat=connect,one2one=T))   ##### make this the multiple one
+  if(any(nearestvert)) suppressMessages(rivers <- splitsegments(rivers,splitthese=connectto,splitthemat=connect,one2one=T,append=TRUE))   ##### make this the multiple one
   else {
     # length <- length(rivers$lines)
     if(calcconnections) rivers$connections <- calculateconnections(lines=rivers$lines,tolerance=rivers$tolerance)

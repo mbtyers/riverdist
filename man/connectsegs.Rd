@@ -4,19 +4,19 @@
 \alias{connectsegs}
 \title{Connect Segments}
 \usage{
-connectsegs(connect, connectto, nearestvert = FALSE, rivers,
+connectsegs(connect, connectto, nearestvert = TRUE, rivers,
   calcconnections = TRUE)
 }
 \arguments{
-\item{connect}{The segment to connect to the network.  Typically, this is the
-segment that is disconnected from the rest of the river network.}
+\item{connect}{The segment(s) to connect to the network.  Typically, this is the
+segment that is disconnected from the rest of the river network.  A vector of segments may be used.}
 
-\item{connectto}{The segment to connect it to.  Typically, this is a segment
-that is connected to the rest of the river network.}
+\item{connectto}{The segment(s) to connect it (them) to.  Typically, this is a segment
+that is connected to the rest of the river network.  A vector of segments may be used, corresponding to that used in \code{connect=}.}
 
 \item{nearestvert}{Whether to connect at the nearest vertex and split the
 segment (\code{FALSE}), or connect at the nearest endpoint (\code{TRUE}). 
-Defaults to \code{TRUE}.}
+Defaults to \code{TRUE}.  A vector may be used, corresponding to those used in \code{connect=} and \code{connectto=}.}
 
 \item{rivers}{The river network object to use.}
 
@@ -44,6 +44,13 @@ topologydots(Koyukuk0, add=TRUE)
 Koyukuk0.1 <- connectsegs(connect=21, connectto=20, rivers=Koyukuk0)
 plot(Koyukuk0.1,ylim=c(1930500,1931500), xlim=c(194900,195100))
 topologydots(Koyukuk0.1, add=TRUE)
+
+# or the vector version
+zoomtoseg(seg=21:23, rivers=Koyukuk0)
+Koyukuk0.2 <- connectsegs(connect=c(20,21,22), connectto=c(21,22,23), 
+    nearestvert=c(FALSE,FALSE,TRUE), rivers=Koyukuk0)
+zoomtoseg(seg=21:23, rivers=Koyukuk0.2)
+topologydots(Koyukuk0.2, add=TRUE)
 }
 \author{
 Matt Tyers

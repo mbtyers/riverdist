@@ -4,7 +4,8 @@
 \alias{splitsegments}
 \title{Split Segments by Endpoint Proximity}
 \usage{
-splitsegments(rivers, tolerance = NULL)
+splitsegments(rivers, tolerance = NULL, splitthese = NULL,
+  splitthemat = NULL, one2one = FALSE, append = FALSE)
 }
 \arguments{
 \item{rivers}{The river network object to use}
@@ -12,6 +13,14 @@ splitsegments(rivers, tolerance = NULL)
 \item{tolerance}{The spatial snapping tolerance to use for detecting
 intersection.  If a NULL value is used (default), it will default to the
 tolerance that was used in river network creation in \link{line2network}.}
+
+\item{splitthese}{An optional vector of target segments to split.  If this argument is used, only these segments will be split.  If the default (\code{NULL}) is accepted, all segments will be used.}
+
+\item{splitthemat}{An optional vector of segments (endpoints) to use for splitting.  If this argument is used, segments will only be split at the endpoints of these segments.  If the default (\code{NULL}) is accepted, all segments will be used.}
+
+\item{one2one}{Logical, indicating a one-to-one correspondence between arguments \code{splitthese} and \code{splitthemat}.  Defaults to \code{FALSE},}
+
+\item{append}{Logical, indicating how to organize the output river network.  If \code{TRUE}, appends newly-created segments to the end of \code{$lines}, rather than retaining original line ordering.  This may be useful in retaining original line ID.  Defaults to \code{FALSE}.}
 }
 \value{
 A new, updated river network object
@@ -37,6 +46,14 @@ plot(x=Koyukuk1)
 Koyukuk1split <- splitsegments(rivers=Koyukuk1)
 topologydots(rivers=Koyukuk1split)
 plot(x=Koyukuk1split)
+
+# if only segment 17 were to be split in three places
+plot(x=splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7),
+        splitthemat=c(14,5,12)))
+        
+# if only segment 16 were to be split, showing behavior of append=
+plot(x=splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7),
+        splitthemat=c(14,5,12), append=TRUE))
 }
 \author{
 Matt Tyers

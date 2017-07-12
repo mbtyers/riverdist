@@ -760,7 +760,7 @@ checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset)
 
 **Investigating multiple routes using `riverdistancelist()`**
 
-If the user wishes to explore the possibility of multiple routes beween two locations, a non-robust function `routelist()` detects a list of routes from one segment to another by means of randomization, which is applied by function `riverdistancelist()` to calculate the distance along the routes that were detected.  Because randomization is used to generate possible routes, the list of routes it generates is not guaranteed to be complete.  The `reps=` argument can be used to specify the number of randomizations to run, with more reps resulting in a more complete list of routes, but taking more processing time.  The `riverdistancelist()` function, shown below, returns a list of all routes detected by ascending distance, and the corresponding distances.
+If the user wishes to explore the possibility of multiple routes beween two locations, `routelist()` detects a list of routes from one segment to another, which is applied by function `riverdistancelist()` to calculate the distance along the routes that were detected.  This was by means of randomization in a previous version, but now uses an algorithm that returns a complete list of possible routes.  The `riverdistancelist()` function, shown below, returns a list of all routes detected by ascending distance, and the corresponding distances.
 
 ```{r}
 Killey.dists <- riverdistancelist(startseg=1,endseg=16,startvert=25,endvert=25,

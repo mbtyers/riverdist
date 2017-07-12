@@ -13,26 +13,17 @@ routelist(startseg, endseg, rivers, reps = 100)
 
 \item{rivers}{The river network object to use}
 
-\item{reps}{Number of randomized reorderings to try.  Larger numbers will 
-result in a more comprehensive list of routes, but computation can be slow,
-particularly in the presence of a complex river network.}
+\item{reps}{Deprecated.  Was used in a previous version using randomization.}
 }
 \value{
 A list of vectors, each describing a route in segment numbers.
 }
 \description{
-Called internally within \link{riverdistancelist}.  Detects many
-  sequential routes from one river network segment to another, in the event
-  of braiding.  Different routes are detected by randomly reordering the
-  segment numbers of the input river network object, thus changing the
-  internal hierarchy of segment selection.
+Called internally within \link{riverdistancelist}.  Detects all possible routes from one river network segment to another, in the event
+  of braiding.
 }
 \note{
-Since this function uses randomization, there is no guarantee that the 
-  list of routes will be comprehensive.  Larger numbers of \code{reps} can be
-  tried, but computation can be slow, particularly in the presence of a
-  complex river network.  It may be advantageous to use \link{trimriver} to
-  create a smaller, more specific river network object to work with.
+The previous version of this function returned many possible routes using randomization - this algorithm now computes all possible routes.
 }
 \examples{
 data(KilleyW)

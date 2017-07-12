@@ -172,23 +172,14 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
 }
 
 #' Detect Multiple Routes
-#' @description Called internally within \link{riverdistancelist}.  Detects many
-#'   sequential routes from one river network segment to another, in the event
-#'   of braiding.  Different routes are detected by randomly reordering the
-#'   segment numbers of the input river network object, thus changing the
-#'   internal hierarchy of segment selection.
+#' @description Called internally within \link{riverdistancelist}.  Detects all possible routes from one river network segment to another, in the event
+#'   of braiding.  
 #' @param startseg Segment number of the start of the route
 #' @param endseg Segment number of the end of the route
 #' @param rivers The river network object to use
-#' @param reps Number of randomized reorderings to try.  Larger numbers will 
-#'   result in a more comprehensive list of routes, but computation can be slow,
-#'   particularly in the presence of a complex river network.
+#' @param reps Deprecated.  Was used in a previous version using randomization.
 #' @return A list of vectors, each describing a route in segment numbers.
-#' @note Since this function uses randomization, there is no guarantee that the 
-#'   list of routes will be comprehensive.  Larger numbers of \code{reps} can be
-#'   tried, but computation can be slow, particularly in the presence of a
-#'   complex river network.  It may be advantageous to use \link{trimriver} to
-#'   create a smaller, more specific river network object to work with.
+#' @note The previous version of this function returned many possible routes using randomization - this algorithm now computes all possible routes.
 #' @author Matt Tyers
 #' @examples
 #' data(KilleyW)
@@ -197,23 +188,40 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
 #' routelist(startseg=1, endseg=16, rivers=KilleyW, reps=1000)
 #' @export
 routelist <- function(startseg,endseg,rivers,reps=100) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) stop("Invalid segments specified.")
-  connections <- rivers$connections
-  length <- length(rivers$lines)
   routes <- list()
-  
-  for(i in 1:reps) {
-    codex <- sample(1:length,length)
-    scrambled <- rivers
-    scrambled$segroutes <- NULL
-    scrambled$connections <- rivers$connections[codex,codex]
-    scrambled$lines <- rivers$lines[codex]
-    scrambled.route <- detectroute(start=order(codex)[startseg],end=order(codex)[endseg],rivers=scrambled,algorithm="sequential")
-    routes[[i]] <- codex[scrambled.route]
+  routes[[1]] <- detectroute(start=startseg,end=endseg,rivers=rivers,algorithm="Dijkstra",stopiferror=F)
+  routetoinvestigate <- 1
+  routetoadd <- 2
+  done <- F
+  brokenlist <- list()
+  brokenlist[[1]] <- NA
+  while(!done) {
+    for(i in 1:length(routes[[routetoinvestigate]])) {
+      notrivers <- rivers
+      notrivers$connections[routes[[routetoinvestigate]][i],] <- NA
+      notrivers$connections[,routes[[routetoinvestigate]][i]] <- NA
+      if(!is.na(brokenlist[[routetoinvestigate]][1])) {
+        notrivers$connections[brokenlist[[routetoinvestigate]],] <- NA
+        notrivers$connections[,brokenlist[[routetoinvestigate]]] <- NA
+      }
+      theroute <- detectroute(start=startseg,end=endseg,rivers=notrivers,algorithm="Dijkstra",stopiferror=F)
+      if(!is.na(theroute[1])) {
+        anyofthem <- F
+        for(j in 1:length(routes)) {
+          if(isTRUE(all.equal(routes[[j]],theroute))) anyofthem<-T
+        }
+        if(!anyofthem) {
+          routes[[routetoadd]] <- theroute
+          if(is.na(brokenlist[[routetoinvestigate]][1])) brokenlist[[routetoadd]] <- routes[[routetoinvestigate]][i]
+          else brokenlist[[routetoadd]] <- c(brokenlist[[routetoinvestigate]],routes[[routetoinvestigate]][i])
+          routetoadd <- routetoadd+1
+        }
+      }
+    }
+    routetoinvestigate <- routetoinvestigate+1
+    done <- routetoinvestigate>=length(routes)
   }
-  unique.routes <- unique(routes)
-  return(unique.routes)
+  return(routes)
 }
 
 

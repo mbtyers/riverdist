@@ -1,3 +1,56 @@
+# checkbraided <- function(rivers,startseg=NULL,endseg=NULL,progress=TRUE) {
+#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   connections <- rivers$connections
+#   length <- length(rivers$lines)
+#   
+#   invertrivers <- rivers
+#   invertrivers$connections <- connections[length:1,length:1]
+#   invertrivers$lines <- rivers$lines[length:1]
+#   
+#   if(sum(is.null(startseg),is.null(endseg))==1) {
+#     stop("Error - need to specify both starting and ending segments, or neither")
+#   }
+#   
+#   if(is.null(startseg) & is.null(endseg)) {
+#     if(interactive() & progress) pb <- txtProgressBar(style=3)
+#     finished <- FALSE
+#     braiding <- FALSE
+#     i <- 1
+#     j <- 1
+#     
+#     while(!finished & !braiding) {
+#       if(i!=j) {
+#         route1 <- detectroute(start=i,end=j,rivers=rivers,algorithm="sequential")
+#         route2 <- detectroute(start=(length-i+1),end=(length-j+1),rivers=invertrivers,algorithm="sequential")
+#         route2 <- length-route2+1
+#         if(length(route1) != length(route2)) braiding<-T
+#         if(length(route1) == length(route2)) if(any(route1 != route2)) braiding<-T
+#       }
+#       if(i==length & j==length) finished<-T
+#       if(i==length) j<-j+1
+#       if(i<length) i<-i+1
+#       if(interactive() & progress) setTxtProgressBar(pb=pb, value=i/length)
+#     }
+#     if(interactive() & progress) setTxtProgressBar(pb=pb, value=1)
+#     if(braiding) cat('\n',"Braiding detected in river network.  Distance measurements may be inaccurate.")
+#     if(finished & !braiding) cat('\n',"No braiding detected in river network.")
+#   }
+#   
+#   if(!is.null(startseg) & !is.null(endseg)) {
+#     if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
+#       stop("Invalid segments specified.")
+#     }
+#     route1 <- detectroute(start=startseg,end=endseg,rivers=rivers,algorithm="sequential")
+#     route2 <- detectroute(start=(length-startseg+1),end=(length-endseg+1),rivers=invertrivers,algorithm="sequential")
+#     route2 <- length-route2+1
+#     if(length(route1) != length(route2)) cat("Braiding detected between segments.  Distance measurements may be inaccurate.")
+#     if(length(route1) == length(route2)) if(any(route1 != route2)) cat("Braiding detected between segments.  Distance measurements may be inaccurate.")
+#     if(length(route1) == length(route2)) if(all(route1 == route2)) cat("No braiding detected between segments.")
+#   }
+# }
+
+
+
 #' Check for Braiding in a River Network
 #' @description Detects braiding (multiple flow channels between two locations)
 #'   within a river network object.  Braiding can either be checked for in the
@@ -27,53 +80,36 @@
 #' @export
 checkbraided <- function(rivers,startseg=NULL,endseg=NULL,progress=TRUE) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  connections <- rivers$connections
-  length <- length(rivers$lines)
   
-  invertrivers <- rivers
-  invertrivers$connections <- connections[length:1,length:1]
-  invertrivers$lines <- rivers$lines[length:1]
-  
-  if(sum(is.null(startseg),is.null(endseg))==1) {
-    stop("Error - need to specify both starting and ending segments, or neither")
-  }
-  
-  if(is.null(startseg) & is.null(endseg)) {
-    if(interactive() & progress) pb <- txtProgressBar(style=3)
-    finished <- FALSE
-    braiding <- FALSE
-    i <- 1
-    j <- 1
-    
-    while(!finished & !braiding) {
-      if(i!=j) {
-        route1 <- detectroute(start=i,end=j,rivers=rivers,algorithm="sequential")
-        route2 <- detectroute(start=(length-i+1),end=(length-j+1),rivers=invertrivers,algorithm="sequential")
-        route2 <- length-route2+1
-        if(length(route1) != length(route2)) braiding<-T
-        if(length(route1) == length(route2)) if(any(route1 != route2)) braiding<-T
-      }
-      if(i==length & j==length) finished<-T
-      if(i==length) j<-j+1
-      if(i<length) i<-i+1
-      if(interactive() & progress) setTxtProgressBar(pb=pb, value=i/length)
-    }
-    if(interactive() & progress) setTxtProgressBar(pb=pb, value=1)
+  if(is.null(startseg) | is.null(endseg)) {
+    braiding <- checkbraidedTF(rivers=rivers,progress=progress,toreturn="logical")
     if(braiding) cat('\n',"Braiding detected in river network.  Distance measurements may be inaccurate.")
-    if(finished & !braiding) cat('\n',"No braiding detected in river network.")
+    if(!braiding) cat('\n',"No braiding detected in river network.")
+  }
+  else {
+    braiding <- F
+    theroute <- detectroute(start=startseg, end=endseg, rivers=rivers, stopiferror=F, algorithm="Dijkstra")           ##################################################################
+    if(length(theroute)>2) {
+      jdone <- F
+      j <- 2
+      while(!jdone) {
+        rivers_except_not <- rivers
+        rivers_except_not$connections[theroute[j],] <- NA
+        rivers_except_not$connections[,theroute[j]] <- NA
+        trialroute <- detectroute(start=startseg, end=endseg, rivers=rivers_except_not, stopiferror=F, algorithm="Dijkstra")           ##################################################################
+        if(!is.na(trialroute[1])) {
+          braiding <- T
+          finished <- T  ###############
+          jdone <- T
+        }
+        j <- j+1
+        if(j>=length(theroute)) jdone<-T
+      }
+    }
+    if(braiding) cat("Braiding detected between segments.  Distance measurements may be inaccurate.")
+    else cat("No braiding detected between segments.")
   }
   
-  if(!is.null(startseg) & !is.null(endseg)) {
-    if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
-      stop("Invalid segments specified.")
-    }
-    route1 <- detectroute(start=startseg,end=endseg,rivers=rivers,algorithm="sequential")
-    route2 <- detectroute(start=(length-startseg+1),end=(length-endseg+1),rivers=invertrivers,algorithm="sequential")
-    route2 <- length-route2+1
-    if(length(route1) != length(route2)) cat("Braiding detected between segments.  Distance measurements may be inaccurate.")
-    if(length(route1) == length(route2)) if(any(route1 != route2)) cat("Braiding detected between segments.  Distance measurements may be inaccurate.")
-    if(length(route1) == length(route2)) if(all(route1 == route2)) cat("No braiding detected between segments.")
-  }
 }
 
 

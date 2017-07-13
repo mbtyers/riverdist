@@ -1,4 +1,4 @@
-# 'riverdist' 0.14.0.9001 (development version - Jul 06, 2017)
+# 'riverdist' 0.14.0.9002 (development version - Jul 13, 2017)
 
 ### Added capabilities
 

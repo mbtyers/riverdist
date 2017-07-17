@@ -1,4 +1,4 @@
-# 'riverdist' 0.14.0.9002 (development version - Jul 13, 2017)
+# 'riverdist' 0.14.0.9003 (development version - Jul 17, 2017)
 
 ### Added capabilities
 
@@ -14,7 +14,7 @@
 
 * Better algorithm used for `checkbraidedTF()` - MUCH faster, and no longer hangs in a complex test case
 
-* `detectroute(..., algorithm="Dijkstra")` speeded up
+* `detectroute(..., algorithm="Dijkstra")` speeded up substantially
 
 * `topologydots()` speeded up
 
@@ -24,7 +24,7 @@
 
 * `plot.rivernetwork()` no longer errors when only one segment is visible in plotting window
 
-# 'riverdist' 0.13.1.9001 (development version - Mar 30, 2017)
+# 'riverdist' 0.14.0 (Mar 31, 2017) - development version 0.13.1.9001
 
 ### Added capabilities
 

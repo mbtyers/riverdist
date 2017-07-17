@@ -102,7 +102,7 @@ data(Gulk)
 plot(x=Gulk)
 ```
 
-Once the river network has been imported, some cleanup may be necessary, depending on the structure of the shapefile.  Ideally, there should be one segment between each endpoint or junction node, and the spatial extent of the shapefile should be limited to the region or network of interest.  If the user has GIS software available, it may be simplest to format the shapefile as desired before importing into R.  However, functions are included for river network formatting in R if necessary.  The `cleanup()` function interactively steps through the formatting functions in a good sequence, and may be a good way to get started.
+Once the river network has been imported, some cleanup may be necessary, depending on the structure of the shapefile.  Ideally, there should be one segment between each endpoint or junction node, and the spatial extent of the shapefile should be limited to the region or network of interest.  If the user has GIS software available, it may be simplest to format the shapefile as desired before importing into R.  However, functions are included for river network formatting in R if necessary.  The `cleanup()` function interactively steps through the formatting functions in a good sequence, and may be a good way to get started.  If there were spatial oddities with the parent shapefile (vertices out of order, or strange "jumps" in segments), the `cleanup_verts()` function interactively steps through each individual segment, providing a means to edit the vertices of each segment if needed.
 
 ```{r,eval=FALSE}
 abstreams_fixed <- cleanup(abstreams0)
@@ -562,7 +562,7 @@ Ideally, the shapefile used to define a river network object should be refined i
 
 **All-purpose river network cleanup using `cleanup()`**
 
-In many cases, the `cleanup()` function will be the recommended first step in fixing a messy river network object after importing it.  The `cleanup()` function should be called within the console, and interactively calls the editing functions in sequence.  It then returns a new, edited river network object which can be edited further, or used as is.  It may even be the most straightforward to call `cleanup()` multiple times.
+In many cases, the `cleanup()` function will be the recommended first step in fixing a messy river network object after importing it.  The `cleanup()` function should be called within the console, and interactively calls the editing functions in sequence.  It then returns a new, edited river network object which can be edited further, or used as is.  It may even be the most straightforward to call `cleanup()` multiple times.  If there were spatial oddities with the parent shapefile (vertices out of order, or strange "jumps" in segments), the `cleanup_verts()` function interactively steps through each individual segment, providing a means to edit the vertices of each segment if needed.
 
 Usage will look like
 
@@ -655,7 +655,7 @@ plot(x=Kenai2_sub_dissolve, main="dissolved")
 
 This issue is problematic, as it directly affects how connectivity is detected within the river network.  Without appropriate connectivity, routes and distances cannot be calculated.  To address this issue, `splitsegments()` automatically breaks segments where another segment endpoint is detected.
 
-In the example below, segments 7, 8, 13, and 16 need to be split in multiple places.  Since connectedness is not detected for the associated tributaries, `topologydots()` shows the endpoints as red, or unconnected.  Calling `splitsegments()` breaks the segments in the appropriate places, allowing for the network to be connected as it should be.
+In the example below, segments 7, 8, 13, and 16 need to be split in multiple places.  Since connectedness is not detected for the associated tributaries, `topologydots()` shows the endpoints as red, or unconnected.  In this case, calling `splitsegments()` breaks the segments in the appropriate places, allowing for the network to be connected as it should be.  It is worth noting that the user can specify which segments to split, with respect to which, which may aid in processing time and specificity. 
 
 ```{r,fig.width=7.5,fig.height=4.5, warning=FALSE, message=FALSE}
 data(Koyukuk1)
@@ -672,7 +672,7 @@ topologydots(rivers=Koyukuk1.split, main="split")
 
 **Issue: segments that should connect do not - a fix using `connectsegs()`**
 
-Segments can be manually "attached" at their closest points using `connectsegs()`.
+Segments (or vectors of segments) can be manually "attached" at their endpoints or closest points using `connectsegs()`.
 
 ```{r,fig.width=7.5,fig.height=4, warning=FALSE, message=FALSE}
 data(Koyukuk0)

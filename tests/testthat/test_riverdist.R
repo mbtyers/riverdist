@@ -285,8 +285,21 @@ test_that("sequence",{
 
 data(Koyukuk1,Koyukuk2)
 Koyukuk1a <- splitsegments(rivers=Koyukuk1)
+Koyukuk1b <- splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7), splitthemat=c(14,5,12))
+Koyukuk1c <- splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7), splitthemat=c(14,5,12), append=T)
+Koyukuk0.2 <- connectsegs(connect=c(20,21,22), connectto=c(21,22,23), 
+                          nearestvert=c(FALSE,FALSE,TRUE), rivers=Koyukuk0)
 test_that("splitsegments",{
   expect_equal(Koyukuk1a,Koyukuk2)
+  expect_equal(length(Koyukuk1b$lines), 20)
+  expect_equal(sum(Koyukuk1b$lines[[20]]), 505784711)
+  expect_equal(length(Koyukuk1c$lines), 20)
+  expect_equal(sum(Koyukuk1c$lines[[20]]), 673547226)
+  expect_equal(Koyukuk0.2$connections[20,21],2)
+  expect_equal(Koyukuk0.2$connections[21,22],2)
+  expect_equal(Koyukuk0.2$connections[22,23],2)
+  expect_equal(Koyukuk0.2$connections[23,27],3)
+  expect_equal(Koyukuk0.2$connections[22,27],1)
 })
 
 Gulk3 <- Gulk

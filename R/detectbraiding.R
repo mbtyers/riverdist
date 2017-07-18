@@ -273,9 +273,7 @@ routelist <- function(startseg,endseg,rivers,reps=100) {
 #' @param startvert Vertex number of the start of the route
 #' @param endvert Vertex number of the end of the route
 #' @param rivers The river network object to use
-#' @param reps Number of randomized reorderings to try.  Larger numbers will
-#'   result in a more comprehensive list of routes, but computation can be slow,
-#'   particularly in the presence of a complex river network.
+#' @param reps Deprecated.  Was the number of randomized reorderings to try.
 #' @return A list with two objects, \code{$routes} being a list of detected routes in
 #'   ascending order by distance, and \code{$distances} being the respective distances
 #'   along the routes detected.

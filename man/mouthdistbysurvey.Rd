@@ -15,7 +15,7 @@ use a numeric or date format (see \link{as.Date}) to preserve survey order.}
 
 \item{seg}{A vector of river locations (segment)}
 
-\item{vert}{A vectpr pf rover coordinates (vertex)}
+\item{vert}{A vector pf rover coordinates (vertex)}
 
 \item{rivers}{The river network object to use}
 

@@ -22,7 +22,7 @@ Provides a user-friendly way of specifying the segment and
 }
 \note{
 The mouth segment and vertex can also be specified using direct
-  assigment to the \code{$mouth$seg} and \code{$mouth$vert} components of the river network
+  assignment to the \code{$mouth$seg} and \code{$mouth$vert} components of the river network
   object.
 
 This function is called within \link{cleanup}, which is recommended in most cases.

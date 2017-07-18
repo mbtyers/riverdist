@@ -47,7 +47,7 @@ Plotting methods are described in \link{plot.rivernetwork}.
   of each route (between the starting and ending segments"), and the
   \code{distlookup$starttop} and \code{distlookup$endtop} matrices have value
   \code{TRUE}, \code{FALSE}, or \code{NA} if the segments at the beginning or
-  end of the route are connected to the resto of the route at the top of the
+  end of the route are connected to the rest of the route at the top of the
   coordinate matrix, bottom of the coordinate matrix, or if the route is
   contained to just one segment, respectively. }
   }

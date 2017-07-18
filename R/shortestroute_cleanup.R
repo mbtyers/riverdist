@@ -817,7 +817,7 @@ removemicrosegs <- function(rivers) {
 }
 
 
-#' Add Vertices To Maintain a Minumum Distance Between Vertices
+#' Add Vertices To Maintain a Minimum Distance Between Vertices
 #' @description In certain cases, such as when there is a lake within a river system, there may be long, straight lines in a river network with vertices only at either end.
 #' In these cases, any point data along these stretches would be snapped to the vertices at either end.  This function automatically
 #' adds equally-spaced vertices along the straight line, according to a specified minimum allowable distance between vertices. 

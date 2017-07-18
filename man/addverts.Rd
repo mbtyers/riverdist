@@ -2,7 +2,7 @@
 % Please edit documentation in R/shortestroute_cleanup.R
 \name{addverts}
 \alias{addverts}
-\title{Add Vertices To Maintain a Minumum Distance Between Vertices}
+\title{Add Vertices To Maintain a Minimum Distance Between Vertices}
 \usage{
 addverts(rivers, mindist = 500)
 }

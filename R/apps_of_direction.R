@@ -52,7 +52,7 @@ isflowconnected <- function(seg1,seg2,rivers,stopiferror=TRUE,algorithm=NULL) {
 #'   \link{detectroute} for more details.
 #' @param flowconnected If \code{TRUE}, only returns direction if the two input segments are flow-connected.  Defaults to \code{FALSE}.
 #' @return Direction: "up", "down", or "0" (character).  Returns NA if \code{flowconnected==TRUE} and the two segments are not flow-connected.
-#' @note BBuilding routes from the river mouth to each river network segment and/or distance lookup tables will
+#' @note Building routes from the river mouth to each river network segment and/or distance lookup tables will
 #'   greatly reduce computation time (see \link{buildsegroutes}).
 #' @author Matt Tyers
 #' @examples
@@ -831,7 +831,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' @param survey A vector of identifiers for each survey.  It is recommended to
 #'   use a numeric or date format (see \link{as.Date}) to preserve survey order.
 #' @param seg A vector of river locations (segment)
-#' @param vert A vectpr pf rover coordinates (vertex)
+#' @param vert A vector pf rover coordinates (vertex)
 #' @param rivers The river network object to use
 #' @param logical A boolean vector that can be used for subsetting - if used, 
 #'   \code{mouthdistbysurvey()} will only return distances in which a specified

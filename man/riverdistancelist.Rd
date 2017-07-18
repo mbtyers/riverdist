@@ -17,9 +17,7 @@ riverdistancelist(startseg, endseg, startvert, endvert, rivers, reps = 100)
 
 \item{rivers}{The river network object to use}
 
-\item{reps}{Number of randomized reorderings to try.  Larger numbers will
-result in a more comprehensive list of routes, but computation can be slow,
-particularly in the presence of a complex river network.}
+\item{reps}{Deprecated.  Was the number of randomized reorderings to try.}
 }
 \value{
 A list with two objects, \code{$routes} being a list of detected routes in

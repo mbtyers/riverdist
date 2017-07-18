@@ -98,7 +98,7 @@ showends <- function(seg,rivers) {
 #' @param rivers The river network object to use
 #' @return A new river network object (see \link{rivernetwork})
 #' @note The mouth segment and vertex can also be specified using direct
-#'   assigment to the \code{$mouth$seg} and \code{$mouth$vert} components of the river network
+#'   assignment to the \code{$mouth$seg} and \code{$mouth$vert} components of the river network
 #'   object.
 #' @note This function is called within \link{cleanup}, which is recommended in most cases.
 #' @author Matt Tyers

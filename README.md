@@ -35,7 +35,7 @@ Summaries and plots are also available at the dataset level, in addition to indi
 
 ### Installation
 
-Version 0.14.0 of the 'riverdist' package is available on CRAN.
+Version 0.15.0 of the 'riverdist' package is available on CRAN.
 
 The development version is currently available on Github, and can be installed in R with the following code:
 

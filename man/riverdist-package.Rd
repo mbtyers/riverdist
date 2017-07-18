@@ -17,8 +17,8 @@ Reads river network shape files and computes network distances.
 \tabular{ll}{
 Package: \tab riverdist\cr
 Type: \tab Package\cr
-Version: \tab 0.14.0.9003\cr
-Date: \tab 2017-07-17\cr
+Version: \tab 0.15.0\cr
+Date: \tab 2017-07-18\cr
 License: \tab GPL-2\cr
 }
 The riverdist package provides tools for distance calculation along a river network.  The river network is imported from a projected shapefile.  Spatial point data may be imported from a shapefile as well, or directly from coordinates.

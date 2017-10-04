@@ -3,3 +3,4 @@
 ^cran-comments\.md$
 ^\.Rhistory$
 ^docs$
+^\.travis\.yml$

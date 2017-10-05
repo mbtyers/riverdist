@@ -102,6 +102,7 @@ calculateconnections <- function(lines,tolerance) {
 #' @description Uses \link[rgdal]{readOGR} in package 'rgdal' to read a river 
 #'   shapefile, and establishes connectivity of segment endpoints based on 
 #'   spatial proximity.
+#' @param sp SpatialLinesDataFrame object. optional.
 #' @param path File path, default is the current working directory.
 #' @param layer Name of the shapefile, without the .shp extension.
 #' @param tolerance Snapping tolerance of segment endpoints to determine 
@@ -118,7 +119,7 @@ calculateconnections <- function(lines,tolerance) {
 #'   shapefile is detected.  To resolve this, the shapefile can be re-projected 
 #'   in a GIS environment, or using \code{reproject=}, shown in the second 
 #'   example below.
-#' @author Matt Tyers
+#' @author Matt Tyers, Joseph Stachelek
 #' @importFrom rgdal readOGR
 #' @importFrom sp is.projected
 #' @importFrom sp CRS
@@ -129,7 +130,13 @@ calculateconnections <- function(lines,tolerance) {
 #' Gulk_UTM5 <- line2network(path=filepath, layer="Gulk_UTM5")
 #' plot(Gulk_UTM5)
 #' 
-#' # # Re-projecting in Alaska Albers Equal Area projection:
+#' ## Reading directly from a SpatialLinesDataFrame object
+#' 
+#' sp <- rgdal::readOGR(dsn = filepath, layer = "Gulk_UTM5", verbose = FALSE)
+#' Gulk_UTM5 <- line2network(sp)
+#' plot(Gulk_UTM5)
+#' 
+#' ## Re-projecting in Alaska Albers Equal Area projection:
 #' 
 #' AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 
 #'     +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
@@ -138,11 +145,24 @@ calculateconnections <- function(lines,tolerance) {
 #' plot(Gulk_AKalbers)
 #' 
 #' @export
-line2network <- function(path=".",layer,tolerance=100,reproject=NULL,supplyprojection=NULL) {
-  sp <- suppressWarnings(rgdal::readOGR(dsn=path,layer=layer,verbose=F)) # reading the shapefile as an sp object
-  if(class(sp)!="SpatialLinesDataFrame") stop("Specified shapefile is not a linear feature.")
-  if(is.na(sp@proj4string@projargs) & !is.null(supplyprojection)) sp@proj4string@projargs <- supplyprojection
-  if(is.na(sp@proj4string@projargs)) stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 (in double-quotes).  If so, it must also be reprojected using reproject=.")
+line2network <- function(sp = NA, path=".", layer = NA, tolerance=100, 
+                         reproject=NULL, supplyprojection=NULL) {
+  
+  if(suppressWarnings(is.na(sp))){
+    sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))   }
+  
+  if(class(sp)!="SpatialLinesDataFrame"){ 
+    stop("Specified shapefile is not a linear feature.")
+  }
+  
+  if(is.na(sp@proj4string@projargs) & !is.null(supplyprojection)){ 
+    sp@proj4string@projargs <- supplyprojection
+  }
+    
+  if(is.na(sp@proj4string@projargs)){ 
+    stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 (in double-quotes).  If so, it must also be reprojected using reproject=.")
+  }
+    
   proj4 <- strsplit(sp@proj4string@projargs,split=" ")
   projected <- sp::is.projected(sp)
   if(is.null(reproject) & !projected) stop("Distances can only be computed from a projected coordinate system.  Use reproject= to specify a Proj.4 projection to use.")

@@ -32,10 +32,9 @@ plot(x=Kenai1.trim)
 Kenai1.trim.2 <- trimriver(trimto=c(20,57,118,183,45,162,39,98,19), rivers=Kenai1)
 plot(x=Kenai1.trim.2)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

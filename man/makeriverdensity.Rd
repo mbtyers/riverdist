@@ -68,10 +68,9 @@ Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 plot(x=Gulk_dens)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{plot.riverdensity}, \link{plotriverdensitypoints}
 }
-
+\author{
+Matt Tyers
+}

@@ -61,10 +61,9 @@ logi1 <- (fakefish$flight.date==as.Date("2015-11-25"))
 
 upstreammat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{upstream}
 }
-
+\author{
+Matt Tyers
+}

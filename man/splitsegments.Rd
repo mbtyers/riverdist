@@ -55,10 +55,9 @@ plot(x=splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7),
 plot(x=splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7),
         splitthemat=c(14,5,12), append=TRUE))
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

@@ -64,10 +64,9 @@ upstreammatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 upstreammatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{upstream}
 }
-
+\author{
+Matt Tyers
+}

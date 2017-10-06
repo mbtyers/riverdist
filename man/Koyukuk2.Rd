@@ -15,4 +15,3 @@ A second pass at a messy river network object, with topologies fixed from \link{
 \link{Koyukuk1}
 }
 \keyword{datasets}
-

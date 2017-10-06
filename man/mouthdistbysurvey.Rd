@@ -60,10 +60,9 @@ seqbysurvey <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight
 seqbysurvey
 plotseq(seqbysurvey)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{plotseq}
 }
-
+\author{
+Matt Tyers
+}

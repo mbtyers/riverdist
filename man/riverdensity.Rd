@@ -22,7 +22,7 @@ Created by \link{makeriverdensity} from point data and a river network.  Contain
    \item{\code{rivers}:}{Object of class \code{"rivernetwork"} ; see \link{rivernetwork-class}}.
   }
 }
+
 \author{
 Matt Tyers
 }
-

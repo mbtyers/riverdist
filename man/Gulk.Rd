@@ -12,4 +12,3 @@ data(Gulk)
 A stretch of Gulkana River and tributaries.
 }
 \keyword{datasets}
-

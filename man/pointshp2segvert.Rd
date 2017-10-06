@@ -43,4 +43,3 @@ riverpoints(seg=fakefish_UTM5$seg, vert=fakefish_UTM5$vert, rivers=Gulk, pch=16,
 \author{
 Matt Tyers
 }
-

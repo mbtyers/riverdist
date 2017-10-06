@@ -76,10 +76,9 @@ riverdirectiontofrom(seg1=streamlocs.seg, vert1=streamlocs.vert,
   seg2=fish.seg, vert2=fish.vert, rivers=Gulk, logical1=logi1,
   logical2=logi2, ID1=streamlocs.ID, ID2=fish.ID)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdirection}
 }
-
+\author{
+Matt Tyers
+}

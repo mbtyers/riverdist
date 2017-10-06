@@ -26,4 +26,3 @@ pdist(point1,point2)
 \author{
 Matt Tyers
 }
-

@@ -32,4 +32,3 @@ Gulk <- setmouth(seg=1, vert=1, rivers=Gulk)
 \author{
 Matt Tyers
 }
-

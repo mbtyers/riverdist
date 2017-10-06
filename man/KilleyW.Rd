@@ -12,4 +12,3 @@ data(KilleyW)
 A messy and braided section of the Kenai River network - actually a subset of \link{Kenai3}.
 }
 \keyword{datasets}
-

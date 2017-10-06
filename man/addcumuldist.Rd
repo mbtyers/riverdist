@@ -22,4 +22,3 @@ Gulk1 <- addcumuldist(rivers=Gulk)
 \author{
 Matt Tyers
 }
-

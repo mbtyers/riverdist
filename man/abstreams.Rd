@@ -12,4 +12,3 @@ data(abstreams)
 A complex river network object, a subset of the streams in the Absaroka-Beartooth Wilderness.
 }
 \keyword{datasets}
-

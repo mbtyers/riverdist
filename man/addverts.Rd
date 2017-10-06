@@ -32,10 +32,9 @@ points(Kenai3$lines[[74]])        # vertices before adding
 zoomtoseg(seg=c(47,74,78), rivers=Kenai3split)
 points(Kenai3split$lines[[74]])   # vertices after adding
 }
-\author{
-Matt Tyers
-}
 \seealso{
 line2network
 }
-
+\author{
+Matt Tyers
+}

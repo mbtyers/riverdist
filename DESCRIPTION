@@ -28,4 +28,4 @@ VignetteBuilder: knitr
 LazyData: TRUE
 URL: https://cran.r-project.org/package=riverdist
 BugReports: http://github.com/mbtyers/riverdist/issues
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

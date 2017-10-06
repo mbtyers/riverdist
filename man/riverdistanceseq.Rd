@@ -52,10 +52,9 @@ seqbysurvey <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.
 seqbysurvey
 plotseq(seqbysurvey)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdistance}, \link{plotseq}
 }
-
+\author{
+Matt Tyers
+}

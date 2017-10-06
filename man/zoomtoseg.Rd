@@ -28,4 +28,3 @@ zoomtoseg(c(110,63), rivers=Kenai3)
 \author{
 Matt Tyers
 }
-

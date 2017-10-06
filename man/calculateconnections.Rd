@@ -17,10 +17,20 @@ A matrix with topological information.  See the \code{$connections} element of t
 \description{
 Calculates the connectivity matrix for a river network, during import and editing.  Called internally.
 }
+\details{
+Connection types. One of:
+\itemize{
+ \item 1: beginning - beginning
+ \item 2: beginning - end
+ \item 3: end - beginning
+ \item 4: end - end
+ \item 5: beginning - beginning and end - end
+ \item 6: beginning - end and end - beginning
+}
+}
 \examples{
 Gulk_connections <- calculateconnections(lines=Gulk$lines, tolerance=Gulk$tolerance)
 }
 \author{
 Matt Tyers
 }
-

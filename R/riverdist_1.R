@@ -61,18 +61,22 @@ addcumuldist <- function(rivers) {
 #' @param tolerance The spatial tolerance for establishing connectivity.
 #' @return A matrix with topological information.  See the \code{$connections} element of the \link{rivernetwork-class}.
 #' @author Matt Tyers
+#' @details 
+#' Connection types. One of:
+#' \itemize{
+#'  \item 1: beginning - beginning
+#'  \item 2: beginning - end
+#'  \item 3: end - beginning
+#'  \item 4: end - end
+#'  \item 5: beginning - beginning and end - end
+#'  \item 6: beginning - end and end - beginning
+#' }
 #' @examples
 #' Gulk_connections <- calculateconnections(lines=Gulk$lines, tolerance=Gulk$tolerance)
 #' @export
 calculateconnections <- function(lines,tolerance) {
   length <- length(lines)
   # defining a connectivity matrix...
-  # connection type 1: beginning - beginning
-  # connection type 2: beginning - end
-  # connection type 3: end - beginning
-  # connection type 4: end - end
-  # connection type 5: beginning - beginning and end - end
-  # connection type 6: beginning - end and end - beginning
   connections <- matrix(NA,nrow=length,ncol=length)
   begmat <- matrix(unlist(sapply(lines,function(xy) xy[1,],simplify=F)),ncol=2,byrow=T)
   endmat <- matrix(unlist(sapply(lines,function(xy) xy[nrow(xy),],simplify=F)),ncol=2,byrow=T)

@@ -4,10 +4,12 @@
 \alias{line2network}
 \title{Create a River Network Object from a Shapefile}
 \usage{
-line2network(path = ".", layer, tolerance = 100, reproject = NULL,
-  supplyprojection = NULL)
+line2network(sp = NA, path = ".", layer = NA, tolerance = 100,
+  reproject = NULL, supplyprojection = NULL)
 }
 \arguments{
+\item{sp}{SpatialLinesDataFrame object. optional.}
+
 \item{path}{File path, default is the current working directory.}
 
 \item{layer}{Name of the shapefile, without the .shp extension.}
@@ -44,7 +46,13 @@ filepath <- system.file("extdata", package="riverdist")
 Gulk_UTM5 <- line2network(path=filepath, layer="Gulk_UTM5")
 plot(Gulk_UTM5)
 
-# # Re-projecting in Alaska Albers Equal Area projection:
+## Reading directly from a SpatialLinesDataFrame object
+
+sp <- rgdal::readOGR(dsn = filepath, layer = "Gulk_UTM5", verbose = FALSE)
+Gulk_UTM5 <- line2network(sp)
+plot(Gulk_UTM5)
+
+## Re-projecting in Alaska Albers Equal Area projection:
 
 AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 
     +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
@@ -54,6 +62,5 @@ plot(Gulk_AKalbers)
 
 }
 \author{
-Matt Tyers
+Matt Tyers, Joseph Stachelek
 }
-

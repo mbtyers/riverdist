@@ -104,7 +104,7 @@ cleanup <- function(rivers) {
     while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Dissolve? (y/n) ")
     if(yes=="Y" | yes=="y") {
       cat("Dissolving...",'\n')
-      suppressMessages(rivers2 <- dissolve(rivers=rivers1))
+      suppressMessages(rivers2 <- dissolve(rivers = rivers1))
       cat("Simplified from",length(rivers1$lines),"to",length(rivers2$lines),"segments.",'\n')
       plot(rivers2)
     }
@@ -273,8 +273,15 @@ cleanup <- function(rivers) {
     # })   # 139.73 seconds
     
     # system.time({
-      ntop <- rowSums(rivers4$connections==1,na.rm=T) + rowSums(rivers4$connections==2,na.rm=T) + rowSums(rivers4$connections==5,na.rm=T) + rowSums(rivers4$connections==6,na.rm=T)
-      nbot <- rowSums(rivers4$connections==3,na.rm=T) + rowSums(rivers4$connections==4,na.rm=T) + rowSums(rivers4$connections==5,na.rm=T) + rowSums(rivers4$connections==6,na.rm=T)
+      ntop <- rowSums(rivers4$connections==1,na.rm=T) + 
+              rowSums(rivers4$connections==2,na.rm=T) + 
+              rowSums(rivers4$connections==5,na.rm=T) + 
+              rowSums(rivers4$connections==6,na.rm=T)
+      
+      nbot <- rowSums(rivers4$connections==3,na.rm=T) + 
+              rowSums(rivers4$connections==4,na.rm=T) + 
+              rowSums(rivers4$connections==5,na.rm=T) + 
+              rowSums(rivers4$connections==6,na.rm=T)
       
       thesefirst <- xor(ntop==0,nbot==0)
       
@@ -291,7 +298,7 @@ cleanup <- function(rivers) {
           # print(i)    ##############################################################################################
         }
         else {
-          checked[theroute] <- T
+          checked[theroute]    <- T
           thesefirst[theroute] <- F
         }
         setTxtProgressBar(pb=pb, value=mean(checked))

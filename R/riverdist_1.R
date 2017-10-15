@@ -1223,4 +1223,3 @@ removeunconnected <- function(rivers) {
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers2)
 }
-

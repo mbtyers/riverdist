@@ -64,51 +64,63 @@ removeduplicates <- function(rivers) {
 #' @export
 cleanup <- function(rivers) {
   if(!interactive()) stop("The cleanup() function can only be used in an interactive environment.")
-  cat("Cleanup started, with",length(rivers$lines),"segments.",'\n')
+  cat("Cleanup started, with", length(rivers$lines), "segments.", '\n')
   plot(rivers)
-  cat('\n',"Removing duplicate line segments...",'\n')
-  suppressWarnings(rivers1 <- removeduplicates(rivers=rivers))
-  cat("Removed",(length(rivers$lines)-length(rivers1$lines)),"duplicated segments.",'\n')
-  if((length(rivers$lines)-length(rivers1$lines))>0) plot(rivers1)
-  cat('\n',"Checking if dissolve is recommended...",'\n')
+  cat('\n', "Removing duplicate line segments...", '\n')
+  suppressWarnings(rivers1 <- removeduplicates(rivers = rivers))
+  cat("Removed", (length(rivers$lines) - length(rivers1$lines)), 
+      "duplicated segments.",'\n')
+  if((length(rivers$lines) - length(rivers1$lines)) > 0) plot(rivers1)
+  cat('\n', "Checking if dissolve is recommended...", '\n')
   
-  tolerance <- rivers1$tolerance
-  lines <- rivers1$lines
+  tolerance   <- rivers1$tolerance
+  lines       <- rivers1$lines
   connections <- rivers1$connections
-  length <- length(lines)
+  length      <- length(lines)
   
-  n.top <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
+  n.top <- function(seg, connections) {
+    return(length(connections[seg,][(connections[seg,] == 1 | 
+                                     connections[seg,] == 2 | 
+                                     connections[seg,] == 5 | 
+                                     connections[seg,] == 6) & 
+                                    is.na(connections[seg,]) == FALSE]))
   }
   n.bot <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==3 | connections[seg,]==4 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
+    return(length(connections[seg,][(connections[seg,]==3 | 
+                                     connections[seg,]==4 | 
+                                     connections[seg,]==5 | 
+                                     connections[seg,]==6) & 
+                                    is.na(connections[seg,]) == FALSE]))
   }
-  i<-1
-  done<-F
-  needed<-F
+  
+  i      <- 1
+  done   <- FALSE
+  needed <- FALSE
+  
   while(!done) {
-    if(n.top(i,connections)==1 | n.bot(i,connections)==i) {
-      needed<-T
-      done<-T
+    if(n.top(i, connections) == 1 | n.bot(i, connections) == i) {
+      needed <-TRUE
+      done   <-TRUE
     }
-    if(i==length) done<-T
-    i<-i+1
+    if(i == length) done <- TRUE
+    i <- i + 1
   }
   
   if(!needed) {
-    rivers2<-rivers1
+    rivers2 <- rivers1
   }
   if(needed) {
     cat("Dissolve recommended. This will combine segments that do not need to be split, but will remove any data stored as a table.",'\n')
-    yes<-0
-    while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Dissolve? (y/n) ")
-    if(yes=="Y" | yes=="y") {
-      cat("Dissolving...",'\n')
+    yes <- 0
+    while(!any(yes == c("y", "Y", "n", "N"))) yes <- readline(prompt = "Dissolve? (y/n) ")
+    if(yes == "Y" | yes == "y") {
+      cat("Dissolving...", '\n')
       suppressMessages(rivers2 <- dissolve(rivers = rivers1))
-      cat("Simplified from",length(rivers1$lines),"to",length(rivers2$lines),"segments.",'\n')
+      cat("Simplified from", length(rivers1$lines), 
+          "to", length(rivers2$lines), "segments.", '\n')
       plot(rivers2)
     }
-    if(yes!="Y" & yes!="y") rivers2 <- rivers1
+    if(yes != "Y" & yes != "y") rivers2 <- rivers1
   }
   
   cat('\n',"Checking for segments with length less than the connectivity tolerance...",'\n')

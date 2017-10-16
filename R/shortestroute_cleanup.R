@@ -223,7 +223,7 @@ cleanup <- function(rivers) {
   cat("Maximum distance between vertices is",round(maxlength),'\n')
   hist(distances)
   yes <- 0
-  while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Insert vertices to reduce distances between vertices and increase point snapping precision? (y/n) ")
+  while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Insert vertices to reduce distances between vertices and increase point snapping \n precision? (y/n) ")
   if(yes=="Y" | yes=="y") {
     mindist <- as.numeric(readline(prompt="Minimum distance to use: "))
     cat("Inserting vertices...",'\n')

@@ -78,16 +78,26 @@ mapbyname <- function(rivers,scale=TRUE,cex=.6,...) {
 #' @importFrom graphics points
 #' @importFrom graphics text
 #' @export
-showends <- function(seg,rivers) {
+showends <- function(seg, rivers) {
   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(seg>length(rivers$lines) | seg<1) stop("Invalid segment specified.")
-  plot(x=rivers)
-  lines(rivers$lines[[seg]],lwd=2,col=4)
-  points(rivers$lines[[seg]][1,1],rivers$lines[[seg]][1,2],pch=16,col=3)
-  text(rivers$lines[[seg]][1,1],rivers$lines[[seg]][1,2],labels=paste("beginning",1),pos=4)
+  
   len <- dim(rivers$lines[[seg]])[1]
-  points(rivers$lines[[seg]][len,1],rivers$lines[[seg]][len,2],pch=16,col=2)
-  text(rivers$lines[[seg]][len,1],rivers$lines[[seg]][len,2],labels=paste("end",len),pos=4)
+  
+  plot(x = rivers)
+  lines(rivers$lines[[seg]], 
+         lwd = 2, col = 4)
+  points(rivers$lines[[seg]][1,1], 
+         rivers$lines[[seg]][1,2], 
+         pch = 16, col = 3)
+  text(rivers$lines[[seg]][1,1], rivers$lines[[seg]][1,2], 
+       labels = paste("beginning", 1), pos = 4)
+  points(rivers$lines[[seg]][len,1], 
+         rivers$lines[[seg]][len,2], 
+         pch = 16, col = 2)
+  text(rivers$lines[[seg]][len,1], 
+       rivers$lines[[seg]][len,2], 
+       labels = paste("end", len), pos = 4)
 }
 
 #' Specify the Segment and Vertex of the Mouth of a River Network Object.

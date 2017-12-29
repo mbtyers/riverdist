@@ -44,10 +44,9 @@ homerangeoverlap(ranges)
 plothomerangeoverlap(ranges)
 with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk))
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
 }
-
+\author{
+Matt Tyers
+}

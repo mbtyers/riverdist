@@ -12,4 +12,3 @@ data(abstreams0)
 An unusably messy river network object, included for the purpose of testing river network editing functions.
 }
 \keyword{datasets}
-

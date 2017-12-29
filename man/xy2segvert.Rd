@@ -55,4 +55,3 @@ points(line98albers)
 \author{
 Matt Tyers
 }
-

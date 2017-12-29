@@ -25,4 +25,3 @@ A small set of observations of fakefish on the Gulkana River and its tributaries
 \link{Gulk}
 }
 \keyword{datasets}
-

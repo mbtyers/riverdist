@@ -37,4 +37,3 @@ str(KilleyW.1)
 \author{
 Matt Tyers
 }
-

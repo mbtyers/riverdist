@@ -16,4 +16,3 @@ several non-connected segments have been removed.
 \link{Kenai1}, \link{Kenai3}
 }
 \keyword{datasets}
-

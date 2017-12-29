@@ -37,10 +37,9 @@ showends(seg=1, rivers=Gulk)
 # this means that the mouth is row 1, so we can specify this:
 Gulk <- setmouth(seg=1, vert=1, rivers=Gulk)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

@@ -15,4 +15,3 @@ An unusably messy river network object, included for the purpose of testing rive
 \link{Koyukuk1}, \link{Koyukuk2}
 }
 \keyword{datasets}
-

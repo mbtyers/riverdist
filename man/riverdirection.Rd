@@ -50,10 +50,9 @@ Gulk$mouth$mouth.vert <- 1
 plot(x=Gulk)
 riverdirection(startseg=6, endseg=3, startvert=40, endvert=40, rivers=Gulk)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{setmouth}
 }
-
+\author{
+Matt Tyers
+}

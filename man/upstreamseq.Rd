@@ -69,10 +69,9 @@ seqbysurvey <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
 seqbysurvey
 plotseq(seqbysurvey)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{upstream}, \link{plotseq}
 }
-
+\author{
+Matt Tyers
+}

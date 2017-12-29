@@ -15,4 +15,3 @@ An object created by \link{riverdensity}, describing the density of Fakefish poi
 Intended for plotting using \link{plotriverdensity}.
 }
 \keyword{datasets}
-

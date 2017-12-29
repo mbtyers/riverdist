@@ -66,34 +66,58 @@ isflowconnected <- function(seg1,seg2,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' riverdirection(startseg=6, endseg=3, startvert=40, endvert=40, rivers=Gulk)
 #' @seealso \link{setmouth}
 #' @export
-riverdirection <- function(startseg,endseg,startvert,endvert,rivers,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
+riverdirection <- function(startseg, endseg, startvert, endvert, rivers, 
+                  flowconnected = FALSE, stopiferror = TRUE, algorithm = NULL){
+  
+  if(class(rivers) != "rivernetwork"){
+      stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  }
+  
+  if(max(c(startseg, endseg), na.rm = T) > length(rivers$lines) | 
+     min(c(startseg,endseg), na.rm = T) < 1) {
     stop("Invalid segments specified.")
   }
-  if(startvert>dim(rivers$lines[[startseg]])[1] | startvert<1 | endvert>dim(rivers$lines[[endseg]])[1] | endvert<1) {
+  
+  if(startvert > dim(rivers$lines[[startseg]])[1] |
+     startvert < 1 | 
+     endvert > dim(rivers$lines[[endseg]])[1] | 
+     endvert < 1) {
     stop("Invalid vertex specified.")
   }
   
-  if(is.na(rivers$mouth$mouth.seg) | is.na(rivers$mouth$mouth.vert)) {
+  if(is.na(rivers$mouth$mouth.seg) | 
+     is.na(rivers$mouth$mouth.vert)) {
     stop("Error - Need to specify segment & vertex of river mouth")
   }
+  
   direction <- "0"
-  flowc <- isflowconnected(seg1=startseg,seg2=endseg,rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)
-  if(!stopiferror & is.na(flowc)) direction <- NA
+  flowc <- isflowconnected(seg1 = startseg, seg2 = endseg, 
+                           rivers = rivers, 
+                           stopiferror = stopiferror, algorithm = algorithm)
+  
+  if(!stopiferror & is.na(flowc)){ direction <- NA }
   if(!is.na(flowc)) {
-    if(flowconnected & !flowc) direction <- NA
+    if(flowconnected & !flowc){ direction <- NA }
     if(!flowconnected | flowc) {
-      if(riverdistance(startseg=rivers$mouth$mouth.seg,endseg=startseg,startvert=rivers$mouth$mouth.vert,endvert=startvert,
-                       rivers=rivers,stopiferror=stopiferror,algorithm=algorithm) <
-         riverdistance(startseg=rivers$mouth$mouth.seg,endseg=endseg,startvert=rivers$mouth$mouth.vert,endvert=endvert,
-                       rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)) {
+      if(riverdistance(startseg = rivers$mouth$mouth.seg, endseg = startseg, 
+                    startvert = rivers$mouth$mouth.vert, endvert = startvert,
+                    rivers = rivers, stopiferror = stopiferror, 
+                    algorithm = algorithm) <
+         riverdistance(startseg = rivers$mouth$mouth.seg, endseg = endseg, 
+                    startvert = rivers$mouth$mouth.vert, endvert = endvert,
+                    rivers = rivers, stopiferror = stopiferror, 
+                    algorithm = algorithm)) {
         direction <- "up"
       }
-      if(riverdistance(startseg=rivers$mouth$mouth.seg,endseg=startseg,startvert=rivers$mouth$mouth.vert,endvert=startvert,
-                       rivers=rivers,stopiferror=stopiferror,algorithm=algorithm) >
-         riverdistance(startseg=rivers$mouth$mouth.seg,endseg=endseg,startvert=rivers$mouth$mouth.vert,endvert=endvert,
-                       rivers=rivers,stopiferror=stopiferror,algorithm=algorithm)) {
+      
+      if(riverdistance(startseg = rivers$mouth$mouth.seg, endseg = startseg, 
+                    startvert = rivers$mouth$mouth.vert, endvert = startvert,
+                    rivers = rivers, stopiferror = stopiferror, 
+                    algorithm = algorithm) >
+         riverdistance(startseg = rivers$mouth$mouth.seg, endseg = endseg, 
+                    startvert = rivers$mouth$mouth.vert, endvert = endvert,
+                    rivers = rivers, stopiferror = stopiferror, 
+                    algorithm=algorithm)) {
         direction <- "down"
       }
     }

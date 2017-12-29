@@ -43,4 +43,3 @@ checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset)
 \author{
 Matt Tyers
 }
-

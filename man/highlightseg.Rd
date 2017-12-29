@@ -33,4 +33,3 @@ highlightseg(seg=c(10,30,68),rivers=Kenai3)
 \author{
 Matt Tyers
 }
-

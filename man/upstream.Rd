@@ -63,10 +63,9 @@ upstream(startseg=6, endseg=4, startvert=140, endvert=40, rivers=Gulk, net=TRUE)
 upstream(startseg=6, endseg=4, startvert=140, endvert=40, rivers=Gulk, net=FALSE)
 upstream(startseg=6, endseg=4, startvert=140, endvert=40, rivers=Gulk, flowconnected=TRUE)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{setmouth}
 }
-
+\author{
+Matt Tyers
+}

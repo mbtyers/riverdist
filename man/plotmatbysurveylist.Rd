@@ -43,10 +43,9 @@ data(fakefish)
 #   seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 # plotmatbysurveylist(matbysurveylist)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{upstream}, \link{upstreammatbysurvey}
 }
-
+\author{
+Matt Tyers
+}

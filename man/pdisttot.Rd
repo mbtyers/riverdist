@@ -23,4 +23,3 @@ pdisttot(xy=points)
 \author{
 Matt Tyers
 }
-

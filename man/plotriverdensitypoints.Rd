@@ -22,10 +22,9 @@ Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 
 plotriverdensitypoints(riverdensity=Gulk_dens)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{makeriverdensity}, \link{plot.riverdensity}
 }
-
+\author{
+Matt Tyers
+}

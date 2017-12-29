@@ -27,4 +27,3 @@ plot(Koy_subset_trim)
 \author{
 Matt Tyers
 }
-

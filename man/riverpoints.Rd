@@ -38,4 +38,3 @@ with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk,
 \author{
 Matt Tyers
 }
-

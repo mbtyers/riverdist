@@ -15,7 +15,7 @@ A class that holds information computed from the \link{homerange} function.  Con
    \item{\code{seg, vert, unique, rivers}:}{All inputs from the original \link{homerange} call.}
   }
 }
+
 \author{
 Matt Tyers
 }
-

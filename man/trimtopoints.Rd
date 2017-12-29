@@ -56,10 +56,9 @@ Koyukuk2.buf3 <- trimtopoints(x, y, rivers=Koyukuk2, method="buffer", dist=1000)
 plot(x=Koyukuk2.buf3)
 points(x, y, pch=15, col=4)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

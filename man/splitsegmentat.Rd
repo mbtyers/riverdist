@@ -26,10 +26,9 @@ plot(x=Gulk)
 Gulk2 <- splitsegmentat(seg=1, vert=400, rivers=Gulk)
 plot(x=Gulk2)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

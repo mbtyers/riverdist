@@ -14,4 +14,3 @@ transformation.  Coordinates come from arbitrary line number 98 in the Kenai
 River 1 shapefile, rendered in long-lat.
 }
 \keyword{datasets}
-

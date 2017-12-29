@@ -64,53 +64,68 @@ removeduplicates <- function(rivers) {
 #' @export
 cleanup <- function(rivers) {
   if(!interactive()) stop("The cleanup() function can only be used in an interactive environment.")
-  cat("Cleanup started, with",length(rivers$lines),"segments.",'\n')
+  cat("Cleanup started, with", length(rivers$lines), "segments.", '\n')
   plot(rivers)
-  cat('\n',"Removing duplicate line segments...",'\n')
-  suppressWarnings(rivers1 <- removeduplicates(rivers=rivers))
-  cat("Removed",(length(rivers$lines)-length(rivers1$lines)),"duplicated segments.",'\n')
-  if((length(rivers$lines)-length(rivers1$lines))>0) plot(rivers1)
-  cat('\n',"Checking if dissolve is recommended...",'\n')
+  cat('\n', "Removing duplicate line segments...", '\n')
+  suppressWarnings(rivers1 <- removeduplicates(rivers = rivers))
+  cat("Removed", (length(rivers$lines) - length(rivers1$lines)), 
+      "duplicated segments.",'\n')
+  if((length(rivers$lines) - length(rivers1$lines)) > 0) plot(rivers1)
   
-  tolerance <- rivers1$tolerance
-  lines <- rivers1$lines
+  # Checking if dissolve recommended ##########################################  
+  cat('\n', "Checking if dissolve is recommended...", '\n')
+  
+  tolerance   <- rivers1$tolerance
+  lines       <- rivers1$lines
   connections <- rivers1$connections
-  length <- length(lines)
-  
-  n.top <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==1 | connections[seg,]==2 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
+  length      <- length(lines)
+
+  n.top <- function(seg, connections) {
+    return(length(connections[seg,][(connections[seg,] == 1 | 
+                                     connections[seg,] == 2 | 
+                                     connections[seg,] == 5 | 
+                                     connections[seg,] == 6) & 
+                                    is.na(connections[seg,]) == FALSE]))
   }
   n.bot <- function(seg,connections) {
-    return(length(connections[seg,][(connections[seg,]==3 | connections[seg,]==4 | connections[seg,]==5 | connections[seg,]==6) & is.na(connections[seg,])==F]))
+    return(length(connections[seg,][(connections[seg,]==3 | 
+                                     connections[seg,]==4 | 
+                                     connections[seg,]==5 | 
+                                     connections[seg,]==6) & 
+                                    is.na(connections[seg,]) == FALSE]))
   }
-  i<-1
-  done<-F
-  needed<-F
+  
+  i      <- 1
+  done   <- FALSE
+  needed <- FALSE
+  
   while(!done) {
-    if(n.top(i,connections)==1 | n.bot(i,connections)==i) {
-      needed<-T
-      done<-T
+    if(n.top(i, connections) == 1 | n.bot(i, connections) == i) {
+      needed <- TRUE
+      done   <- TRUE
     }
-    if(i==length) done<-T
-    i<-i+1
+    if(i == length) done <- TRUE
+    i <- i + 1
   }
   
   if(!needed) {
-    rivers2<-rivers1
+    rivers2 <- rivers1
   }
   if(needed) {
     cat("Dissolve recommended. This will combine segments that do not need to be split, but will remove any data stored as a table.",'\n')
-    yes<-0
-    while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Dissolve? (y/n) ")
-    if(yes=="Y" | yes=="y") {
-      cat("Dissolving...",'\n')
-      suppressMessages(rivers2 <- dissolve(rivers=rivers1))
-      cat("Simplified from",length(rivers1$lines),"to",length(rivers2$lines),"segments.",'\n')
+    yes <- 0
+    while(!any(yes == c("y", "Y", "n", "N"))) yes <- readline(prompt = "Dissolve? (y/n) ")
+    if(yes == "Y" | yes == "y") {
+      cat("Dissolving...", '\n')
+      suppressMessages(rivers2 <- dissolve(rivers = rivers1))
+      cat("Simplified from", length(rivers1$lines), 
+          "to", length(rivers2$lines), "segments.", '\n')
       plot(rivers2)
     }
-    if(yes!="Y" & yes!="y") rivers2 <- rivers1
+    if(yes != "Y" & yes != "y") rivers2 <- rivers1
   }
   
+  # Checking for segments with length less than tolerance #####################
   cat('\n',"Checking for segments with length less than the connectivity tolerance...",'\n')
   displacement <- NA
   for(i in 1:length(rivers2$lines)) {
@@ -136,6 +151,7 @@ cleanup <- function(rivers) {
   }
   if(length(problems)==0) rivers3<-rivers2
   
+  # Checking if splitting segments is needed ##################################
   cat('\n',"Checking if splitting segments is needed...",'\n')
   
   pdist2 <- function(p1,p2mat) {
@@ -150,10 +166,11 @@ cleanup <- function(rivers) {
     if(n.top(riv.i,rivers3$connections)==0) {
       for(riv.j in 1:length(rivers3$lines)) {
         if(riv.i!=riv.j) {
-          distanceses <- pdist2(rivers3$lines[[riv.i]][1,],rivers3$lines[[riv.j]])
-          if(any(distanceses<rivers3$tolerance)) {
-            needed <- T
-            done <- T
+          distanceses <- pdist2(rivers3$lines[[riv.i]][1,], 
+                                rivers3$lines[[riv.j]])
+          if(any(distanceses < rivers3$tolerance)) {
+            needed <- TRUE
+            done <- TRUE
           }
         }
       }
@@ -176,8 +193,9 @@ cleanup <- function(rivers) {
   if(!needed) {
     rivers4<-rivers3
   }
+  # Split segments ############################################################
   if(needed) {
-    cat("Recommend splitting segments for connectedness to be correct.",'\n')  ############################
+    cat("Recommend splitting segments for connectedness to be correct.",'\n')  
     yes<-0
     while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Split segments? (y/n) ")
     if(yes %in% c("y","Y")) {
@@ -185,11 +203,11 @@ cleanup <- function(rivers) {
       suppressMessages(rivers4 <- splitsegments(rivers=rivers3))
       cat("Identified",(length(rivers4$lines)-length(rivers3$lines)),"new segment breaks.",'\n')
     }
-    else rivers4 <- rivers3 ###########################
+    else rivers4 <- rivers3
   }
   
-  # checking segment lengths
-  cat("Checking between-vertex lengths...",'\n') ###########################
+  # Checking segment lengths ####
+  cat("Checking between-vertex lengths...",'\n')
   distances <- NULL
   if(is.null(rivers4$cumuldist)) rivers4 <- addcumuldist(rivers=rivers4)
   for(segi in 1:length(rivers4$lines)) {
@@ -205,7 +223,7 @@ cleanup <- function(rivers) {
   cat("Maximum distance between vertices is",round(maxlength),'\n')
   hist(distances)
   yes <- 0
-  while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Insert vertices to reduce distances between vertices and increase point snapping precision? (y/n) ")
+  while(!any(yes==c("y","Y","n","N"))) yes <- readline(prompt="Insert vertices to reduce distances between vertices and increase point snapping \n precision? (y/n) ")
   if(yes=="Y" | yes=="y") {
     mindist <- as.numeric(readline(prompt="Minimum distance to use: "))
     cat("Inserting vertices...",'\n')
@@ -234,7 +252,8 @@ cleanup <- function(rivers) {
     rivers4 <- setmouth(seg=as.numeric(mouthseg),vert=as.numeric(mouthvert),rivers=rivers4)
   }
   
-  dealtwith<-F
+  # Checking for unconnected segments ####
+  dealtwith <- FALSE
   while(!dealtwith) {
     cat('\n',"Checking for unconnected segments...",'\n')
     takeout <- NULL
@@ -254,27 +273,34 @@ cleanup <- function(rivers) {
     # origin41 <-which(order==origin)
     # 
     # for(i in 1:length(rivers41$lines)) {   ### this is SOOO SLOOOOWWWW ... only check endpts??
-    #   if(is.na(detectroute(end=origin41,start=i,rivers=rivers41,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           ##################################################################
+    #   if(is.na(detectroute(end=origin41,start=i,rivers=rivers41,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           
     #     takeout[k] <- i
     #     k <- k+1
-    #     # print(i)    ##############################################################################################
+    #     # print(i)    
     #   }
     # }    # 
     ################################## don't think i need to do this -- just makes sequential run faster
     
     # system.time({
     # for(i in 1:length(rivers4$lines)) {   ### this is SOOO SLOOOOWWWW ... only check endpts??
-    #   if(is.na(detectroute(end=rivers4$mouth$mouth.seg,start=i,rivers=rivers4,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           ##################################################################
+    #   if(is.na(detectroute(end=rivers4$mouth$mouth.seg,start=i,rivers=rivers4,stopiferror=FALSE,algorithm="Dijkstra")[1])) {    #was sequential           
     #     takeout[k] <- i
     #     k <- k+1
-    #     # print(i)    ##############################################################################################
+    #     # print(i)    
     #   }
     # }
     # })   # 139.73 seconds
     
     # system.time({
-      ntop <- rowSums(rivers4$connections==1,na.rm=T) + rowSums(rivers4$connections==2,na.rm=T) + rowSums(rivers4$connections==5,na.rm=T) + rowSums(rivers4$connections==6,na.rm=T)
-      nbot <- rowSums(rivers4$connections==3,na.rm=T) + rowSums(rivers4$connections==4,na.rm=T) + rowSums(rivers4$connections==5,na.rm=T) + rowSums(rivers4$connections==6,na.rm=T)
+      ntop <- rowSums(rivers4$connections==1,na.rm=T) + 
+              rowSums(rivers4$connections==2,na.rm=T) + 
+              rowSums(rivers4$connections==5,na.rm=T) + 
+              rowSums(rivers4$connections==6,na.rm=T)
+      
+      nbot <- rowSums(rivers4$connections==3,na.rm=T) + 
+              rowSums(rivers4$connections==4,na.rm=T) + 
+              rowSums(rivers4$connections==5,na.rm=T) + 
+              rowSums(rivers4$connections==6,na.rm=T)
       
       thesefirst <- xor(ntop==0,nbot==0)
       
@@ -282,17 +308,21 @@ cleanup <- function(rivers) {
       pb <- txtProgressBar(style=3)
       while(!all(checked)) {   
         # i <- which.min(checked) 
-        i <- ifelse(any(thesefirst),which.max(thesefirst),which.min(checked))
-        theroute <- detectroute(end=rivers4$mouth$mouth.seg,start=i,rivers=rivers4,stopiferror=FALSE,algorithm="Dijkstra")
+        i <- ifelse(any(thesefirst), which.max(thesefirst), which.min(checked))
+        theroute <- detectroute(end = rivers4$mouth$mouth.seg, 
+                                start = i, 
+                                rivers = rivers4, 
+                                stopiferror = FALSE, 
+                                algorithm = "Dijkstra")
         if(is.na(theroute[1])) { 
-          takeout[i] <- T
-          checked[i] <- T
-          thesefirst[i] <- F
-          # print(i)    ##############################################################################################
+          takeout[i]    <- TRUE
+          checked[i]    <- TRUE
+          thesefirst[i] <- FALSE
+          # print(i)    
         }
         else {
-          checked[theroute] <- T
-          thesefirst[theroute] <- F
+          checked[theroute]    <- TRUE
+          thesefirst[theroute] <- FALSE
         }
         setTxtProgressBar(pb=pb, value=mean(checked))
       }
@@ -300,7 +330,7 @@ cleanup <- function(rivers) {
     # })  # 76.19 # 84.46 seconds
     
     if(length(takeout)>0) {
-      # takeout <- order[takeout]   ##########################
+      # takeout <- order[takeout]   
       highlightseg(seg=takeout,rivers=rivers4)
       cat('\n',length(takeout),"unconnected segments detected.",'\n')
       
@@ -313,20 +343,27 @@ cleanup <- function(rivers) {
       regions <- list()
       regioni <- 1
       toplace <- takeout
-      everybodyoutofthepool <- F
+      everybodyoutofthepool <- FALSE
       pb <- txtProgressBar(style=3)
       while(!everybodyoutofthepool) {    ###### this loop is really slow - needs a progress bar at least
         thisregion <- toplace[1]
         if(length(toplace)>1) {
           jinregion <- 2
           for(iinregion in 2:length(toplace)) {
-            thisroute <- detectroute(start=toplace[1],end=toplace[iinregion],stopiferror=FALSE,algorithm="Dijkstra",rivers=rivers4)
-            num <- num+1  ## 867
+            thisroute <- detectroute(start = toplace[1], 
+                                     end = toplace[iinregion], 
+                                     stopiferror = FALSE, 
+                                     algorithm = "Dijkstra", 
+                                     rivers = rivers4)
+            num <- num + 1  ## 867
             if(!is.na(thisroute[1])) {
               thisregion[jinregion] <- toplace[iinregion]
               jinregion <- jinregion+1
             }
-            setTxtProgressBar(pb=pb, value=(length(takeout)-length(toplace))/length(takeout)+length(thisregion)/length(takeout))
+            setTxtProgressBar(pb = pb, 
+                              value = (length(takeout) - length(toplace)) / 
+                                length(takeout) + 
+                                length(thisregion) / length(takeout))
           }
         }
         regions[[regioni]] <- thisregion
@@ -419,8 +456,12 @@ cleanup <- function(rivers) {
             if(any(howtodo==c("e","E"))) closestpt <- F
             if(closestpt) cat('\n',"Connecting and calculating new segment splits...",'\n')
             if(!closestpt) cat('\n',"Connecting...",'\n')
-            suppressMessages(rivers4a <- connectsegs(connect=connect1,connectto=connect2,nearestvert=closestpt,rivers=rivers4))   ##### 
-            tozoomto <- rbind(rivers4$lines[[connect1]],rivers4$lines[[connect2]])
+            suppressMessages(rivers4a <- connectsegs(connect = connect1, 
+                                                     connectto = connect2, 
+                                                     nearestvert = closestpt, 
+                                                     rivers = rivers4))
+            tozoomto <- rbind(rivers4$lines[[connect1]], 
+                              rivers4$lines[[connect2]])
             xmin <- min(tozoomto[,1],na.rm=T)
             xmax <- max(tozoomto[,1],na.rm=T)
             ymin <- min(tozoomto[,2],na.rm=T)
@@ -447,8 +488,6 @@ cleanup <- function(rivers) {
       
       if(!is.null(connectthese)) suppressMessages(rivers4 <- connectsegs(connect=connectthese, connectto=tothese, nearestvert=closestptTF, rivers=rivers4))
       if(!is.null(taketheseout)) suppressMessages(rivers4 <- trimriver(trim=taketheseout, rivers=rivers4))
-      
-      ##################
       
       # whattodo<-0
       # while(!any(whattodo==c("r","R","c","C"))) {
@@ -530,8 +569,9 @@ cleanup <- function(rivers) {
     }
   }
   
+  # Checking for braiding #####################################################
   cat('\n',"Checking for braiding...",'\n')
-  routes<-checkbraidedTF(rivers5,toreturn="routes")           ##################################################################
+  routes<-checkbraidedTF(rivers5,toreturn="routes")           
   rivers5$braided <- !is.null(routes)
   braided <- rivers5$braided
   rivers6<-rivers5
@@ -565,7 +605,7 @@ cleanup <- function(rivers) {
       checkagain<-0
       while(!any(checkagain==c("y","Y","n","N"))) checkagain<-readline(prompt="Re-check for braiding? (y/n) ")
       if(checkagain=="Y" | checkagain=="y") {
-        routes<-checkbraidedTF(rivers6,toreturn="routes")           ##################################################################
+        routes <- checkbraidedTF(rivers6, toreturn = "routes")           
         rivers6$braided <- !is.null(routes)
         braided <- rivers6$braided
         if(braided) cat('\n',"Braiding still detected.",'\n')
@@ -580,14 +620,12 @@ cleanup <- function(rivers) {
     if(yes=="Y" | yes=="y") rivers6 <- buildsegroutes(rivers6)
   } 
   
+  # Cleanup completed #########################################################
   cat('\n',"Cleanup completed, returning a network with",length(rivers6$lines),"segments.",'\n')
   cat('\n',"Recommend saving output to a .Rdata or .rda file.",'\n')
   cat('\n',"Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().",'\n')
   return(rivers6)
 }
-
-
-
 
 # connectsegs <- function(connect,connectto,nearestvert=FALSE,rivers,calcconnections=TRUE) {
 #   if(length(whoconnected(connect,rivers))>0){

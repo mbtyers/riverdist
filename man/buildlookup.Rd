@@ -47,4 +47,3 @@ abstreams1 <- buildlookup(abstreams)
 \author{
 Matt Tyers
 }
-

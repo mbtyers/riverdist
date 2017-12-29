@@ -56,4 +56,3 @@ riverdistance(startvert=100, endvert=25, path=Killey.dists$routes[[18]], rivers=
 \author{
 Matt Tyers
 }
-

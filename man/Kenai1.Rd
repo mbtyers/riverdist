@@ -15,4 +15,3 @@ A first pass at a messy river network object.
 \link{Kenai2}, \link{Kenai3}
 }
 \keyword{datasets}
-

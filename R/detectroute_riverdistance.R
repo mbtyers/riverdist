@@ -656,3 +656,41 @@ buildlookup <- function(rivers) {
   
   return(rivers)
 }
+
+#' Detect terminal segments
+#' 
+#' @inheritParams riverdistance
+#' @export
+#' 
+#' @examples \dontrun{
+#' data(Gulk)
+#' plot(Gulk)
+#' Gulk1 <- detectterminal(Gulk, map = TRUE)
+#' Gulk1$terminal
+#' }
+detectterminal <- function(rivers, map = FALSE){
+  
+  intermediate <- function(x, i){
+    if(any(x == i)){
+      which(x == i) != length(x) & which(x == i) != 1
+    }else{
+      FALSE
+    }
+  }
+  
+  terminal <- rep(NA, length(rivers$segroutes))
+  for(i in seq_len(length(rivers$segroutes))){
+    terminal[i] <- all(!(unlist(lapply(rivers$segroutes, 
+                                       function(x) intermediate(x, i)))))
+  }
+  terminal <- which(terminal)
+  
+  if(map){
+    plot(rivers)
+    invisible(lapply(rivers$lines[terminal], 
+                     function(x) lines(x, col = "red", lwd = 2)))
+  }
+  
+  rivers$terminal <- terminal
+  return(rivers)
+}

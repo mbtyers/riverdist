@@ -38,72 +38,85 @@
 #' tend <- Sys.time()
 #' tend - tstart
 #' @export
-detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+detectroute <- function(start, end, rivers, verbose = FALSE, 
+                        stopiferror = TRUE, algorithm = NULL) {
   
-  if(start==end) return(start)
+  if(class(rivers) != "rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  
+  if(start == end) return(start)
   
   if(is.null(algorithm)) {
     algorithm <- ifelse(is.null(rivers$segroutes), "Dijkstra", "segroutes")
   }
-  if(algorithm=="segroutes" & is.null(rivers$segroutes)) { 
+  
+  if(algorithm == "segroutes" & is.null(rivers$segroutes)) { 
     algorithm <- "Dijkstra"
   }
   
   if(!any(algorithm==c("sequential","Dijkstra","segroutes"))) stop("Invalid algorithm specified.")
+  
   if(verbose) cat("Using",algorithm,"algorithm...",'\n')
 
-  if(max(c(start,end),na.rm=T)>length(rivers$lines) | min(c(start,end),na.rm=T)<1) {
+  if(max(c(start, end), na.rm = T) > length(rivers$lines) | 
+     min(c(start, end), na.rm = T) < 1) {
     stop("Invalid segments specified.")
   }
   
-  if(algorithm=="segroutes") {
+  if(algorithm == "segroutes") {
     segroutes <- rivers$segroutes
     connections <- rivers$connections
-    if(any(segroutes[[start]]==end)) {
-      route <- segroutes[[start]][which(segroutes[[start]]==start):which(segroutes[[start]]==end)]
+    if(any(segroutes[[start]] == end)) {
+      route <- segroutes[[start]][which(segroutes[[start]] == start) : 
+                                    which(segroutes[[start]] == end)]
     }
-    if(any(segroutes[[end]]==start)) {
-      route <- segroutes[[end]][which(segroutes[[end]]==start):which(segroutes[[end]]==end)]
+    if(any(segroutes[[end]] == start)) {
+      route <- segroutes[[end]][which(segroutes[[end]] == start) : 
+                                  which(segroutes[[end]] == end)]
     }
-    if(all(segroutes[[end]]!=start) & all(segroutes[[start]]!=end)) {
+    if(all(segroutes[[end]] != start) & all(segroutes[[start]] != end)) {
       
-      minl <- min(length(segroutes[[start]]), length(segroutes[[end]]))
-      ijunct <- min(which(segroutes[[start]][1:minl] != segroutes[[end]][1:minl]))
+      minl   <- min(length(segroutes[[start]]), length(segroutes[[end]]))
+      ijunct <- min(which(segroutes[[start]][1:minl] != 
+                            segroutes[[end]][1:minl]))
       
-      route <- c(segroutes[[start]][which(segroutes[[start]]==start):ijunct], segroutes[[end]][ijunct:which(segroutes[[end]]==end)])
-      if(is.na(connections[segroutes[[start]][ijunct],segroutes[[end]][ijunct]])) {
-        route <- c(segroutes[[start]][which(segroutes[[start]]==start):ijunct], segroutes[[start]][1], segroutes[[end]][ijunct:which(segroutes[[end]]==end)])
+      route <- c(segroutes[[start]][which(segroutes[[start]] == start):ijunct], 
+                 segroutes[[end]][ijunct:which(segroutes[[end]] == end)])
+      if(is.na(connections[segroutes[[start]][ijunct], 
+                           segroutes[[end]][ijunct]])) {
+        route <- c(segroutes[[start]][which(segroutes[[start]] == start):ijunct], 
+                   segroutes[[start]][1], 
+                   segroutes[[end]][ijunct:which(segroutes[[end]] == end)])
       }
     }
     return(route)
   }
   
-  if(algorithm=="Dijkstra") {
+  if(algorithm == "Dijkstra") {
+    
     connections <- rivers$connections
-    length <- length(rivers$lines)
-    lengths <- rivers$lengths
-    max1 <- 2*sum(lengths)
+    length      <- length(rivers$lines)
+    lengths     <- rivers$lengths
+    max1        <- 2 * sum(lengths)
     
-    segs <- 1:length
-    dists <- rep(max1,length)
-    visited <- rep(FALSE,length)
-    minroutes <- list()
-    minroutes_vec <- rep(NA,length)  
+    segs          <- 1:length
+    dists         <- rep(max1, length)
+    visited       <- rep(FALSE, length)
+    minroutes     <- list()
+    minroutes_vec <- rep(NA, length)  
     
-    connected <- !is.na(connections)
-    dists[start] <- lengths[start]
-    current <- start
+    connected          <- !is.na(connections)
+    dists[start]       <- lengths[start]
+    current            <- start
     minroutes[[start]] <- start
     
     found <- FALSE
     while(!found) {
-      neighbors <- (1:length)[connected[current,]&!visited] 
-      if(length(neighbors)>0) {
+      neighbors <- (1:length)[connected[current,] & !visited] 
+      if(length(neighbors) > 0) {
         dists.tentative <- sum(lengths[minroutes[[current]]]) + lengths[neighbors]  
         check1 <- dists.tentative <= dists[neighbors]  
         if(any(check1)) {
-          neighborscheck1 <- neighbors[check1]
+          neighborscheck1        <- neighbors[check1]
           dists[neighborscheck1] <- dists.tentative[check1] 
           for(neighbor in neighborscheck1) {
             minroutes[[neighbor]] <- c(minroutes[[current]],neighbor)
@@ -114,32 +127,33 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
       
       if(is.null(minroutes[[current]][1])) {  
         if(stopiferror) stop("No route detected.")
-        found <- TRUE
+        found            <- TRUE
         minroutes[[end]] <- NA
       }
       
       if(verbose) print(minroutes[[current]])
-      visited[current] <- TRUE
-      if(current==end) found <- TRUE
+      visited[current]         <- TRUE
+      if(current == end) found <- TRUE
       
       if(!found) {
         thing1 <- which.min(dists+(visited*max1))
         if(current == thing1) { 
-          dists[current] <- max1
+          dists[current]      <- max1
           connected[,current] <- connected[current,] <- F
-          current <- minroutes[[current]][length(minroutes[[current]])-1]  
+          current <- minroutes[[current]][length(minroutes[[current]]) - 1]  
         }
         else current <- thing1 
       }
       
-      if(!any(connected[current,minroutes_vec[!is.na(minroutes_vec)]]) & !(current %in% minroutes_vec)) {  
-        if(stopiferror) stop("No route detected.")
-        found <- TRUE
-        minroutes[[end]] <- NA
+      if(!any(connected[current, 
+        minroutes_vec[!is.na(minroutes_vec)]]) & !(current %in% minroutes_vec)){  
+          if(stopiferror) stop("No route detected.")
+          found            <- TRUE
+          minroutes[[end]] <- NA
       }   
-      if(all(visited)&!found) {
+      if(all(visited) & !found) {
         if(stopiferror) stop("No route detected.")
-        found <- TRUE
+        found            <- TRUE
         minroutes[[end]] <- NA
       }
     }
@@ -147,91 +161,92 @@ detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorith
     return(minroutes[[end]])
   }
 
-  if(algorithm=="sequential") {
+  if(algorithm == "sequential") {
     connections <- rivers$connections
-    length <- length(rivers$lines)
-    if(start==end) path <- start
+    length      <- length(rivers$lines)
+    if(start == end) path <- start
     if(start != end) {
-      is.connected <- is.na(connections)==F
-      path <- start             # vector of the current path being considered
-      option <- 1            # vector of the option number (of available at each level) the current path is
-      used <- rep(F,length)  # which segment numbers have been used
+      is.connected <- is.na(connections) == F
+      path   <- start           # vector of the current path being considered
+      option <- 1               # vector of the option number (of available at
+                                  # each level) the current path is
+      used   <- rep(F, length)  # which segment numbers have been used
       
-      used <- matrix(F,nrow=length,ncol=length)
-      used[1,start]<-T
+      used          <- matrix(F, nrow = length, ncol = length)
+      used[1,start] <- T
       
-      level<-1
-      found<-F
-      while(found==F) {
+      level <- 1
+      found <- F
+      while(found == F) {
         connected.to <- (1:length)[is.connected[,path[level]]]  # which are connected to the current terminal node
         connected.to.new <- connected.to
         for(i in 1:length(connected.to)) {  # checking if target has been reached, defining new possible connections        
-          if(length(connected.to)==0) {
+          if(length(connected.to) == 0) {
             if(stopiferror) {
               cat('\n',"Unable to calculate route between segments",start,"and",end,'\n')
               stop("Gaps exist between specified segments.") 
             }
             if(!stopiferror) {
-              path <- NA
+              path  <- NA
               found <- T
             }
           }
           if(!found) {
-            if(connected.to[i]==end) {
-              found <- T
-              path[level+1]<-end
+            if(connected.to[i] == end) {
+              found           <- T
+              path[level + 1] <- end
             }
-            if(used[level,][connected.to[i]]==T) connected.to.new <- connected.to.new[connected.to.new!=connected.to[i]]
+            if(used[level,][connected.to[i]] == T) connected.to.new <- connected.to.new[connected.to.new!=connected.to[i]]
           }
         }
-        if(!found & length(connected.to.new)>0) {  # if dead end has not been reached
+        if(!found & length(connected.to.new) > 0) {  # if dead end has not been reached
           used[level,][connected.to.new] <- T
-          level <- level+1
-          if(found==F) path[level]<-connected.to.new[1]
-          option[level]<-1
-          used[level,]<-used[level-1,]  
+          level <- level + 1
+          if(found == F) path[level] <- connected.to.new[1]
+          option[level]  <- 1
+          used[level,]   <- used[level-1,]  
         }
         if(!found & length(connected.to.new)==0) { #if dead end has been reached
           #cat("oops dead end ... ")
           good.to.go <- F
-          while(good.to.go==F) {
+          while(good.to.go == F) {
             option[level] <- option[level]+1
-            connected.to.prev <- (1:length)[is.connected[,path[level-1]]]  # which are connected to the previous terminal node
+            connected.to.prev <- (1:length)[is.connected[,path[level - 1]]]  # which are connected to the previous terminal node
             connected.to.new.prev <- connected.to.prev
             for(i in 1:length(connected.to.prev)) {  # seeing if a different option exists for the previous terminal node
-              if(level>2) {
-                if(used[level-2,][connected.to.prev[i]]==T) connected.to.new.prev <- connected.to.new.prev[connected.to.new.prev!=connected.to.prev[i]]
+              if(level > 2) {
+                if(used[level - 2,][connected.to.prev[i]] == T) connected.to.new.prev <- connected.to.new.prev[connected.to.new.prev!=connected.to.prev[i]]
               }
             } 
-            if(length(connected.to.new.prev)<option[level]) {  # if not, back out another level
-              level <- level-1
-              path <- path[1:level]
+            if(length(connected.to.new.prev) < option[level]) {  # if not, back out another level
+              level  <- level - 1
+              path   <- path[1:level]
               option <- option[1:level]
             }
-            if(length(option[level])==0) {
+            if(length(option[level]) == 0) {
               if(stopiferror) {
                 cat('\n',"Unable to calculate route between segments",start,"and",end,'\n')
                 stop("Gaps exist between specified segments.") 
               }
               if(!stopiferror) {
-                path <- NA
+                path  <- NA
                 found <- T
               } 
             }
-            if(level>0) {   
+            if(level > 0) {   
               if(length(connected.to.new.prev)>=option[level]) {  # if so, use the different option
                 path[level] <- connected.to.new.prev[option[level]]
-                good.to.go <-T
+                good.to.go  <-T
               }
             }
-            if(level<1) { 
+            if(level < 1) { 
               if(stopiferror) {
                 cat('\n',"Unable to calculate route between segments",start,"and",end,'\n')
                 stop("Gaps exist between specified segments.") 
               }
               if(!stopiferror) {
-                path <- NA
-                found <- T
+                path       <- NA
+                found      <- T
                 good.to.go <- T
               }
             }

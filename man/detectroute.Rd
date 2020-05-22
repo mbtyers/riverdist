@@ -4,8 +4,14 @@
 \alias{detectroute}
 \title{Detect Route}
 \usage{
-detectroute(start, end, rivers, verbose = FALSE, stopiferror = TRUE,
-  algorithm = NULL)
+detectroute(
+  start,
+  end,
+  rivers,
+  verbose = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{start}{Segment number of the start of the route}
@@ -59,4 +65,3 @@ tend - tstart
 \author{
 Matt Tyers
 }
-

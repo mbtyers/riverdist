@@ -4,7 +4,9 @@
 \name{Koyukuk0}
 \alias{Koyukuk0}
 \title{Dataset: Koyukuk River 0}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(Koyukuk0)
 }
@@ -15,4 +17,3 @@ An unusably messy river network object, included for the purpose of testing rive
 \link{Koyukuk1}, \link{Koyukuk2}
 }
 \keyword{datasets}
-

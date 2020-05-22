@@ -34,10 +34,9 @@ data(abstreams0,Koyukuk0,Kenai1)
 # Koyukuk <- cleanup(Koyukuk0)
 # Kenai <- cleanup(Kenai1)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 line2network
 }
-
+\author{
+Matt Tyers
+}

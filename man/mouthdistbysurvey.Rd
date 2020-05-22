@@ -4,8 +4,16 @@
 \alias{mouthdistbysurvey}
 \title{Distance From Mouth for All Observations of Individuals}
 \usage{
-mouthdistbysurvey(unique, survey, seg, vert, rivers, logical = NULL,
-  stopiferror = TRUE, algorithm = NULL)
+mouthdistbysurvey(
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  logical = NULL,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{unique}{A vector of identifiers for each fish.}
@@ -60,10 +68,9 @@ seqbysurvey <- mouthdistbysurvey(unique=fakefish$fish.id, survey=fakefish$flight
 seqbysurvey
 plotseq(seqbysurvey)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{plotseq}
 }
-
+\author{
+Matt Tyers
+}

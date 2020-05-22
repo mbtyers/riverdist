@@ -4,7 +4,9 @@
 \name{Koyukuk2}
 \alias{Koyukuk2}
 \title{Dataset: Koyukuk River 2}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(Koyukuk2)
 }
@@ -15,4 +17,3 @@ A second pass at a messy river network object, with topologies fixed from \link{
 \link{Koyukuk1}
 }
 \keyword{datasets}
-

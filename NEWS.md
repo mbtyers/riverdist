@@ -1,3 +1,7 @@
+# 'riverdist' 0.15.1 (May 21, 2020)
+
+* Minor update for compatibility with new PROJ
+
 # 'riverdist' 0.15.0 (Jul 18, 2017)
 
 ### Added capabilities

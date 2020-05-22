@@ -4,7 +4,9 @@
 \name{smallset}
 \alias{smallset}
 \title{Dataset: Smallset}
-\format{A data frame}
+\format{
+A data frame
+}
 \usage{
 data(smallset)
 }
@@ -25,4 +27,3 @@ A small set of observations of fakefish on the Gulkana River and its tributaries
 \link{Gulk}
 }
 \keyword{datasets}
-

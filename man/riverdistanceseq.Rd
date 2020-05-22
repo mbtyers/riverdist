@@ -4,8 +4,16 @@
 \alias{riverdistanceseq}
 \title{River Distance Between Sequential Observations}
 \usage{
-riverdistanceseq(unique, survey, seg, vert, rivers, logical = NULL,
-  stopiferror = TRUE, algorithm = NULL)
+riverdistanceseq(
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  logical = NULL,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{unique}{A vector of identifiers for each fish.}
@@ -52,10 +60,9 @@ seqbysurvey <- riverdistanceseq(unique=fakefish$fish.id, survey=fakefish$flight.
 seqbysurvey
 plotseq(seqbysurvey)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdistance}, \link{plotseq}
 }
-
+\author{
+Matt Tyers
+}

@@ -22,10 +22,9 @@ zoomtoseg(seg=c(170,171,157),rivers=abstreams0)
 abstreams1 <- removeduplicates(rivers=abstreams0)
 zoomtoseg(seg=c(166,167,154),rivers=abstreams1)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 line2network
 }
-
+\author{
+Matt Tyers
+}

@@ -4,9 +4,18 @@
 \alias{riverdirectionmatbysurvey}
 \title{River Direction Matrix of All Observations of an Individual}
 \usage{
-riverdirectionmatbysurvey(indiv, unique, survey, seg, vert, rivers,
-  full = TRUE, flowconnected = FALSE, stopiferror = TRUE,
-  algorithm = NULL)
+riverdirectionmatbysurvey(
+  indiv,
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  full = TRUE,
+  flowconnected = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{indiv}{The unique identifier of the fish in question.}
@@ -61,10 +70,9 @@ riverdirectionmatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flig
 riverdirectionmatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdirection}
 }
-
+\author{
+Matt Tyers
+}

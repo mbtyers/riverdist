@@ -4,8 +4,15 @@
 \alias{riverdistancemat}
 \title{River Distance Matrix}
 \usage{
-riverdistancemat(seg, vert, rivers, logical = NULL, ID = NULL,
-  stopiferror = TRUE, algorithm = NULL)
+riverdistancemat(
+  seg,
+  vert,
+  rivers,
+  logical = NULL,
+  ID = NULL,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{seg}{A vector of river locations (segment component).}
@@ -48,10 +55,9 @@ logi1 <- (fakefish$flight.date==as.Date("2015-11-25"))
 
 riverdistancemat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdistance}
 }
-
+\author{
+Matt Tyers
+}

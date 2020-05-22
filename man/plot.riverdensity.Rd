@@ -5,11 +5,29 @@
 \alias{plotriverdensity}
 \title{Plot Kernel Density Using River Distance}
 \usage{
-\method{plot}{riverdensity}(x, whichplots = NULL, points = TRUE,
-  bycol = TRUE, bylwd = TRUE, maxlwd = 10, pwr = 0.7, scalebyN = TRUE,
-  ramp = "grey", lwd = 1, linecol = "black", denscol = "black",
-  alpha = 1, dark = 1, showN = TRUE, main = NULL, xlab = "",
-  ylab = "", add = FALSE, scalebar = TRUE, ...)
+\method{plot}{riverdensity}(
+  x,
+  whichplots = NULL,
+  points = TRUE,
+  bycol = TRUE,
+  bylwd = TRUE,
+  maxlwd = 10,
+  pwr = 0.7,
+  scalebyN = TRUE,
+  ramp = "grey",
+  lwd = 1,
+  linecol = "black",
+  denscol = "black",
+  alpha = 1,
+  dark = 1,
+  showN = TRUE,
+  main = NULL,
+  xlab = "",
+  ylab = "",
+  add = FALSE,
+  scalebar = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{A river density object created by \link{makeriverdensity}.}
@@ -110,10 +128,9 @@ Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 plot(x=Gulk_dens)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{makeriverdensity}, \link{plotriverdensitypoints}
 }
-
+\author{
+Matt Tyers
+}

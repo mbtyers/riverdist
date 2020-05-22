@@ -4,7 +4,9 @@
 \name{Gulk}
 \alias{Gulk}
 \title{Dataset: Gulkana River}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(Gulk)
 }
@@ -12,4 +14,3 @@ data(Gulk)
 A stretch of Gulkana River and tributaries.
 }
 \keyword{datasets}
-

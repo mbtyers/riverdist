@@ -4,7 +4,9 @@
 \name{Kenai1}
 \alias{Kenai1}
 \title{Dataset: Kenai River 1}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(Kenai1)
 }
@@ -15,4 +17,3 @@ A first pass at a messy river network object.
 \link{Kenai2}, \link{Kenai3}
 }
 \keyword{datasets}
-

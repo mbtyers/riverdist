@@ -24,10 +24,9 @@ Produces a graphical check of the connectivity of a river
 data(Gulk)
 topologydots(rivers=Gulk)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

@@ -4,9 +4,19 @@
 \alias{upstreammatbysurvey}
 \title{Upstream Distance Matrix of All Observations of an Individual}
 \usage{
-upstreammatbysurvey(indiv, unique, survey, seg, vert, rivers, full = TRUE,
-  flowconnected = FALSE, net = FALSE, stopiferror = TRUE,
-  algorithm = NULL)
+upstreammatbysurvey(
+  indiv,
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  full = TRUE,
+  flowconnected = FALSE,
+  net = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{indiv}{The unique identifier of the fish in question.}
@@ -64,10 +74,9 @@ upstreammatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
 upstreammatbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{upstream}
 }
-
+\author{
+Matt Tyers
+}

@@ -4,8 +4,17 @@
 \alias{riverdirectionseq}
 \title{River Travel Direction Between Sequential Observations}
 \usage{
-riverdirectionseq(unique, survey, seg, vert, rivers, logical = NULL,
-  flowconnected = FALSE, stopiferror = TRUE, algorithm = NULL)
+riverdirectionseq(
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  logical = NULL,
+  flowconnected = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{unique}{A vector of identifiers for each fish.}
@@ -59,10 +68,9 @@ riverdirectionseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$
 riverdirectionseq(unique=fakefish$fish.id, survey=fakefish$flight.date, seg=fakefish$seg,
    vert=fakefish$vert, rivers=Gulk)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdirection}
 }
-
+\author{
+Matt Tyers
+}

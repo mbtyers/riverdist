@@ -4,7 +4,9 @@
 \name{abstreams0}
 \alias{abstreams0}
 \title{Dataset: A-B Streams 0}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(abstreams0)
 }
@@ -12,4 +14,3 @@ data(abstreams0)
 An unusably messy river network object, included for the purpose of testing river network editing functions.
 }
 \keyword{datasets}
-

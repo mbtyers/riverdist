@@ -4,7 +4,9 @@
 \name{Koyukuk1}
 \alias{Koyukuk1}
 \title{Dataset: Koyukuk River 1}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(Koyukuk1)
 }
@@ -17,4 +19,3 @@ topologies do not work.
 \link{Koyukuk2}
 }
 \keyword{datasets}
-

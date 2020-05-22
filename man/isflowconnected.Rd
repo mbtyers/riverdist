@@ -43,4 +43,3 @@ isflowconnected(seg1=13, seg2=1, rivers=Gulk)
 \author{
 Matt Tyers
 }
-

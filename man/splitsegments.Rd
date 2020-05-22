@@ -4,8 +4,14 @@
 \alias{splitsegments}
 \title{Split Segments by Endpoint Proximity}
 \usage{
-splitsegments(rivers, tolerance = NULL, splitthese = NULL,
-  splitthemat = NULL, one2one = FALSE, append = FALSE)
+splitsegments(
+  rivers,
+  tolerance = NULL,
+  splitthese = NULL,
+  splitthemat = NULL,
+  one2one = FALSE,
+  append = FALSE
+)
 }
 \arguments{
 \item{rivers}{The river network object to use}
@@ -55,10 +61,9 @@ plot(x=splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7),
 plot(x=splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7),
         splitthemat=c(14,5,12), append=TRUE))
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

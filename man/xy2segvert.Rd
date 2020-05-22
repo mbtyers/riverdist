@@ -46,7 +46,7 @@ head(line98)  # note that coordinates are stored in long-lat, NOT lat-long
 library(rgdal)
 line98albers <- project(line98,proj="+proj=aea +lat_1=55 +lat_2=65 
     +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs 
-    +ellps=GRS80 +towgs84=0,0,0")
+    +ellps=GRS80")
 head(line98albers)
 
 zoomtoseg(seg=c(162,19), rivers=Kenai1)
@@ -55,4 +55,3 @@ points(line98albers)
 \author{
 Matt Tyers
 }
-

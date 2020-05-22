@@ -4,8 +4,16 @@
 \alias{riverdirection}
 \title{River Direction}
 \usage{
-riverdirection(startseg, endseg, startvert, endvert, rivers,
-  flowconnected = FALSE, stopiferror = TRUE, algorithm = NULL)
+riverdirection(
+  startseg,
+  endseg,
+  startvert,
+  endvert,
+  rivers,
+  flowconnected = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{startseg}{Segment number of the start of the route}
@@ -50,10 +58,9 @@ Gulk$mouth$mouth.vert <- 1
 plot(x=Gulk)
 riverdirection(startseg=6, endseg=3, startvert=40, endvert=40, rivers=Gulk)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{setmouth}
 }
-
+\author{
+Matt Tyers
+}

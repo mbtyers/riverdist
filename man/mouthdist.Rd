@@ -47,4 +47,3 @@ mouthdist(seg=c(4,5), vert=c(40,20), rivers=Gulk)
 \author{
 Matt Tyers
 }
-

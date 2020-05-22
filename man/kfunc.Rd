@@ -4,10 +4,24 @@
 \alias{kfunc}
 \title{Plotting K-functions for a Set of Surveys}
 \usage{
-kfunc(seg, vert, survey = NULL, rivers, lwd = 2, envelope = TRUE,
-  envreps = 1000, envcol = "grey80", envborder = NA, maxdist = NULL,
-  xlab = "Distance", ylab = "\% within", showN = TRUE,
-  whichplots = NULL, returnoutput = FALSE, ...)
+kfunc(
+  seg,
+  vert,
+  survey = NULL,
+  rivers,
+  lwd = 2,
+  envelope = TRUE,
+  envreps = 1000,
+  envcol = "grey80",
+  envborder = NA,
+  maxdist = NULL,
+  xlab = "Distance",
+  ylab = "\% within",
+  showN = TRUE,
+  whichplots = NULL,
+  returnoutput = FALSE,
+  ...
+)
 }
 \arguments{
 \item{seg}{A vector of river locations (segment)}
@@ -104,4 +118,3 @@ for(i in 1:10) {
 \author{
 Matt Tyers
 }
-

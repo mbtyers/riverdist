@@ -4,8 +4,13 @@
 \alias{connectsegs}
 \title{Connect Segments}
 \usage{
-connectsegs(connect, connectto, nearestvert = TRUE, rivers,
-  calcconnections = TRUE)
+connectsegs(
+  connect,
+  connectto,
+  nearestvert = TRUE,
+  rivers,
+  calcconnections = TRUE
+)
 }
 \arguments{
 \item{connect}{The segment(s) to connect to the network.  Typically, this is the
@@ -52,10 +57,9 @@ Koyukuk0.2 <- connectsegs(connect=c(20,21,22), connectto=c(21,22,23),
 zoomtoseg(seg=21:23, rivers=Koyukuk0.2)
 topologydots(Koyukuk0.2, add=TRUE)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 line2network
 }
-
+\author{
+Matt Tyers
+}

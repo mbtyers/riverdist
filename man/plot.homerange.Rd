@@ -4,8 +4,17 @@
 \alias{plot.homerange}
 \title{Plot Home Range}
 \usage{
-\method{plot}{homerange}(x, cumulative = FALSE, lwd = 3, maxlwd = 10,
-  col = 4, pch = 21, label = FALSE, main = NULL, ...)
+\method{plot}{homerange}(
+  x,
+  cumulative = FALSE,
+  lwd = 3,
+  maxlwd = 10,
+  col = 4,
+  pch = 21,
+  label = FALSE,
+  main = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{An object returned from \link{homerange}.}
@@ -44,10 +53,9 @@ homerangeoverlap(ranges)
 plothomerangeoverlap(ranges)
 with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk))
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
 }
-
+\author{
+Matt Tyers
+}

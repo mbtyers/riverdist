@@ -4,9 +4,18 @@
 \alias{upstreamseq}
 \title{Upstream Distance Between Sequential Observations}
 \usage{
-upstreamseq(unique, survey, seg, vert, rivers, logical = NULL,
-  flowconnected = FALSE, net = FALSE, stopiferror = TRUE,
-  algorithm = NULL)
+upstreamseq(
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  logical = NULL,
+  flowconnected = FALSE,
+  net = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{unique}{A vector of identifiers for each fish.}
@@ -69,10 +78,9 @@ seqbysurvey <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight.date,
 seqbysurvey
 plotseq(seqbysurvey)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{upstream}, \link{plotseq}
 }
-
+\author{
+Matt Tyers
+}

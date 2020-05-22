@@ -139,7 +139,7 @@ calculateconnections <- function(lines,tolerance) {
 #' ## Re-projecting in Alaska Albers Equal Area projection:
 #' 
 #' AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 
-#'     +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
+#'     +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80"
 #'     
 #' Gulk_AKalbers <- line2network(path=filepath, layer="Gulk_UTM5", reproject=AKalbers)
 #' plot(Gulk_AKalbers)
@@ -160,7 +160,7 @@ line2network <- function(sp = NA, path=".", layer = NA, tolerance=100,
   }
     
   if(is.na(sp@proj4string@projargs)){ 
-    stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 (in double-quotes).  If so, it must also be reprojected using reproject=.")
+    stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 (in double-quotes).  If so, it must also be reprojected using reproject=.")
   }
     
   proj4 <- strsplit(sp@proj4string@projargs,split=" ")
@@ -753,7 +753,7 @@ whoconnected <- function(seg,rivers) {
 #' library(rgdal)
 #' line98albers <- project(line98,proj="+proj=aea +lat_1=55 +lat_2=65 
 #'     +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs 
-#'     +ellps=GRS80 +towgs84=0,0,0")
+#'     +ellps=GRS80")
 #' head(line98albers)
 #' 
 #' zoomtoseg(seg=c(162,19), rivers=Kenai1)

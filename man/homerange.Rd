@@ -4,8 +4,17 @@
 \alias{homerange}
 \title{Home Range}
 \usage{
-homerange(unique = NULL, survey = NULL, seg, vert, rivers, map = FALSE,
-  algorithm = NULL, main = NULL, ...)
+homerange(
+  unique = NULL,
+  survey = NULL,
+  seg,
+  vert,
+  rivers,
+  map = FALSE,
+  algorithm = NULL,
+  main = NULL,
+  ...
+)
 }
 \arguments{
 \item{unique}{A vector of unique identifiers for each fish.  If the default (\code{NULL}) is used, the function will assume all observations come from a single individual.}
@@ -58,10 +67,9 @@ homerangeoverlap(ranges)
 plothomerangeoverlap(ranges)
 with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk))
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{plot.homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
 }
-
+\author{
+Matt Tyers
+}

@@ -4,8 +4,17 @@
 \alias{upstream}
 \title{Upstream River Distance}
 \usage{
-upstream(startseg, endseg, startvert, endvert, rivers, flowconnected = FALSE,
-  net = FALSE, stopiferror = TRUE, algorithm = NULL)
+upstream(
+  startseg,
+  endseg,
+  startvert,
+  endvert,
+  rivers,
+  flowconnected = FALSE,
+  net = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{startseg}{Segment number of the start of the route}
@@ -63,10 +72,9 @@ upstream(startseg=6, endseg=4, startvert=140, endvert=40, rivers=Gulk, net=TRUE)
 upstream(startseg=6, endseg=4, startvert=140, endvert=40, rivers=Gulk, net=FALSE)
 upstream(startseg=6, endseg=4, startvert=140, endvert=40, rivers=Gulk, flowconnected=TRUE)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{setmouth}
 }
-
+\author{
+Matt Tyers
+}

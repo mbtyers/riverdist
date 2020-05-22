@@ -22,10 +22,9 @@ This function is called within \link{cleanup}, which is recommended in most case
 data(abstreams0)
 abstreams1 <- removemicrosegs(abstreams0)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 line2network
 }
-
+\author{
+Matt Tyers
+}

@@ -4,9 +4,19 @@
 \alias{plotseq}
 \title{Plot Sequence of Observations}
 \usage{
-plotseq(seqbysurvey, type = "boxplot", xlab = "", ylab = "", main = "",
-  cex.axisX = 0.8, lowerbound = NULL, upperbound = NULL,
-  boundtype = "negative", surveysareDates = F, ...)
+plotseq(
+  seqbysurvey,
+  type = "boxplot",
+  xlab = "",
+  ylab = "",
+  main = "",
+  cex.axisX = 0.8,
+  lowerbound = NULL,
+  upperbound = NULL,
+  boundtype = "negative",
+  surveysareDates = F,
+  ...
+)
 }
 \arguments{
 \item{seqbysurvey}{A matrix returned from \link{mouthdistbysurvey}, 
@@ -73,4 +83,3 @@ plotseq(seqbysurvey=from_upstreamseq)
 \author{
 Matt Tyers
 }
-

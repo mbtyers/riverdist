@@ -4,8 +4,17 @@
 \alias{riverdistancematbysurvey}
 \title{River Distance Matrix of All Observations of an Individual}
 \usage{
-riverdistancematbysurvey(indiv, unique, survey, seg, vert, rivers,
-  full = TRUE, stopiferror = TRUE, algorithm = NULL)
+riverdistancematbysurvey(
+  indiv,
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  full = TRUE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{indiv}{The unique identifier of the fish in question.}
@@ -55,10 +64,9 @@ riverdistancematbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$fligh
 riverdistancematbysurvey(indiv=1, unique=fakefish$fish.id, survey=fakefish$flight,
       seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, full=FALSE)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdistance}
 }
-
+\author{
+Matt Tyers
+}

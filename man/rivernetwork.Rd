@@ -52,7 +52,7 @@ Plotting methods are described in \link{plot.rivernetwork}.
   contained to just one segment, respectively. }
   }
 }
+
 \author{
 Matt Tyers
 }
-

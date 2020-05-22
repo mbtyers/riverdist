@@ -4,7 +4,9 @@
 \name{fakefish}
 \alias{fakefish}
 \title{Dataset: Fakefish}
-\format{A data frame}
+\format{
+A data frame
+}
 \usage{
 data(fakefish)
 }
@@ -26,4 +28,3 @@ A set of observations of Fakefish on the Gulkana River and its tributaries.
 \link{Gulk}
 }
 \keyword{datasets}
-

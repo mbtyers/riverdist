@@ -4,7 +4,9 @@
 \name{Kenai3}
 \alias{Kenai3}
 \title{Dataset: Kenai River 3}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(Kenai3)
 }
@@ -17,4 +19,3 @@ segments have been dissolved into single segments.
 \link{Kenai1}, \link{Kenai2}
 }
 \keyword{datasets}
-

@@ -4,9 +4,19 @@
 \alias{matbysurveylist}
 \title{Generate List of Distance Matrix Between Observations, for All Individuals}
 \usage{
-matbysurveylist(unique, survey, seg, vert, rivers, indiv = NULL,
-  method = "upstream", flowconnected = FALSE, net = FALSE,
-  stopiferror = TRUE, algorithm = NULL)
+matbysurveylist(
+  unique,
+  survey,
+  seg,
+  vert,
+  rivers,
+  indiv = NULL,
+  method = "upstream",
+  flowconnected = FALSE,
+  net = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{unique}{A vector of unique identifiers for each fish.}
@@ -56,10 +66,9 @@ data(fakefish)
 #   seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 # plotmatbysurveylist(matbysurveylist)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdistance}, \link{riverdirection}, \link{upstream}, \link{riverdistancematbysurvey}, \link{riverdirectionmatbysurvey}, \link{upstreammatbysurvey}, \link{plotmatbysurveylist}
 }
-
+\author{
+Matt Tyers
+}

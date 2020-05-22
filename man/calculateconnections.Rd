@@ -23,4 +23,3 @@ Gulk_connections <- calculateconnections(lines=Gulk$lines, tolerance=Gulk$tolera
 \author{
 Matt Tyers
 }
-

@@ -4,7 +4,9 @@
 \name{KilleyW}
 \alias{KilleyW}
 \title{Dataset: Killey River, West Channel}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(KilleyW)
 }
@@ -12,4 +14,3 @@ data(KilleyW)
 A messy and braided section of the Kenai River network - actually a subset of \link{Kenai3}.
 }
 \keyword{datasets}
-

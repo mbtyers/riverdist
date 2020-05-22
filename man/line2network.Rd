@@ -4,8 +4,14 @@
 \alias{line2network}
 \title{Create a River Network Object from a Shapefile}
 \usage{
-line2network(sp = NA, path = ".", layer = NA, tolerance = 100,
-  reproject = NULL, supplyprojection = NULL)
+line2network(
+  sp = NA,
+  path = ".",
+  layer = NA,
+  tolerance = 100,
+  reproject = NULL,
+  supplyprojection = NULL
+)
 }
 \arguments{
 \item{sp}{SpatialLinesDataFrame object. optional.}
@@ -55,7 +61,7 @@ plot(Gulk_UTM5)
 ## Re-projecting in Alaska Albers Equal Area projection:
 
 AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 
-    +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
+    +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80"
     
 Gulk_AKalbers <- line2network(path=filepath, layer="Gulk_UTM5", reproject=AKalbers)
 plot(Gulk_AKalbers)

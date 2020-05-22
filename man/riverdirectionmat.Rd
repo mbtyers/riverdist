@@ -4,8 +4,16 @@
 \alias{riverdirectionmat}
 \title{River Direction Matrix}
 \usage{
-riverdirectionmat(seg, vert, rivers, logical = NULL, ID = NULL,
-  flowconnected = FALSE, stopiferror = TRUE, algorithm = NULL)
+riverdirectionmat(
+  seg,
+  vert,
+  rivers,
+  logical = NULL,
+  ID = NULL,
+  flowconnected = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{seg}{A vector of river locations (segment component).}
@@ -57,10 +65,9 @@ logi1 <- (fakefish$flight.date==as.Date("2015-11-25"))
 
 riverdirectionmat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdirection}
 }
-
+\author{
+Matt Tyers
+}

@@ -4,7 +4,9 @@
 \name{abstreams}
 \alias{abstreams}
 \title{Dataset: A-B Streams}
-\format{A river network object, see \link{rivernetwork}}
+\format{
+A river network object, see \link{rivernetwork}
+}
 \usage{
 data(abstreams)
 }
@@ -12,4 +14,3 @@ data(abstreams)
 A complex river network object, a subset of the streams in the Absaroka-Beartooth Wilderness.
 }
 \keyword{datasets}
-

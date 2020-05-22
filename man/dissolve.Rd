@@ -25,10 +25,9 @@ plot(x=Kenai2)
 Kenai2dissolve <- dissolve(rivers=Kenai2)
 plot(x=Kenai2dissolve)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 line2network
 }
-
+\author{
+Matt Tyers
+}

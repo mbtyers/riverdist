@@ -25,4 +25,3 @@ whoconnected(seg=4, rivers=Gulk)
 \author{
 Matt Tyers
 }
-

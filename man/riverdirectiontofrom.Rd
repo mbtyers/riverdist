@@ -4,9 +4,20 @@
 \alias{riverdirectiontofrom}
 \title{River Direction Matrix between Two Datasets}
 \usage{
-riverdirectiontofrom(seg1, vert1, seg2, vert2, rivers, logical1 = NULL,
-  logical2 = NULL, ID1 = NULL, ID2 = NULL, flowconnected = FALSE,
-  stopiferror = TRUE, algorithm = NULL)
+riverdirectiontofrom(
+  seg1,
+  vert1,
+  seg2,
+  vert2,
+  rivers,
+  logical1 = NULL,
+  logical2 = NULL,
+  ID1 = NULL,
+  ID2 = NULL,
+  flowconnected = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{seg1}{First vector of river locations (segment component).  These are expressed as rows in the output matrix.}
@@ -76,10 +87,9 @@ riverdirectiontofrom(seg1=streamlocs.seg, vert1=streamlocs.vert,
   seg2=fish.seg, vert2=fish.vert, rivers=Gulk, logical1=logi1,
   logical2=logi2, ID1=streamlocs.ID, ID2=fish.ID)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{riverdirection}
 }
-
+\author{
+Matt Tyers
+}

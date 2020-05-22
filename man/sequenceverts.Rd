@@ -33,10 +33,9 @@ str(Gulk)
 Gulk.dir <- sequenceverts(rivers=Gulk)
 str(Gulk.dir)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{line2network}
 }
-
+\author{
+Matt Tyers
+}

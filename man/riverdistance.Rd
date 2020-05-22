@@ -4,9 +4,18 @@
 \alias{riverdistance}
 \title{River Distance}
 \usage{
-riverdistance(startseg = NULL, endseg = NULL, startvert, endvert, rivers,
-  path = NULL, map = FALSE, add = FALSE, stopiferror = TRUE,
-  algorithm = NULL)
+riverdistance(
+  startseg = NULL,
+  endseg = NULL,
+  startvert,
+  endvert,
+  rivers,
+  path = NULL,
+  map = FALSE,
+  add = FALSE,
+  stopiferror = TRUE,
+  algorithm = NULL
+)
 }
 \arguments{
 \item{startseg}{Segment number of the start of the route}
@@ -83,4 +92,3 @@ Sys.time()- tstart
 \author{
 Matt Tyers
 }
-

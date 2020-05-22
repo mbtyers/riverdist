@@ -4,8 +4,7 @@
 \alias{highlightseg}
 \title{Highlight Segments}
 \usage{
-highlightseg(seg, rivers, cex = 0.8, lwd = 3, add = FALSE,
-  color = FALSE, ...)
+highlightseg(seg, rivers, cex = 0.8, lwd = 3, add = FALSE, color = FALSE, ...)
 }
 \arguments{
 \item{seg}{A vector of segments to highlight}
@@ -33,4 +32,3 @@ highlightseg(seg=c(10,30,68),rivers=Kenai3)
 \author{
 Matt Tyers
 }
-

@@ -4,8 +4,15 @@
 \alias{makeriverdensity}
 \title{Calculate Kernel Density Using River Distance}
 \usage{
-makeriverdensity(seg, vert, rivers, survey = NULL, kernel = "gaussian",
-  bw = NULL, resolution = NULL)
+makeriverdensity(
+  seg,
+  vert,
+  rivers,
+  survey = NULL,
+  kernel = "gaussian",
+  bw = NULL,
+  resolution = NULL
+)
 }
 \arguments{
 \item{seg}{A vector of river locations (segment)}
@@ -68,10 +75,9 @@ Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 plot(x=Gulk_dens)
 }
-\author{
-Matt Tyers
-}
 \seealso{
 \link{plot.riverdensity}, \link{plotriverdensitypoints}
 }
-
+\author{
+Matt Tyers
+}

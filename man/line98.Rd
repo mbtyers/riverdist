@@ -4,7 +4,9 @@
 \name{line98}
 \alias{line98}
 \title{Dataset: Line 98 of Kenai River 1 (Long-Lat)}
-\format{A matrix of values}
+\format{
+A matrix of values
+}
 \usage{
 data(line98)
 }
@@ -14,4 +16,3 @@ transformation.  Coordinates come from arbitrary line number 98 in the Kenai
 River 1 shapefile, rendered in long-lat.
 }
 \keyword{datasets}
-

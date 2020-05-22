@@ -4,6 +4,7 @@
 
 ## Test environments
 * local Windows 10 install, R 4.0.0
+* winbuilder R-Devel
 * OS X 10.10.3, R 3.2.2
 
 ## R CMD check results

@@ -236,7 +236,6 @@ NULL
 #' @name rivernetwork 
 #' @rdname rivernetwork
 #' @aliases rivernetwork-class
-#' @exportClass rivernetwork
 #' @author Matt Tyers
 NULL
 
@@ -259,7 +258,6 @@ NULL
 #' @name riverdensity
 #' @rdname riverdensity
 #' @aliases riverdensity-class
-#' @exportClass riverdensity
 #' @author Matt Tyers
 NULL
 
@@ -276,6 +274,5 @@ NULL
 #'   }
 #' @name homerange-class
 #' @rdname homerange-class
-#' @exportClass homerange
 #' @author Matt Tyers
 NULL

@@ -617,7 +617,7 @@ homerange <- function (unique=NULL, survey=NULL, seg, vert, rivers, map = FALSE,
 #' @param main Plot title.  If the default \code{NULL} is used, plots will be titled according to unique individual.
 #' @param ... Additional plotting parameters, see \link{plot.rivernetwork}.
 #' @seealso \link{homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
-#' @author Matt Tyers
+#' @author Matt Tyers, bug fix by Jordy Bernard
 #' @examples
 #' data(Gulk, fakefish)
 #' ranges <- with(fakefish, homerange(unique=fish.id, survey=flight, seg=seg, vert=vert, rivers=Gulk))
@@ -652,7 +652,11 @@ plot.homerange <- function(x,cumulative=FALSE,lwd=3,maxlwd=10,col=4,pch=21,label
       lasts <- c(which(a[-n]!=a[-1]),n)
       denses <- a[firsts]
       for(k in 1:length(denses)) {
-        if(denses[k]>0) lines(x$rivers$lines[[j]][(firsts[k]:lasts[k]),],lwd=(lwd+cumulative*(lwdfactor*denses[k]-1)),col=col)
+        if(denses[k]>0){
+          if(!is.null(dim(x$rivers$lines[[j]][(firsts[k]:lasts[k]),]))){
+            lines(x$rivers$lines[[j]][(firsts[k]:lasts[k]),],lwd=(lwd+cumulative*(lwdfactor*denses[k]-1)),col=col)
+          }
+        }
       }
     }
     riverpoints(seg=x$seg[x$unique==names(x$subseg_n)[i]],vert=x$vert[x$unique==names(x$subseg_n)[i]],rivers=x$rivers,pch=pch,bg="white",col=col)

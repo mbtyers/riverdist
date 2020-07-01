@@ -57,5 +57,5 @@ with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk))
 \link{homerange}, \link{homerangeoverlap}, \link{plothomerangeoverlap}
 }
 \author{
-Matt Tyers
+Matt Tyers, bug fix by Jordy Bernard
 }

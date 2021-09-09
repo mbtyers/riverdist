@@ -6,7 +6,7 @@ Date: 2021-09-08
 Author: Matt Tyers [aut, cre]
 Authors@R: person("Matt", "Tyers", email = "matttyersstat@gmail.com",
     role = c("aut", "cre"))
-Maintainer: Matt Tyers <matt.tyers@alaska.gov>
+Maintainer: Matt Tyers <matttyersstat@gmail.com>
 Description: Reads river network shape files and computes network distances.
     Also included are a variety of computation and graphical tools designed 
     for fisheries telemetry research, such as minimum home range, kernel density 

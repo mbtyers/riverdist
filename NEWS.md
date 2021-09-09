@@ -1,3 +1,7 @@
+# 'riverdist' 0.15.4 (September 8, 2021)
+
+* Updated maintainer email address
+
 # 'riverdist' 0.15.3 (July 1, 2020)
 
 * Minor bug fix

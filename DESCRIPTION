@@ -27,5 +27,5 @@ Suggests:
 VignetteBuilder: knitr
 LazyData: TRUE
 URL: https://cran.r-project.org/package=riverdist
-BugReports: http://github.com/mbtyers/riverdist/issues
+BugReports: https://github.com/mbtyers/riverdist/issues
 RoxygenNote: 7.1.0

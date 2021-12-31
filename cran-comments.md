@@ -1,11 +1,12 @@
 ## Package update
-* This is an update of the 'riverdist' package to reflect my new email address.
+* This is an update of the 'riverdist' package to maintain compatibility with
+the new version of R.
 * I have read and agree to all CRAN policies.
 
 ## Test environments
 * local Windows 10 install, R 4.1.0
 * winbuilder R-Devel
-* OS X 10.10.3, R 3.2.2
+* Mac OS 12.1, R 4.1.1
 
 ## R CMD check results
 * There were no ERRORs, WARNINGs, or NOTEs. 

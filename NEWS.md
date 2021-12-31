@@ -1,3 +1,7 @@
+# 'riverdist' 0.15.5 (December 31, 2021)
+
+* Fixed testing glitch for compatibility with new R version
+
 # 'riverdist' 0.15.4 (September 8, 2021)
 
 * Updated maintainer email address

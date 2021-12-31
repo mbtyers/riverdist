@@ -228,8 +228,10 @@ us <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$
 dirs <- riverdirectionseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 test_that("seqs",{
   expect_equal(ds[1,8],54220.046,tolerance=0.001)
-  expect_equal(sum(as.vector(ds)[!is.na(as.vector(ds))]),3145402,tolerance=.1)
-  expect_equal(sum(as.vector(us)[!is.na(as.vector(us))]),49838.52,tolerance=.01)
+  # expect_equal(sum(as.vector(ds)[!is.na(as.vector(ds))]),3145402,tolerance=.1)
+  # expect_equal(sum(as.vector(us)[!is.na(as.vector(us))]),49838.52,tolerance=.01)
+  expect_equal(sum(unlist(ds)[!is.na(unlist(ds))]),3145402,tolerance=.1)
+  expect_equal(sum(unlist(us)[!is.na(unlist(us))]),49838.52,tolerance=.01)
   expect_equal(us[1,8],-54220.046,tolerance=0.001)
   expect_equal(as.character(dirs[1,8]),"down")
   expect_true(is.na(ds[1,2]))

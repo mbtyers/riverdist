@@ -469,3 +469,4 @@ test_that("connections 5 and 6", {
   expect_equal(riverdistance(startseg=2, endseg=3, startvert=1, endvert=25, rivers=K2f), 0, tolerance=0.001)
   expect_equal(riverdistance(startseg=2, endseg=3, startvert=1, endvert=25, rivers=K2fl), 0, tolerance=0.001)
 })
+

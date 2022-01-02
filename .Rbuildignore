@@ -6,5 +6,3 @@
 ^\.travis\.yml$
 ^CRAN-RELEASE$
 ^\.git$
-^/.git$
-^git$

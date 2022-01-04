@@ -5,4 +5,3 @@
 ^docs$
 ^\.travis\.yml$
 ^CRAN-RELEASE$
-^\.git$

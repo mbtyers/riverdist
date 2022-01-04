@@ -9,7 +9,10 @@ the new version of R.
 * Mac OS 12.1, R 4.1.1
 
 ## R CMD check results
-* There were no ERRORs, WARNINGs, or NOTEs. 
+* There is currently a WARNING and NOTE associated with a hidden subdirectory 
+./.git when testing locally that I have been unable to resolve yet.  This issue
+should not affect the package functionality and will be fixed in the future.
+I am choosing to submit now to maintain compatibility with the new version of R.
 
 ## Downstream dependencies
 * This is a fairly new package and there are not yet any downstream dependencies.

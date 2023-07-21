@@ -197,6 +197,7 @@ NULL
 #' Plotting methods are described in \link{plot.rivernetwork}.
 #'@section Elements: 
 #'  \describe{
+#'    \item{\code{sf}:}{Object of class \code{"sf"} from package 'sf'; see \link[sf]{sf}.  This is the original object as read by \link[sf]{read_sf}, and is preserved to maintain plotting capability.}
 #'    \item{\code{sp}:}{Object of class \code{"SpatialLinesDataFrame"} from package 'sp'; see \link[sp]{SpatialLinesDataFrame-class}.  This is the original object as read by \link[rgdal]{readOGR}, and is preserved to maintain plotting capability.}
 #'    \item{\code{lines}:}{Object of class \code{"list"}.  Each list element is a matrix of XY coordinates of the vertices of a single river segment.}
 #'    \item{\code{connections}:}{Object of class \code{"matrix"}, with \code{"numeric"} elements.  Defined as a square matrix, with elements describing the type of connection detected between line segments.

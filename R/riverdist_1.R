@@ -99,19 +99,21 @@ calculateconnections <- function(lines,tolerance) {
 
 
 #' Create a River Network Object from a Shapefile
-#' @description Uses \link[rgdal]{readOGR} in package 'rgdal' to read a river 
+#' @description Uses \link[sf]{read_sf} in package 'sf' to read a river 
 #'   shapefile, and establishes connectivity of segment endpoints based on 
 #'   spatial proximity.
-#' @param sp SpatialLinesDataFrame object. optional.
+#' @param sf Input as an \link[sf]{sf} object. Optional.
+#' @param sp Input as a \link[sp]{SpatialLinesDataFrame} object. Optional.
 #' @param path File path, default is the current working directory.
 #' @param layer Name of the shapefile, without the .shp extension.
 #' @param tolerance Snapping tolerance of segment endpoints to determine 
 #'   connectivity.  Default is 100, therefore care should be exercised when 
 #'   working with larger units of distance, such as km.
 #' @param reproject A valid Proj.4 projection string, if the shapefile is to be 
-#'   re-projected.  Re-projection is done using \link[sp]{spTransform} in 
-#'   package 'sp'.
-#' @param supplyprojection A valid Proj.4 projection string, if the input shapefile does not have the projection information attached.
+#'   re-projected.  Re-projection is done using \link[sf]{st_transform} in 
+#'   package 'sf'.
+#' @param supplyprojection A valid Proj.4 projection string, if the input 
+#'   shapefile does not have the projection information attached.
 #' @return Returns an object of class \code{"rivernetwork"} containing all
 #'   spatial and topological information.  See \link{rivernetwork-class}.
 #' @note Since distance can only be calculated using projected coordinates, 
@@ -119,21 +121,28 @@ calculateconnections <- function(lines,tolerance) {
 #'   shapefile is detected.  To resolve this, the shapefile can be re-projected 
 #'   in a GIS environment, or using \code{reproject=}, shown in the second 
 #'   example below.
-#' @author Matt Tyers, Joseph Stachelek
-#' @importFrom rgdal readOGR
-#' @importFrom sp is.projected
-#' @importFrom sp CRS
-#' @importFrom sp spTransform
+#' @author Matt Tyers, Jemma Stachelek
+#' @importFrom sf read_sf
+#' @importFrom sf as_Spatial
+#' @importFrom sf st_zm
+#' @importFrom sf st_is_longlat
+#' @importFrom sf st_transform
 #' @examples 
 #' filepath <- system.file("extdata", package="riverdist")
 #' 
 #' Gulk_UTM5 <- line2network(path=filepath, layer="Gulk_UTM5")
 #' plot(Gulk_UTM5)
 #' 
+#' ## Reading directly from an sf object
+#' 
+#' sf <- sf::read_sf(dsn = filepath, layer = "Gulk_UTM5")
+#' Gulk_UTM5 <- line2network(sf=sf)
+#' plot(Gulk_UTM5)
+#' 
 #' ## Reading directly from a SpatialLinesDataFrame object
 #' 
 #' sp <- rgdal::readOGR(dsn = filepath, layer = "Gulk_UTM5", verbose = FALSE)
-#' Gulk_UTM5 <- line2network(sp)
+#' Gulk_UTM5 <- line2network(sp=sp)
 #' plot(Gulk_UTM5)
 #' 
 #' ## Re-projecting in Alaska Albers Equal Area projection:
@@ -145,11 +154,24 @@ calculateconnections <- function(lines,tolerance) {
 #' plot(Gulk_AKalbers)
 #' 
 #' @export
-line2network <- function(sp = NA, path=".", layer = NA, tolerance=100, 
+line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100, 
                          reproject=NULL, supplyprojection=NULL) {
   
-  if(suppressWarnings(is.na(sp))){
-    sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))   }
+  if(suppressWarnings(is.na(sp) & all(is.na(sf)))) {
+    # sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))  
+    ## read to sf here
+    sf <- sf::read_sf(dsn = path, layer = layer)
+  }
+  
+  if(suppressWarnings(is.na(sp))) {
+    ## convert sf to sp
+    sp <- sf::as_Spatial(sf::st_zm(sf))
+  }
+  
+  if(suppressWarnings(all(is.na(sf)))) {
+    ## convert sp to sf
+    sf <- as(sp, "sf")
+  }
   
   if(class(sp)!="SpatialLinesDataFrame"){ 
     stop("Specified shapefile is not a linear feature.")
@@ -164,11 +186,17 @@ line2network <- function(sp = NA, path=".", layer = NA, tolerance=100,
   }
     
   proj4 <- strsplit(sp@proj4string@projargs,split=" ")
-  projected <- sp::is.projected(sp)
+  
+  # projected <- sp::is.projected(sp)
+  projected <- !sf::st_is_longlat(sf)
+  
   if(is.null(reproject) & !projected) stop("Distances can only be computed from a projected coordinate system.  Use reproject= to specify a Proj.4 projection to use.")
   
   if(!is.null(reproject)) {
-    sp <- sp::spTransform(sp,sp::CRS(reproject))
+    # sp <- sp::spTransform(sp,sp::CRS(reproject))
+    sf <- sf::st_transform(sf, crs=reproject)
+    sp <- sf::as_Spatial(sf::st_zm(sf))
+    
     proj4 <- strsplit(sp@proj4string@projargs,split=" ")
   }
   
@@ -241,7 +269,7 @@ line2network <- function(sp = NA, path=".", layer = NA, tolerance=100,
   }
   
   out.names <- c("sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
-  out <- list(sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
+  out <- list(sf,sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
   names(out) <- out.names
   class(out) <- "rivernetwork"
   

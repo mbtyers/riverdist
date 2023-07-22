@@ -5,6 +5,7 @@
 \title{Create a River Network Object from a Shapefile}
 \usage{
 line2network(
+  sf = NA,
   sp = NA,
   path = ".",
   layer = NA,
@@ -14,7 +15,9 @@ line2network(
 )
 }
 \arguments{
-\item{sp}{SpatialLinesDataFrame object. optional.}
+\item{sf}{Input as an \link[sf]{sf} object. Optional.}
+
+\item{sp}{Input as a \link[sp]{SpatialLinesDataFrame} object. Optional.}
 
 \item{path}{File path, default is the current working directory.}
 
@@ -25,17 +28,18 @@ connectivity.  Default is 100, therefore care should be exercised when
 working with larger units of distance, such as km.}
 
 \item{reproject}{A valid Proj.4 projection string, if the shapefile is to be 
-re-projected.  Re-projection is done using \link[sp]{spTransform} in 
-package 'sp'.}
+re-projected.  Re-projection is done using \link[sf]{st_transform} in 
+package 'sf'.}
 
-\item{supplyprojection}{A valid Proj.4 projection string, if the input shapefile does not have the projection information attached.}
+\item{supplyprojection}{A valid Proj.4 projection string, if the input 
+shapefile does not have the projection information attached.}
 }
 \value{
 Returns an object of class \code{"rivernetwork"} containing all
   spatial and topological information.  See \link{rivernetwork-class}.
 }
 \description{
-Uses \link[rgdal]{readOGR} in package 'rgdal' to read a river 
+Uses \link[sf]{read_sf} in package 'sf' to read a river 
   shapefile, and establishes connectivity of segment endpoints based on 
   spatial proximity.
 }
@@ -52,10 +56,16 @@ filepath <- system.file("extdata", package="riverdist")
 Gulk_UTM5 <- line2network(path=filepath, layer="Gulk_UTM5")
 plot(Gulk_UTM5)
 
+## Reading directly from an sf object
+
+sf <- sf::read_sf(dsn = filepath, layer = "Gulk_UTM5")
+Gulk_UTM5 <- line2network(sf=sf)
+plot(Gulk_UTM5)
+
 ## Reading directly from a SpatialLinesDataFrame object
 
 sp <- rgdal::readOGR(dsn = filepath, layer = "Gulk_UTM5", verbose = FALSE)
-Gulk_UTM5 <- line2network(sp)
+Gulk_UTM5 <- line2network(sp=sp)
 plot(Gulk_UTM5)
 
 ## Re-projecting in Alaska Albers Equal Area projection:
@@ -68,5 +78,5 @@ plot(Gulk_AKalbers)
 
 }
 \author{
-Matt Tyers, Joseph Stachelek
+Matt Tyers, Jemma Stachelek
 }

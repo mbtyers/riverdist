@@ -399,13 +399,14 @@ test_that("cleanup funcs",{
 })
 
 filepath <- system.file("extdata", package="riverdist")
-sp <- suppressWarnings(rgdal::readOGR(dsn = filepath, 
-                                      layer = "Gulk_UTM5", 
-                                      verbose = FALSE))
+# sp <- suppressWarnings(rgdal::readOGR(dsn = filepath, 
+#                                       layer = "Gulk_UTM5", 
+#                                       verbose = FALSE))
+sf <- sf::read_sf(dsn = filepath, layer = "Gulk_UTM5")
 ptshp <- pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)
 test_that("line2network and pointshp2segvert works", {
   expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
-  expect_equal(length(line2network(sp)$lines), 14)
+  expect_equal(length(line2network(sf=sf)$lines), 14)
   expect_equal(dim(ptshp),c(100,8))
   expect_equal(sum(ptshp[,1:2]),27095)
 }) 

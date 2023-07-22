@@ -300,10 +300,10 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
 #' @note If the input shapefile is detected to be in a different projection than
 #'   the river network, the input shapefile will be re-projected before
 #'   conversion to river locations.
-#' @importFrom rgdal readOGR
-#' @importFrom sp proj4string
-#' @importFrom sp CRS
-#' @importFrom sp spTransform
+#' @importFrom sf read_sf
+#' @importFrom sf st_coordinates
+#' @importFrom sf st_drop_geometry
+#' @importFrom sf st_transform
 #' @examples 
 #' filepath <- system.file("extdata", package="riverdist")
 #' 
@@ -316,14 +316,18 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
 #' 
 #' @export
 pointshp2segvert <- function(path=".",layer,rivers) {
-  shp <- rgdal::readOGR(dsn=path,layer=layer,pointDropZ=TRUE)
-  if(sp::proj4string(shp) != sp::proj4string(rivers$sp)) {
+  # shp <- rgdal::readOGR(dsn=path,layer=layer,pointDropZ=TRUE)
+  shp <- sf::read_sf(dsn=path,layer=layer)
+  # if(sf::st_crs(shp)$proj4string != sf::st_crs(as(rivers$sp,"sf"))$proj4string) {
+  if(sf::st_crs(shp)$proj4string != rivers$sp@proj4string@projargs) {
     cat('\n',"Point projection detected as different from river network.  Re-projecting points before snapping to river network...")
-    projection <- sp::CRS(sp::proj4string(rivers$sp))
-    shp <- sp::spTransform(shp,projection) ##
+    projection <- rivers$sp@proj4string@projargs
+    shp <- sf::st_transform(shp, crs=projection) ##
   }
-  segvert <- xy2segvert(x=shp@coords[,1],y=shp@coords[,2],rivers=rivers)
-  outdf <- cbind(segvert,shp@data)
+  # segvert <- xy2segvert(x=shp@coords[,1],y=shp@coords[,2],rivers=rivers)
+  coords <- sf::st_coordinates(shp)
+  segvert <- xy2segvert(x=coords[,1],y=coords[,2],rivers=rivers)
+  outdf <- cbind(segvert, sf::st_drop_geometry(shp))
   return(outdf)
 }
 

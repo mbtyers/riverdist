@@ -32,7 +32,7 @@
 #' plotseq(seqbysurvey)
 #' @export
 riverdistanceseq <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
   unique<-unique[logical]
@@ -159,7 +159,7 @@ riverdistancematbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=TR
 #' riverdistancemat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 #' @export
 riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
   len <- length(vert)
@@ -222,7 +222,7 @@ riverdistancemat <- function(seg,vert,rivers,logical=NULL,ID=NULL,stopiferror=TR
 homerange <- function (unique=NULL, survey=NULL, seg, vert, rivers, map = FALSE, algorithm = NULL, 
                         main = NULL, ...) 
 {
-  if (class(rivers) != "rivernetwork") 
+  if (!inherits(rivers, "rivernetwork")) 
     stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(unique)) unique <- rep(1,length(seg))
   if ((length(unique) != length(seg)) | (length(seg) != length(vert))) 
@@ -441,7 +441,7 @@ homerange <- function (unique=NULL, survey=NULL, seg, vert, rivers, map = FALSE,
 
 
 # homerange <- function(unique=NULL,seg,vert,rivers,map=FALSE,algorithm=NULL,main=NULL,...) {
-#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
 #   if(is.null(unique)) unique <- rep(1,length(seg))
 #   if((length(unique)!=length(seg))|(length(seg)!=length(vert))) stop("Input vectors must be the same length.")
 #   ID <- sort(unique(unique))
@@ -697,7 +697,7 @@ plot.homerange <- function(x,cumulative=FALSE,lwd=3,maxlwd=10,col=4,pch=21,label
 #' with(fakefish, riverpoints(seg=seg, vert=vert, rivers=Gulk))
 #' @export
 homerangeoverlap <- function(x) {
-  if(class(x)!="homerange") stop("Input must be of class homerange.  See help(homerange) or help(homerange-class) for more details.")
+  if(!inherits(x, "homerange")) stop("Input must be of class homerange.  See help(homerange) or help(homerange-class) for more details.")
   n <- length(x$subseg_n)
   either <- both <- matrix(0,nrow=n,ncol=n)
   for(i in 1:n) {

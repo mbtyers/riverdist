@@ -14,7 +14,7 @@
 #' @importFrom methods new
 #' @export
 dissolve <- function(rivers) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   tolerance <- rivers$tolerance
   lines <- rivers$lines
   connections <- rivers$connections
@@ -182,7 +182,7 @@ dissolve <- function(rivers) {
 #' @importFrom graphics plot
 #' @export
 zoomtoseg <- function(seg,rivers,...) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(max(seg,na.rm=T)>length(rivers$lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
   coords <- rivers$lines[[seg[1]]]
   if(length(seg)>1) {

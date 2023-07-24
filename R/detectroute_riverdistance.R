@@ -39,7 +39,7 @@
 #' tend - tstart
 #' @export
 detectroute <- function(start,end,rivers,verbose=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   
   if(start==end) return(start)
   

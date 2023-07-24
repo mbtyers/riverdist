@@ -67,7 +67,7 @@ isflowconnected <- function(seg1,seg2,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' @seealso \link{setmouth}
 #' @export
 riverdirection <- function(startseg,endseg,startvert,endvert,rivers,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
     stop("Invalid segments specified.")
   }
@@ -145,7 +145,7 @@ riverdirection <- function(startseg,endseg,startvert,endvert,rivers,flowconnecte
 #' @seealso \link{setmouth}
 #' @export
 upstream <- function(startseg,endseg,startvert,endvert,rivers,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(max(c(startseg,endseg),na.rm=T)>length(rivers$lines) | min(c(startseg,endseg),na.rm=T)<1) {
     stop("Invalid segments specified.")
   }
@@ -222,7 +222,7 @@ upstream <- function(startseg,endseg,startvert,endvert,rivers,flowconnected=FALS
 #'    vert=fakefish$vert, rivers=Gulk)
 #' @export
 riverdirectionseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
   unique<-unique[logical]
@@ -362,7 +362,7 @@ riverdirectionmatbysurvey <- function(indiv,unique,survey,seg,vert,rivers,full=T
 #' riverdirectionmat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 #' @export
 riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
   len <- length(vert)
@@ -428,7 +428,7 @@ riverdirectionmat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected
 #' plotseq(seqbysurvey)
 #' @export
 upstreamseq <- function(unique,survey,seg,vert,rivers,logical=NULL,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
   unique<-unique[logical]
@@ -750,7 +750,7 @@ plotmatbysurveylist <- function(matbysurveylist,type="boxplot",showN=TRUE,...) {
 #' upstreammat(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, logical=logi1)
 #' @export
 upstreammat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected=FALSE,net=FALSE,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
   len <- length(vert)
@@ -798,7 +798,7 @@ upstreammat <- function(seg,vert,rivers,logical=NULL,ID=NULL,flowconnected=FALSE
 #' mouthdist(seg=c(4,5), vert=c(40,20), rivers=Gulk)
 #' @export
 mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(any(is.na(seg)) | max(seg)>length(rivers$lines) | min(seg)<1) {
     stop("Invalid segments specified.")
   }
@@ -861,7 +861,7 @@ mouthdist <- function(seg,vert,rivers,stopiferror=TRUE,algorithm=NULL) {
 #' plotseq(seqbysurvey)
 #' @export
 mouthdistbysurvey <- function(unique,survey,seg,vert,rivers,logical=NULL,stopiferror=TRUE,algorithm=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(logical)) logical <- rep(T,length(unique))
   
   unique<-unique[logical]

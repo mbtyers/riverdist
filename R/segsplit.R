@@ -1,5 +1,5 @@
 # splitsegments <- function(rivers,tolerance=NULL) {
-#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
 #   lines <- rivers$lines
 #   if(is.null(tolerance)) tolerance <- rivers$tolerance
 #   
@@ -153,7 +153,7 @@
 #'@export
 splitsegments <- function(rivers,tolerance=NULL,splitthese=NULL,splitthemat=NULL,one2one=FALSE,append=FALSE) {
   
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- rivers$lines
   
   if(is.null(splitthese)) splitthese <- 1:length(lines)   ##############

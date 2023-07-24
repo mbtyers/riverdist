@@ -173,7 +173,7 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
     sf <- as(sp, "sf")
   }
   
-  if(class(sp)!="SpatialLinesDataFrame"){ 
+  if(!inherits(sp, "SpatialLinesDataFrame")) { 
     stop("Specified shapefile is not a linear feature.")
   }
   
@@ -268,7 +268,7 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
     cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
   }
   
-  out.names <- c("sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
+  out.names <- c("sf","sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
   out <- list(sf,sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
   names(out) <- out.names
   class(out) <- "rivernetwork"
@@ -365,7 +365,7 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #' @importFrom graphics axTicks
 #' @export
 plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,linecol=1,xlab="",ylab="",...) {
-  if(class(x)!="rivernetwork") stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(x, "rivernetwork")) stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- x$lines
   length <- length(lines)
   allx <- unlist(lapply(lines,FUN='[',TRUE,1))
@@ -491,7 +491,7 @@ scalebar <- function(rivers,cex=.6) {
 
 # plotrivernetwork_OLD <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
 #   rivers <- x
-#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
 #   lines <- rivers$lines
 #   length <- length(lines)
 #   xmin <- min(lines[[1]][,1])
@@ -561,7 +561,7 @@ scalebar <- function(rivers,cex=.6) {
 
 
 plotrivernetwork2 <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
-  if(class(x)!="rivernetwork") stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(x, "rivernetwork")) stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- x$lines
   length <- length(lines)
   allx <- unlist(lapply(lines,FUN='[',TRUE,1))
@@ -697,7 +697,7 @@ highlightseg <- function(seg,rivers,cex=0.8,lwd=3,add=FALSE,color=FALSE,...) {
 #' @importFrom graphics points
 #' @export
 topologydots <- function(rivers,add=FALSE,...) {
-  # if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  # if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   # if(!add) plot(rivers,color=F,...=...)
   # connections <- rivers$connections
   # lines <- rivers$lines
@@ -711,7 +711,7 @@ topologydots <- function(rivers,add=FALSE,...) {
   #   points(lines[[i]][dim(lines[[i]])[1],1],
   #          lines[[i]][dim(lines[[i]])[1],2],pch=16,col=high)
   # }
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(!add) plot(rivers,color=F,...=...)
   connections <- rivers$connections
   lines <- rivers$lines
@@ -792,7 +792,7 @@ whoconnected <- function(seg,rivers) {
 #' points(line98albers)
 #' @export
 xy2segvert <- function(x,y,rivers) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
   
   lengthlength <- length(unlist(lines))/2
@@ -823,7 +823,7 @@ xy2segvert <- function(x,y,rivers) {
 
 # 
 # xy2segvert_OLD <- function(x,y,rivers) {
-#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
 #   if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
 #   seg <- rep(NA,length(x))
 #   vert <- rep(NA,length(x))
@@ -890,7 +890,7 @@ xy2segvert <- function(x,y,rivers) {
 #' @importFrom stats runif
 #' @export
 riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- rivers$lines
   if(max(seg,na.rm=T)>length(lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
   
@@ -907,7 +907,7 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
 }
 
 # riverpoints_OLD <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
-#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
 #   if(length(pch)==1) pch <- rep(pch,length(seg))
 #   if(length(col)==1) col <- rep(col,length(seg))
 #   lines <- rivers$lines
@@ -959,7 +959,7 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
 #' plot(x=Kenai1.trim.2)
 #' @export
 trimriver <- function(trim=NULL,trimto=NULL,rivers) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   segs <- 1:length(rivers$lines)
   if(!is.null(trim) & !is.null(trimto)) {
     stop("Error - cannot use both trim and trimto arguments")
@@ -1072,7 +1072,7 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
 #' points(x, y, pch=15, col=4)
 #' @export
 trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(is.null(dist)) dist <- max(c(max(x)-min(x)),c(max(y)-min(y)))
   
   if(method=="buffer") {

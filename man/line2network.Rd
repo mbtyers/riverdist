@@ -5,8 +5,8 @@
 \title{Create a River Network Object from a Shapefile}
 \usage{
 line2network(
-  sf = NA,
-  sp = NA,
+  sf = NULL,
+  sp = NULL,
   path = ".",
   layer = NA,
   tolerance = 100,
@@ -60,12 +60,6 @@ plot(Gulk_UTM5)
 
 sf <- sf::read_sf(dsn = filepath, layer = "Gulk_UTM5")
 Gulk_UTM5 <- line2network(sf=sf)
-plot(Gulk_UTM5)
-
-## Reading directly from a SpatialLinesDataFrame object
-
-sp <- rgdal::readOGR(dsn = filepath, layer = "Gulk_UTM5", verbose = FALSE)
-Gulk_UTM5 <- line2network(sp=sp)
 plot(Gulk_UTM5)
 
 ## Re-projecting in Alaska Albers Equal Area projection:

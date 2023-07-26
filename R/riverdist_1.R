@@ -139,12 +139,6 @@ calculateconnections <- function(lines,tolerance) {
 #' Gulk_UTM5 <- line2network(sf=sf)
 #' plot(Gulk_UTM5)
 #' 
-#' ## Reading directly from a SpatialLinesDataFrame object
-#' 
-#' sp <- rgdal::readOGR(dsn = filepath, layer = "Gulk_UTM5", verbose = FALSE)
-#' Gulk_UTM5 <- line2network(sp=sp)
-#' plot(Gulk_UTM5)
-#' 
 #' ## Re-projecting in Alaska Albers Equal Area projection:
 #' 
 #' AKalbers <- "+proj=aea +lat_1=55 +lat_2=65 +lat_0=50 +lon_0=-154 
@@ -154,38 +148,56 @@ calculateconnections <- function(lines,tolerance) {
 #' plot(Gulk_AKalbers)
 #' 
 #' @export
-line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100, 
+line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=100, 
                          reproject=NULL, supplyprojection=NULL) {
   
-  if(suppressWarnings(is.na(sp) & all(is.na(sf)))) {
+  # if(suppressWarnings(is.na(sp) & all(is.na(sf)))) {
+  #   # sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))  
+  #   ## read to sf here
+  #   sf <- sf::read_sf(dsn = path, layer = layer)
+  # }
+  # 
+  # if(suppressWarnings(is.na(sp))) {
+  #   ## convert sf to sp
+  #   sp <- sf::as_Spatial(sf::st_zm(sf))
+  # }
+  # 
+  # if(suppressWarnings(all(is.na(sf)))) {
+  #   ## convert sp to sf
+  #   sf <- as(sp, "sf")
+  # }
+  # 
+  # if(!inherits(sp, "SpatialLinesDataFrame")) { 
+  #   stop("Specified shapefile is not a linear feature.")
+  # }
+  
+  if(is.null(sf)) {
     # sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))  
     ## read to sf here
     sf <- sf::read_sf(dsn = path, layer = layer)
   }
   
-  if(suppressWarnings(is.na(sp))) {
-    ## convert sf to sp
-    sp <- sf::as_Spatial(sf::st_zm(sf))
+  ###### NEED AN APPROPRIATE CHECK HERE
+  # if(!inherits(sp, "SpatialLinesDataFrame")) { 
+  #   stop("Specified shapefile is not a linear feature.")
+  # }
+  
+  projargs <- sf::st_crs(sf)$proj4string
+  
+  # if(is.na(sp@proj4string@projargs) & !is.null(supplyprojection)){ 
+  #   sp@proj4string@projargs <- supplyprojection
+  # }
+  if(is.na(projargs) & !is.null(supplyprojection)){ 
+    projargs <- supplyprojection
   }
   
-  if(suppressWarnings(all(is.na(sf)))) {
-    ## convert sp to sf
-    sf <- as(sp, "sf")
-  }
-  
-  if(!inherits(sp, "SpatialLinesDataFrame")) { 
-    stop("Specified shapefile is not a linear feature.")
-  }
-  
-  if(is.na(sp@proj4string@projargs) & !is.null(supplyprojection)){ 
-    sp@proj4string@projargs <- supplyprojection
-  }
-    
-  if(is.na(sp@proj4string@projargs)){ 
+  # if(is.na(sp@proj4string@projargs)){
+  if(is.na(projargs)){ 
     stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 (in double-quotes).  If so, it must also be reprojected using reproject=.")
   }
-    
-  proj4 <- strsplit(sp@proj4string@projargs,split=" ")
+  
+  # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
+  proj4 <- strsplit(projargs,split=" ")
   
   # projected <- sp::is.projected(sp)
   projected <- !sf::st_is_longlat(sf)
@@ -197,7 +209,8 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
     sf <- sf::st_transform(sf, crs=reproject)
     sp <- sf::as_Spatial(sf::st_zm(sf))
     
-    proj4 <- strsplit(sp@proj4string@projargs,split=" ")
+    # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
+    proj4 <- strsplit(projargs,split=" ")
   }
   
   units <- "unknown"
@@ -210,31 +223,62 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
       }
     }
   }
+  # ## here i am
+  # if(length(sp@lines) > 1) {
+  #   sp_line <- NA
+  #   sp_seg <- NA
+  #   lines <- list()
+  #   j<-1
+  #   for(i in 1:length(sp@lines)) {
+  #     for(k in 1:length(sp@lines[i][[1]]@Lines)) {
+  #       lines[[j]] <- sp@lines[i][[1]]@Lines[[k]]@coords
+  #       sp_line[j] <- i
+  #       sp_seg[j] <- k
+  #       j<-j+1
+  #     }
+  #   }
+  # }
+  # if(length(sp@lines) == 1) {
+  #   lines <- sp@lines[1][[1]]@Lines    # extracting just a list of lines and coordinates
+  #   
+  #   length <- length(lines) # number of line segments
+  #   
+  #   lines.new <- list()
+  #   for(i in 1:length) {
+  #     lines.new[[i]] <- lines[[i]]@coords
+  #   }
+  #   lines <- lines.new 
+  #   sp_line <- rep(1,length)
+  #   sp_seg <- 1:length
+  # }
   
-  if(length(sp@lines) > 1) {
+  ## here i am
+  if(length(sf$geometry) > 1) {
+    # sp@lines becomes sf$geometry
+    # sp@lines[i][[1]]@Lines becomes sf$geometry[[i]]
     sp_line <- NA
     sp_seg <- NA
     lines <- list()
     j<-1
-    for(i in 1:length(sp@lines)) {
-      for(k in 1:length(sp@lines[i][[1]]@Lines)) {
-        lines[[j]] <- sp@lines[i][[1]]@Lines[[k]]@coords
+    for(i in 1:length(sf$geometry)) {
+      for(k in 1:length(sf$geometry[[i]])) {
+        lines[[j]] <- sf$geometry[[i]][[k]][,1:2]
         sp_line[j] <- i
         sp_seg[j] <- k
         j<-j+1
       }
     }
   }
-  if(length(sp@lines) == 1) {
-    lines <- sp@lines[1][[1]]@Lines    # extracting just a list of lines and coordinates
+  if(length(sf$geometry) == 1) {
+    lines <- lapply(sf$geometry[[1]], function(x) x[,1:2])  
     
     length <- length(lines) # number of line segments
     
-    lines.new <- list()
-    for(i in 1:length) {
-      lines.new[[i]] <- lines[[i]]@coords
-    }
-    lines <- lines.new 
+    # lines.new <- list()
+    # for(i in 1:length) {
+    #   lines.new[[i]] <- lines[[i]]@coords
+    # }
+    # lines <- lines.new 
     sp_line <- rep(1,length)
     sp_seg <- 1:length
   }
@@ -268,18 +312,21 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
     cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
   }
   
-  out.names <- c("sf","sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
-  out <- list(sf,sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
-  names(out) <- out.names
+  # out.names <- c("sf","sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
+  # out <- list(sf,sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
+  # names(out) <- out.names
+  out <- list(sf=sf, sp=sp, lineID=lineID, lines=lines, connections=connections, lengths=lengths, names=names, mouth=mouth,
+              sequenced=sequenced, tolerance=tolerance, units=units, braided=braided, cumuldist=cumuldist)
   class(out) <- "rivernetwork"
   
-  length1 <- length(out$lengths)
-  suppressMessages(out <- removeduplicates(out))
-  length2 <- length(out$lengths)
-  if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
-  suppressMessages(out <- removemicrosegs(out))
-  length3 <- length(out$lengths)
-  if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
+  # TURN THIS BACK ON AFTER FIXING trimriver()
+  # length1 <- length(out$lengths)
+  # suppressMessages(out <- removeduplicates(out))
+  # length2 <- length(out$lengths)
+  # if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
+  # suppressMessages(out <- removemicrosegs(out))
+  # length3 <- length(out$lengths)
+  # if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
   
   return(out)
 }
@@ -316,12 +363,15 @@ line2network <- function(sf = NA, sp = NA, path=".", layer = NA, tolerance=100,
 #' 
 #' @export
 pointshp2segvert <- function(path=".",layer,rivers) {
+  rivers <- sp2sf(rivers)
   # shp <- rgdal::readOGR(dsn=path,layer=layer,pointDropZ=TRUE)
   shp <- sf::read_sf(dsn=path,layer=layer)
   # if(sf::st_crs(shp)$proj4string != sf::st_crs(as(rivers$sp,"sf"))$proj4string) {
-  if(sf::st_crs(shp)$proj4string != rivers$sp@proj4string@projargs) {
-    cat('\n',"Point projection detected as different from river network.  Re-projecting points before snapping to river network...")
-    projection <- rivers$sp@proj4string@projargs
+  # if(sf::st_crs(shp)$proj4string != rivers$sp@proj4string@projargs) {
+  if(sf::st_crs(shp)$proj4string != sf::st_crs(rivers$sf)$proj4string) {
+    message('\n',"Point projection detected as different from river network.  Re-projecting points before snapping to river network...")
+    # projection <- rivers$sp@proj4string@projargs
+    projection <- sf::st_crs(rivers$sf)$proj4string
     shp <- sf::st_transform(shp, crs=projection) ##
   }
   # segvert <- xy2segvert(x=shp@coords[,1],y=shp@coords[,2],rivers=rivers)
@@ -329,6 +379,22 @@ pointshp2segvert <- function(path=".",layer,rivers) {
   segvert <- xy2segvert(x=coords[,1],y=coords[,2],rivers=rivers)
   outdf <- cbind(segvert, sf::st_drop_geometry(shp))
   return(outdf)
+}
+
+
+#' @importFrom methods as
+sp2sf <- function(rivers, keep_sp=FALSE) {
+  if(!is.null(rivers$sp)) {
+    message('\n',"River network retains old-style dependency on sp package.")
+    if(is.null(rivers$sf)) {
+      rivers$sf <- as(rivers$sp, "sf")
+      message('\n',"Converting to updated sf package...")
+    }
+    if(!keep_sp) {
+      rivers$sp <- NULL
+    }
+  }
+  return(rivers)
 }
 
 
@@ -1025,6 +1091,59 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
     trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
   }
+  
+  ## updating sf object
+  sf1 <- rivers$sf
+  trimid <- rivers$lineID[segs,]
+  
+  # updating geometry
+  # geom1 <- sf1$geometry[unique(trimid$sp_line)]  # first selecting elements
+  # for(i in unique(trimid$sp_line)) {
+  #   geom1[[i]] <- geom1[[i]][trimid$sp_seg[trimid$sp_line==i]]  # then selecting sub-elements
+  # }
+  geom1 <- sf1$geometry
+  for(i in unique(trimid$sp_line)) {  # sub-elements first
+    geom1[[i]] <- geom1[[i]][trimid$sp_seg[trimid$sp_line==i]]  
+    
+    ### this structure doesn't work with LINESTRINGS!!
+    ### Kenai1 as opposed to Koyukuk0
+    
+  }
+  geom2 <- geom1[unique(trimid$sp_line)]  # then full elements
+  
+  # updating data
+  data1 <- sf::st_drop_geometry(sf1)[segs,]
+  
+  # constructing new sf object!
+  trimmed.rivers$sf <- sf::st_sf(data1, geometry=geom2)
+  
+  
+  # id <- rivers$lineID
+  # sf_geom1 <- rivers$sf$geometry[unique(id[segs,2])]   
+  # j<-1
+  # for(i in unique(id[segs,2])) {
+  #   sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[segs,3][id[segs,2]==i]]
+  #   j<-j+1
+  # }
+  rivID <- NA
+  sp_line <- NA
+  sp_seg <- NA
+  k<-1
+  for(i in 1:length(geom1)) {
+    for(j in 1:length(geom1[[i]])) {
+      sp_line[k] <- i
+      sp_seg[k] <- j
+      k<-k+1
+    }
+  }
+  rivID <- 1:(k-1)
+  lineID <- data.frame(rivID,sp_line,sp_seg)
+  trimmed.rivers$lineID <- lineID
+  trimmed.rivers$sp@lines <- sp_lines1
+  if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
+    trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
+  }
+  
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(trimmed.rivers)
 }

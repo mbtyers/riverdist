@@ -258,7 +258,7 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
   # }
   
   ## here i am
-  if(length(sf$geometry) > 1) {
+  # if(length(sf$geometry) > 1) {   ### I think we no longer need this condition!
     # sp@lines becomes sf$geometry
     # sp@lines[i][[1]]@Lines becomes sf$geometry[[i]]
     sp_line <- NA
@@ -281,20 +281,20 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
         }
       }
     }
-  }
-  if(length(sf$geometry) == 1) {
-    lines <- lapply(sf$geometry[[1]], function(x) x[,1:2])  
-    
-    length <- length(lines) # number of line segments
-    
-    # lines.new <- list()
-    # for(i in 1:length) {
-    #   lines.new[[i]] <- lines[[i]]@coords
-    # }
-    # lines <- lines.new 
-    sp_line <- rep(1,length)
-    sp_seg <- 1:length
-  }
+  # }
+  # if(length(sf$geometry) == 1) {   ########### this is probably wrong
+  #   lines <- lapply(sf$geometry[[1]], function(x) x[,1:2])  
+  #   
+  #   length <- length(lines) # number of line segments
+  #   
+  #   # lines.new <- list()
+  #   # for(i in 1:length) {
+  #   #   lines.new[[i]] <- lines[[i]]@coords
+  #   # }
+  #   # lines <- lines.new 
+  #   sp_line <- rep(1,length)
+  #   sp_seg <- 1:length
+  # }
   length <- length(lines)
   
   rivID <- 1:length
@@ -1018,6 +1018,16 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
 
 
 
+update_sf <- function(rivers) {
+  sfold <- rivers$sf
+  sfnew <- sfold # to grab the projection information, etc
+  sf::st_geometry(sfnew) <- sf::st_sfc(sf::st_multilinestring(rivers$lines))
+  sf::st_crs(sfnew) <- sf::st_crs(sfold)
+  rivers$sf_current <- sfnew
+}
+
+
+
 #' Trim a River Network Object to Specified Segments
 #' @description Removes line segments from a river network object.  User can specify which segments to remove (\code{trim}) or which segments to keep (\code{trimto}).
 #' @param trim Vector of line segments to remove
@@ -1078,32 +1088,32 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   }
   trimmed.rivers <- addcumuldist(trimmed.rivers)
   
-  # updating sp object
-  id <- rivers$lineID
-  sp_lines1 <- rivers$sp@lines[unique(id[segs,2])]   
-  j<-1
-  for(i in unique(id[segs,2])) {
-    sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[segs,3][id[segs,2]==i]]
-    j<-j+1
-  }
-  rivID <- NA
-  sp_line <- NA
-  sp_seg <- NA
-  k<-1
-  for(i in 1:length(sp_lines1)) {
-    for(j in 1:length(sp_lines1[[i]]@Lines)) {
-      sp_line[k] <- i
-      sp_seg[k] <- j
-      k<-k+1
-    }
-  }
-  rivID <- 1:(k-1)
-  lineID <- data.frame(rivID,sp_line,sp_seg)
-  trimmed.rivers$lineID <- lineID
-  trimmed.rivers$sp@lines <- sp_lines1
-  if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
-    trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
-  }
+  # # updating sp object
+  # id <- rivers$lineID
+  # sp_lines1 <- rivers$sp@lines[unique(id[segs,2])]   
+  # j<-1
+  # for(i in unique(id[segs,2])) {
+  #   sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[segs,3][id[segs,2]==i]]
+  #   j<-j+1
+  # }
+  # rivID <- NA
+  # sp_line <- NA
+  # sp_seg <- NA
+  # k<-1
+  # for(i in 1:length(sp_lines1)) {
+  #   for(j in 1:length(sp_lines1[[i]]@Lines)) {
+  #     sp_line[k] <- i
+  #     sp_seg[k] <- j
+  #     k<-k+1
+  #   }
+  # }
+  # rivID <- 1:(k-1)
+  # lineID <- data.frame(rivID,sp_line,sp_seg)
+  # trimmed.rivers$lineID <- lineID
+  # trimmed.rivers$sp@lines <- sp_lines1
+  # if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
+  #   trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
+  # }
   
   # ## updating sf object
   # if(is.null(rivers$sf)) rivers$sf <- as(rivers$sp, "sf") ### take this out!!!
@@ -1152,10 +1162,12 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   rivID <- 1:(k-1)
   lineID <- data.frame(rivID,sp_line,sp_seg)
   trimmed.rivers$lineID <- lineID
-  trimmed.rivers$sp@lines <- sp_lines1
-  if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
-    trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
-  }
+  # trimmed.rivers$sp@lines <- sp_lines1
+  # if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
+  #   trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
+  # }
+  
+  trimmed.rivers$sf_current <- update_sf(trimmed.rivers)
   
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(trimmed.rivers)

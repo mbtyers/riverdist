@@ -725,7 +725,7 @@ connectsegs <- function(connect,connectto,nearestvert=TRUE,rivers,calcconnection
         rivers$lines[[connect[ientry]]] <- rbind(rivers$lines[[connect[ientry]]],rivers$lines[[connectto[ientry]]][l2,])
       }
       
-      rivers$sp@lines[[rivers$lineID[connect[ientry],2]]]@Lines[[rivers$lineID[connect[ientry],3]]]@coords <- rivers$lines[[connect[ientry]]]
+      # rivers$sp@lines[[rivers$lineID[connect[ientry],2]]]@Lines[[rivers$lineID[connect[ientry],3]]]@coords <- rivers$lines[[connect[ientry]]]
       rivers$lengths[[connect[ientry]]] <- rivers$lengths[[connect[ientry]]]+min(dists)
       
     }
@@ -754,7 +754,7 @@ connectsegs <- function(connect,connectto,nearestvert=TRUE,rivers,calcconnection
         rivers$lines[[connect[ientry]]] <- rbind(rivers$lines[[connect[ientry]]],rivers$lines[[connectto[ientry]]][whichend,])
       }
       
-      rivers$sp@lines[[rivers$lineID[connect[ientry],2]]]@Lines[[rivers$lineID[connect[ientry],3]]]@coords <- rivers$lines[[connect[ientry]]]
+      # rivers$sp@lines[[rivers$lineID[connect[ientry],2]]]@Lines[[rivers$lineID[connect[ientry],3]]]@coords <- rivers$lines[[connect[ientry]]]
       rivers$lengths[[connect[ientry]]] <- rivers$lengths[[connect[ientry]]]+min(c(dbeg,dend))
       
     }
@@ -773,6 +773,8 @@ connectsegs <- function(connect,connectto,nearestvert=TRUE,rivers,calcconnection
   }
   rivers <- addcumuldist(rivers)
   if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
+  
+  rivers <- update_sf(rivers)
   
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers)
@@ -863,8 +865,8 @@ addverts <- function(rivers,mindist=500) {
       lines[[segi]] <- unname(seginew)
     }
     
-    # updating the sp object!
-    rivers1$sp@lines[[rivers$lineID[segi,2]]]@Lines[[rivers$lineID[segi,3]]]@coords <- unname(seginew)
+    # # updating the sp object!
+    # rivers1$sp@lines[[rivers$lineID[segi,2]]]@Lines[[rivers$lineID[segi,3]]]@coords <- unname(seginew)
   }
    
   rivers1$lines <- lines
@@ -884,6 +886,8 @@ addverts <- function(rivers,mindist=500) {
   }
   rivers1 <- addcumuldist(rivers1)
   if(!is.null(rivers1$distlookup)) rivers1 <- buildlookup(rivers1)
+  
+  rivers1 <- update_sf(rivers1)
   
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)

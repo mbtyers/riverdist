@@ -164,7 +164,7 @@ sequenceverts <- function(rivers) {
         temp[j,] <- rivers$lines[[i]][(seg.length-j+1),]
       }
       rivers$lines[[i]] <- temp
-      rivers$sp@lines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- temp
+      # rivers$sp@lines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- temp
       if(i==rivers$mouth$mouth.seg) rivers$mouth$mouth.vert<- 1
     }
   } 
@@ -199,5 +199,6 @@ sequenceverts <- function(rivers) {
   rivers$connections <- connections
   rivers$sequenced <- TRUE
   rivers <- addcumuldist(rivers)
+  rivers <- update_sf(rivers)
   return(rivers) 
 }

@@ -148,7 +148,7 @@ calculateconnections <- function(lines,tolerance) {
 #' plot(Gulk_AKalbers)
 #' 
 #' @export
-line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=100, 
+line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100, 
                          reproject=NULL, supplyprojection=NULL) {
   
   # if(suppressWarnings(is.na(sp) & all(is.na(sf)))) {
@@ -261,22 +261,22 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
   # if(length(sf$geometry) > 1) {   ### I think we no longer need this condition!
     # sp@lines becomes sf$geometry
     # sp@lines[i][[1]]@Lines becomes sf$geometry[[i]]
-    sp_line <- NA
-    sp_seg <- NA
+    # sp_line <- NA
+    # sp_seg <- NA
     lines <- list()
     j<-1
     for(i in 1:length(sf$geometry)) {
       if(sf::st_geometry_type(sf$geometry[[i]]) == "LINESTRING") {
         lines[[j]] <- sf$geometry[[i]][,1:2]
-        sp_line[j] <- i #fix this!!!
-        sp_seg[j] <- NA #fix this!!
+        # sp_line[j] <- i #fix this!!!
+        # sp_seg[j] <- NA #fix this!!
         j <- j+1
       }
       if(sf::st_geometry_type(sf$geometry[[i]]) == "MULTILINESTRING") {
         for(k in 1:length(sf$geometry[[i]])) {
           lines[[j]] <- sf$geometry[[i]][[k]][,1:2]
-          sp_line[j] <- i
-          sp_seg[j] <- k
+          # sp_line[j] <- i
+          # sp_seg[j] <- k
           j<-j+1
         }
       }
@@ -297,8 +297,8 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
   # }
   length <- length(lines)
   
-  rivID <- 1:length
-  lineID <- data.frame(rivID,sp_line,sp_seg)
+  # rivID <- 1:length
+  # lineID <- data.frame(rivID,sp_line,sp_seg)
   
   connections <- calculateconnections(lines=lines, tolerance=tolerance)
   
@@ -328,7 +328,7 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
   # out.names <- c("sf","sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
   # out <- list(sf,sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
   # names(out) <- out.names
-  out <- list(sf=sf, sp=sp, lineID=lineID, lines=lines, connections=connections, lengths=lengths, names=names, mouth=mouth,
+  out <- list(sf=sf, lines=lines, connections=connections, lengths=lengths, names=names, mouth=mouth,
               sequenced=sequenced, tolerance=tolerance, units=units, braided=braided, cumuldist=cumuldist)
   class(out) <- "rivernetwork"
   
@@ -376,7 +376,7 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
 #' 
 #' @export
 pointshp2segvert <- function(path=".",layer,rivers) {
-  rivers <- sp2sf(rivers)
+  rivers <- sp2sf(rivers)   ### think if i want to do this every time
   # shp <- rgdal::readOGR(dsn=path,layer=layer,pointDropZ=TRUE)
   shp <- sf::read_sf(dsn=path,layer=layer)
   # if(sf::st_crs(shp)$proj4string != sf::st_crs(as(rivers$sp,"sf"))$proj4string) {
@@ -392,22 +392,6 @@ pointshp2segvert <- function(path=".",layer,rivers) {
   segvert <- xy2segvert(x=coords[,1],y=coords[,2],rivers=rivers)
   outdf <- cbind(segvert, sf::st_drop_geometry(shp))
   return(outdf)
-}
-
-
-#' @importFrom methods as
-sp2sf <- function(rivers, keep_sp=FALSE) {
-  if(!is.null(rivers$sp)) {
-    message('\n',"River network retains old-style dependency on sp package.")
-    if(is.null(rivers$sf)) {
-      rivers$sf <- as(rivers$sp, "sf")
-      message('\n',"Converting to updated sf package...")
-    }
-    if(!keep_sp) {
-      rivers$sp <- NULL
-    }
-  }
-  return(rivers)
 }
 
 
@@ -1018,16 +1002,6 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
 
 
 
-update_sf <- function(rivers) {
-  sfold <- rivers$sf
-  sfnew <- sfold # to grab the projection information, etc
-  sf::st_geometry(sfnew) <- sf::st_sfc(sf::st_multilinestring(rivers$lines))
-  sf::st_crs(sfnew) <- sf::st_crs(sfold)
-  rivers$sf_current <- sfnew
-}
-
-
-
 #' Trim a River Network Object to Specified Segments
 #' @description Removes line segments from a river network object.  User can specify which segments to remove (\code{trim}) or which segments to keep (\code{trimto}).
 #' @param trim Vector of line segments to remove
@@ -1148,10 +1122,10 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   #   sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[segs,3][id[segs,2]==i]]
   #   j<-j+1
   # }
-  rivID <- NA
-  sp_line <- NA
-  sp_seg <- NA
-  k<-1
+  # rivID <- NA
+  # sp_line <- NA
+  # sp_seg <- NA
+  # k<-1
   # for(i in 1:length(geom1)) {
   #   for(j in 1:length(geom1[[i]])) {
   #     sp_line[k] <- i
@@ -1159,15 +1133,15 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   #     k<-k+1
   #   }
   # }
-  rivID <- 1:(k-1)
-  lineID <- data.frame(rivID,sp_line,sp_seg)
-  trimmed.rivers$lineID <- lineID
+  # rivID <- 1:(k-1)
+  # lineID <- data.frame(rivID,sp_line,sp_seg)
+  # trimmed.rivers$lineID <- lineID
   # trimmed.rivers$sp@lines <- sp_lines1
   # if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
   #   trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
   # }
   
-  trimmed.rivers$sf_current <- update_sf(trimmed.rivers)
+  trimmed.rivers <- update_sf(trimmed.rivers)
   
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(trimmed.rivers)
@@ -1318,32 +1292,35 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
   }
   rivers1 <- addcumuldist(rivers1)
   
-  # updating sp object
-  id <- rivers$lineID
-  sp_lines1 <- rivers$sp@lines[unique(id[keep,2])]  
-  j<-1
-  for(i in unique(id[keep,2])) {
-    sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[keep,3][id[keep,2]==i]]
-    j<-j+1
-  }
-  rivID <- NA
-  sp_line <- NA
-  sp_seg <- NA
-  k<-1
-  for(i in 1:length(sp_lines1)) {
-    for(j in 1:length(sp_lines1[[i]]@Lines)) {
-      sp_line[k] <- i
-      sp_seg[k] <- j
-      k<-k+1
-    }
-  }
-  rivID <- 1:(k-1)
-  lineID <- data.frame(rivID,sp_line,sp_seg)
-  rivers1$lineID <- lineID
-  rivers1$sp@lines <- sp_lines1
-  if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
-    rivers1$sp@data <- rivers$sp@data[unique(rivers$lineID[keep,2]),]
-  }
+  # # updating sp object
+  # id <- rivers$lineID
+  # sp_lines1 <- rivers$sp@lines[unique(id[keep,2])]  
+  # j<-1
+  # for(i in unique(id[keep,2])) {
+  #   sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[keep,3][id[keep,2]==i]]
+  #   j<-j+1
+  # }
+  # rivID <- NA
+  # sp_line <- NA
+  # sp_seg <- NA
+  # k<-1
+  # for(i in 1:length(sp_lines1)) {
+  #   for(j in 1:length(sp_lines1[[i]]@Lines)) {
+  #     sp_line[k] <- i
+  #     sp_seg[k] <- j
+  #     k<-k+1
+  #   }
+  # }
+  # rivID <- 1:(k-1)
+  # lineID <- data.frame(rivID,sp_line,sp_seg)
+  # rivers1$lineID <- lineID
+  # rivers1$sp@lines <- sp_lines1
+  # if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
+  #   rivers1$sp@data <- rivers$sp@data[unique(rivers$lineID[keep,2]),]
+  # }
+  
+  rivers1 <- update_sf(rivers1)
+  
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers1)
 }
@@ -1394,5 +1371,38 @@ removeunconnected <- function(rivers) {
   suppressMessages(rivers2 <- trimriver(trim=takeout,rivers=rivers))
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
   return(rivers2)
+}
+
+
+
+update_sf <- function(rivers) {
+  
+  if(!is.null(rivers$sp) & is.null(rivers$sf)) rivers <- sp2sf(rivers)  ### think if i want to keep this
+  
+  sfold <- rivers$sf
+  # sfnew <- sfold # to grab the projection information, etc
+  # sf::st_geometry(sfnew) <- sf::st_sfc(sf::st_multilinestring(rivers$lines))
+  sfnew <- sf::st_sfc(sf::st_multilinestring(rivers$lines))
+  sf::st_crs(sfnew) <- sf::st_crs(sfold)
+  rivers$sf_current <- sfnew
+  return(rivers)
+}
+
+
+#' @importFrom methods as
+sp2sf <- function(rivers, keep_sp=FALSE) {
+  if(!is.null(rivers$sp)) {
+    message('\n',"River network retains old-style dependency on sp package.")
+    if(is.null(rivers$sf)) {
+      rivers$sf <- as(rivers$sp, "sf")
+      message('\n',"Converting to updated sf package...")
+    }
+    if(!keep_sp) {
+      # rivers <- rivers[!names(rivers) %in% c("sp","lineID")]
+      rivers$sp <- NULL
+      rivers$lineID <- NULL
+    }
+  }
+  return(rivers)
 }
 

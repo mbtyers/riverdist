@@ -177,13 +177,15 @@ cleanup_verts <- function(rivers, startwith=1) {
   #### finish updating rivers object!!!!
   rivers <- addcumuldist(rivers)
   
-  # updating sp object
-  riverssplines <- rivers$sp@lines
-  for(i in 1:length(rivers$lines)) {
-    # rivers$sp@lines[[rivers$lineID[i,2]]][[rivers$lineID[i,3]]] <- lines[[i]]
-    riverssplines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- rivers$lines[[i]]
-  }   ## really hope this works
-  rivers$sp@lines <- riverssplines  #### only run this if it does!!!
+  # # updating sp object
+  # riverssplines <- rivers$sp@lines
+  # for(i in 1:length(rivers$lines)) {
+  #   # rivers$sp@lines[[rivers$lineID[i,2]]][[rivers$lineID[i,3]]] <- lines[[i]]
+  #   riverssplines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- rivers$lines[[i]]
+  # }   ## really hope this works
+  # rivers$sp@lines <- riverssplines  #### only run this if it does!!!
+  
+  rivers <- update_sf(rivers)
   
   # making a vector of total segment lengths
   lengths <- rep(NA,length(rivers$lines))

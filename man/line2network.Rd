@@ -6,7 +6,6 @@
 \usage{
 line2network(
   sf = NULL,
-  sp = NULL,
   path = ".",
   layer = NA,
   tolerance = 100,
@@ -16,8 +15,6 @@ line2network(
 }
 \arguments{
 \item{sf}{Input as an \link[sf]{sf} object. Optional.}
-
-\item{sp}{Input as a \link[sp]{SpatialLinesDataFrame} object. Optional.}
 
 \item{path}{File path, default is the current working directory.}
 
@@ -33,6 +30,8 @@ package 'sf'.}
 
 \item{supplyprojection}{A valid Proj.4 projection string, if the input 
 shapefile does not have the projection information attached.}
+
+\item{sp}{Input as a \link[sp]{SpatialLinesDataFrame} object. Optional.}
 }
 \value{
 Returns an object of class \code{"rivernetwork"} containing all

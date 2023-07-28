@@ -196,8 +196,8 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
     stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 (in double-quotes).  If so, it must also be reprojected using reproject=.")
   }
   
-  # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
-  proj4 <- strsplit(projargs,split=" ")
+  # # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
+  # proj4 <- strsplit(projargs,split=" ")
   
   # projected <- sp::is.projected(sp)
   projected <- !sf::st_is_longlat(sf)
@@ -207,22 +207,27 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
   if(!is.null(reproject)) {
     # sp <- sp::spTransform(sp,sp::CRS(reproject))
     sf <- sf::st_transform(sf, crs=reproject)
-    sp <- sf::as_Spatial(sf::st_zm(sf))
+    # sp <- sf::as_Spatial(sf::st_zm(sf))
     
-    # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
-    proj4 <- strsplit(projargs,split=" ")
+    # # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
+    # proj4 <- strsplit(projargs,split=" ")
   }
   
-  units <- "unknown"
-  for(i in 1:length(proj4[[1]])) {
-    if(proj4[[1]][i]!="") {
-      proj4arg <- strsplit(proj4[[1]][i],split="=")
-      if(proj4arg[[1]][1]=="+units") {
-        units <- proj4arg[[1]][2]
-        cat('\n',"Units:",proj4arg[[1]][2],'\n')
-      }
-    }
-  }
+  # ### I think this can go away
+  # units <- "unknown"
+  # for(i in 1:length(proj4[[1]])) {
+  #   if(proj4[[1]][i]!="") {
+  #     proj4arg <- strsplit(proj4[[1]][i],split="=")
+  #     if(proj4arg[[1]][1]=="+units") {
+  #       units <- proj4arg[[1]][2]
+  #       cat('\n',"Units:",proj4arg[[1]][2],'\n')
+  #     }
+  #   }
+  # }
+  # ###
+  units <- sf::st_crs(sf)$units_gdal
+  cat('\n',"Units:",units,'\n')
+  
   # ## here i am
   # if(length(sp@lines) > 1) {
   #   sp_line <- NA
@@ -261,11 +266,19 @@ line2network <- function(sf = NULL, sp = NULL, path=".", layer = NA, tolerance=1
     lines <- list()
     j<-1
     for(i in 1:length(sf$geometry)) {
-      for(k in 1:length(sf$geometry[[i]])) {
-        lines[[j]] <- sf$geometry[[i]][[k]][,1:2]
-        sp_line[j] <- i
-        sp_seg[j] <- k
-        j<-j+1
+      if(sf::st_geometry_type(sf$geometry[[i]]) == "LINESTRING") {
+        lines[[j]] <- sf$geometry[[i]][,1:2]
+        sp_line[j] <- i #fix this!!!
+        sp_seg[j] <- NA #fix this!!
+        j <- j+1
+      }
+      if(sf::st_geometry_type(sf$geometry[[i]]) == "MULTILINESTRING") {
+        for(k in 1:length(sf$geometry[[i]])) {
+          lines[[j]] <- sf$geometry[[i]][[k]][,1:2]
+          sp_line[j] <- i
+          sp_seg[j] <- k
+          j<-j+1
+        }
       }
     }
   }
@@ -505,8 +518,8 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
       scaley <- axTicks(2)[1]
     }
     lines(scalex,rep(scaley,2))
-    if(x$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
-    if(x$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),x$units),pos=3,cex=cex)
+    if(x$units %in% c("m", "metre")) text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
+    if(!x$units %in% c("m", "metre")) text(labx,scaley,labels=paste((scalex[2]-scalex[1]),x$units),pos=3,cex=cex)
   }
 }
 
@@ -1092,30 +1105,30 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
     trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
   }
   
-  ## updating sf object
-  sf1 <- rivers$sf
-  trimid <- rivers$lineID[segs,]
-  
-  # updating geometry
-  # geom1 <- sf1$geometry[unique(trimid$sp_line)]  # first selecting elements
-  # for(i in unique(trimid$sp_line)) {
-  #   geom1[[i]] <- geom1[[i]][trimid$sp_seg[trimid$sp_line==i]]  # then selecting sub-elements
+  # ## updating sf object
+  # if(is.null(rivers$sf)) rivers$sf <- as(rivers$sp, "sf") ### take this out!!!
+  # 
+  # sf1 <- rivers$sf
+  # trimid <- rivers$lineID[segs,]
+  # 
+  # # updating geometry
+  # geom1 <- sf1$geometry
+  # if(all(sf::st_geometry_type(geom1) == "LINESTRING")) {
+  #   geom2 <- geom1[trimid$sp_line]
   # }
-  geom1 <- sf1$geometry
-  for(i in unique(trimid$sp_line)) {  # sub-elements first
-    geom1[[i]] <- geom1[[i]][trimid$sp_seg[trimid$sp_line==i]]  
-    
-    ### this structure doesn't work with LINESTRINGS!!
-    ### Kenai1 as opposed to Koyukuk0
-    
-  }
-  geom2 <- geom1[unique(trimid$sp_line)]  # then full elements
-  
-  # updating data
-  data1 <- sf::st_drop_geometry(sf1)[segs,]
-  
-  # constructing new sf object!
-  trimmed.rivers$sf <- sf::st_sf(data1, geometry=geom2)
+  # if(all(sf::st_geometry_type(geom1) == "MULTILINESTRING")) {
+  #   for(i in unique(trimid$sp_line)) {  # sub-elements first
+  #     geom1[[i]] <- geom1[[i]][trimid$sp_seg[trimid$sp_line==i]]    ##### this is the line that breaks
+  #   }
+  #   geom2 <- geom1[unique(trimid$sp_line)]  # then full elements
+  # }
+  # 
+  # # updating data
+  # # data1 <- sf::st_drop_geometry(sf1)[segs,]
+  # data1 <- sf::st_drop_geometry(sf1)[unique(trimid$sp_line),]
+  # 
+  # # constructing new sf object!
+  # trimmed.rivers$sf <- sf::st_sf(data1, geometry=geom2)
   
   
   # id <- rivers$lineID
@@ -1129,13 +1142,13 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
   sp_line <- NA
   sp_seg <- NA
   k<-1
-  for(i in 1:length(geom1)) {
-    for(j in 1:length(geom1[[i]])) {
-      sp_line[k] <- i
-      sp_seg[k] <- j
-      k<-k+1
-    }
-  }
+  # for(i in 1:length(geom1)) {
+  #   for(j in 1:length(geom1[[i]])) {
+  #     sp_line[k] <- i
+  #     sp_seg[k] <- j
+  #     k<-k+1
+  #   }
+  # }
   rivID <- 1:(k-1)
   lineID <- data.frame(rivID,sp_line,sp_seg)
   trimmed.rivers$lineID <- lineID

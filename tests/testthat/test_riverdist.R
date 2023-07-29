@@ -42,6 +42,9 @@ flipsegs <- function(rivers,whichflip="all") {
   rivers <- addcumuldist(rivers)
   if(!is.null(rivers$segroutes)) rivers <- buildsegroutes(rivers)
   if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
+  
+  rivers <- update_sf(rivers)
+  
   return(rivers)
 }
 

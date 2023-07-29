@@ -1,8 +1,8 @@
 Package: riverdist
 Type: Package
 Title: River Network Distance Computation and Applications
-Version: 0.15.5
-Date: 2021-12-31
+Version: 0.16.0
+Date: 2023-07-28
 Author: Matt Tyers [aut, cre]
 Authors@R: person("Matt", "Tyers", email = "matttyersstat@gmail.com",
     role = c("aut", "cre"))
@@ -17,8 +17,6 @@ License: GPL-2
 Depends:
     R (>= 2.14.0)
 Imports:
-    rgdal (>= 0.9-1),
-    sp (>= 1.0-15),
     sf (>= 1.0-14),
     methods
 Suggests:

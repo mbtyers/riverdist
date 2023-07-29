@@ -103,7 +103,6 @@ calculateconnections <- function(lines,tolerance) {
 #'   shapefile, and establishes connectivity of segment endpoints based on 
 #'   spatial proximity.
 #' @param sf Input as an \link[sf]{sf} object. Optional.
-#' @param sp Input as a \link[sp]{SpatialLinesDataFrame} object. Optional.
 #' @param path File path, default is the current working directory.
 #' @param layer Name of the shapefile, without the .shp extension.
 #' @param tolerance Snapping tolerance of segment endpoints to determine 
@@ -333,13 +332,13 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
   class(out) <- "rivernetwork"
   
   # TURN THIS BACK ON AFTER FIXING trimriver()
-  # length1 <- length(out$lengths)
-  # suppressMessages(out <- removeduplicates(out))
-  # length2 <- length(out$lengths)
-  # if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
-  # suppressMessages(out <- removemicrosegs(out))
-  # length3 <- length(out$lengths)
-  # if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
+  length1 <- length(out$lengths)
+  suppressMessages(out <- removeduplicates(out))
+  length2 <- length(out$lengths)
+  if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
+  suppressMessages(out <- removemicrosegs(out))
+  length3 <- length(out$lengths)
+  if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
   
   return(out)
 }
@@ -828,7 +827,7 @@ whoconnected <- function(seg,rivers) {
 #' @note Conversion to river locations is only valid if the input XY 
 #'   coordinates and river network are in the same projected coordinate system. 
 #'   Point data in geographic coordinates can be projected using 
-#'   \link[rgdal]{project} in package 'rgdal', and an example is shown below.
+#'   \link[sf]{sf_project} in package 'sf', and an example is shown below.
 #' @examples 
 #' data(Gulk,fakefish)
 #' head(fakefish)
@@ -845,8 +844,7 @@ whoconnected <- function(seg,rivers) {
 #' data(line98, Kenai1)
 #' head(line98)  # note that coordinates are stored in long-lat, NOT lat-long
 #' 
-#' library(rgdal)
-#' line98albers <- project(line98,proj="+proj=aea +lat_1=55 +lat_2=65 
+#' line98albers <- sf::sf_project(pts=line98, to="+proj=aea +lat_1=55 +lat_2=65 
 #'     +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs 
 #'     +ellps=GRS80")
 #' head(line98albers)

@@ -25,7 +25,7 @@ This function determines the closest vertex in the river network
 Conversion to river locations is only valid if the input XY 
   coordinates and river network are in the same projected coordinate system. 
   Point data in geographic coordinates can be projected using 
-  \link[rgdal]{project} in package 'rgdal', and an example is shown below.
+  \link[sf]{sf_project} in package 'sf', and an example is shown below.
 }
 \examples{
 data(Gulk,fakefish)
@@ -43,8 +43,7 @@ riverpoints(seg=fakefish.riv$seg, vert=fakefish.riv$vert, rivers=Gulk, pch=15, c
 data(line98, Kenai1)
 head(line98)  # note that coordinates are stored in long-lat, NOT lat-long
 
-library(rgdal)
-line98albers <- project(line98,proj="+proj=aea +lat_1=55 +lat_2=65 
+line98albers <- sf::sf_project(pts=line98, to="+proj=aea +lat_1=55 +lat_2=65 
     +lat_0=50 +lon_0=-154 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs 
     +ellps=GRS80")
 head(line98albers)

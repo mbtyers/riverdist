@@ -16,6 +16,7 @@ Plotting methods are described in \link{plot.rivernetwork}.
  
  \describe{
    \item{\code{sf}:}{Object of class \code{"sf"} from package 'sf'; see \link[sf]{sf}.  This is the original object as read by \link[sf]{read_sf}, and is preserved to maintain plotting capability.}
+   \item{\code{sf_current}:}{Object of class \code{"sf"} from package 'sf'; see \link[sf]{sf}.  This is an updated \link[sf]{sf} object generated from the coordinates in the `lines` element, incorporating any changes to geometry.  Any corresponding data will be dropped.}
    \item{\code{lines}:}{Object of class \code{"list"}.  Each list element is a matrix of XY coordinates of the vertices of a single river segment.}
    \item{\code{connections}:}{Object of class \code{"matrix"}, with \code{"numeric"} elements.  Defined as a square matrix, with elements describing the type of connection detected between line segments.
      \itemize{

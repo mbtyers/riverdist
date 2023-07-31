@@ -114,6 +114,9 @@ calculateconnections <- function(lines,tolerance) {
 #'   package 'sf'.
 #' @param supplyprojection A valid projection, if the input 
 #'   shapefile does not have the projection information attached.
+#' @param autofix Whether to automatically apply two corrections: removal of 
+#'   duplicate segments, and segments with lengths shorter than the connectivity 
+#'   tolerance.  Defaults to `TRUE`.
 #' @return Returns an object of class \code{"rivernetwork"} containing all
 #'   spatial and topological information.  See \link{rivernetwork-class}.
 #' @note Since distance can only be calculated using projected coordinates, 
@@ -149,7 +152,8 @@ calculateconnections <- function(lines,tolerance) {
 #' 
 #' @export
 line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100, 
-                         reproject=NULL, supplyprojection=NULL) {
+                         reproject=NULL, supplyprojection=NULL,
+                         autofix=TRUE) {
   
   # if(suppressWarnings(is.na(sp) & all(is.na(sf)))) {
   #   # sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))  
@@ -181,6 +185,12 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
   # if(!inherits(sp, "SpatialLinesDataFrame")) { 
   #   stop("Specified shapefile is not a linear feature.")
   # }
+  if(!inherits(sf, c("sf"))) stop("Invalid input to sf= argument")
+  
+  if(!all(sf::st_geometry_type(sf) %in% c("LINESTRING", "MULTILINESTRING"))) {
+    stop("Invalid input.  Either specified shapefile is not a linear feature, 
+         or not all geometry types are LINESTRING or MULTILINESTRING.")
+  } 
   
   projargs <- sf::st_crs(sf)$proj4string
   
@@ -333,13 +343,15 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
   class(out) <- "rivernetwork"
   
   # TURN THIS BACK ON AFTER FIXING trimriver()
-  length1 <- length(out$lengths)
-  suppressMessages(out <- removeduplicates(out))
-  length2 <- length(out$lengths)
-  if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
-  suppressMessages(out <- removemicrosegs(out))
-  length3 <- length(out$lengths)
-  if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
+  if(autofix) {
+    length1 <- length(out$lengths)
+    suppressMessages(out <- removeduplicates(out))
+    length2 <- length(out$lengths)
+    if(length2<length1) cat('\n',"Removed",length1-length2,"duplicate segments.",'\n')
+    suppressMessages(out <- removemicrosegs(out))
+    length3 <- length(out$lengths)
+    if(length3<length2) cat('\n',"Removed",length2-length3,"segments with lengths shorter than the connectivity tolerance.",'\n')
+  }
   
   return(out)
 }
@@ -1395,7 +1407,7 @@ update_sf <- function(rivers) {
   sfold <- rivers$sf
   # sfnew <- sfold # to grab the projection information, etc
   # sf::st_geometry(sfnew) <- sf::st_sfc(sf::st_multilinestring(rivers$lines))
-  sfnew <- sf::st_sfc(sf::st_multilinestring(rivers$lines))
+  sfnew <- sf::st_sf(geometry=sf::st_sfc(sf::st_multilinestring(rivers$lines)))
   sf::st_crs(sfnew) <- sf::st_crs(sfold)
   rivers$sf_current <- sfnew
   return(rivers)

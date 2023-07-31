@@ -1,3 +1,7 @@
+# 'riverdist' 0.16.0 (July 31, 2023)
+
+* Transition to remove dependency on `sp` and `rgdal` packages, and transition to newer-generation `sf` package.
+
 # 'riverdist' 0.15.5 (December 31, 2021)
 
 * Fixed testing glitch for compatibility with new R version

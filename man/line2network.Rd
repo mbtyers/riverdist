@@ -10,7 +10,8 @@ line2network(
   layer = NA,
   tolerance = 100,
   reproject = NULL,
-  supplyprojection = NULL
+  supplyprojection = NULL,
+  autofix = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ package 'sf'.}
 
 \item{supplyprojection}{A valid projection, if the input 
 shapefile does not have the projection information attached.}
+
+\item{autofix}{Whether to automatically apply two corrections: removal of 
+duplicate segments, and segments with lengths shorter than the connectivity 
+tolerance.  Defaults to `TRUE`.}
 }
 \value{
 Returns an object of class \code{"rivernetwork"} containing all

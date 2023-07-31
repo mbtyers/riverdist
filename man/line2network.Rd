@@ -14,7 +14,8 @@ line2network(
 )
 }
 \arguments{
-\item{sf}{Input as an \link[sf]{sf} object. Optional.}
+\item{sf}{Optional input as an \link[sf]{sf} object, if shapefile has 
+already been read into the R environment.}
 
 \item{path}{File path, default is the current working directory.}
 
@@ -24,11 +25,11 @@ line2network(
 connectivity.  Default is 100, therefore care should be exercised when 
 working with larger units of distance, such as km.}
 
-\item{reproject}{A valid Proj.4 projection string, if the shapefile is to be 
+\item{reproject}{A valid projection, if the shapefile is to be 
 re-projected.  Re-projection is done using \link[sf]{st_transform} in 
 package 'sf'.}
 
-\item{supplyprojection}{A valid Proj.4 projection string, if the input 
+\item{supplyprojection}{A valid projection, if the input 
 shapefile does not have the projection information attached.}
 }
 \value{

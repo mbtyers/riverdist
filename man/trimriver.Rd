@@ -17,7 +17,9 @@ trimriver(trim = NULL, trimto = NULL, rivers)
 A new river network object
 }
 \description{
-Removes line segments from a river network object.  User can specify which segments to remove (\code{trim}) or which segments to keep (\code{trimto}).
+Removes line segments from a river network object.  User can 
+  specify which segments to remove (\code{trim}) or which segments to 
+  keep (\code{trimto}).
 }
 \note{
 Specifying segments in both trim and trimto arguments will result in an error.

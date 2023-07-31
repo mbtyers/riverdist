@@ -102,16 +102,17 @@ calculateconnections <- function(lines,tolerance) {
 #' @description Uses \link[sf]{read_sf} in package 'sf' to read a river 
 #'   shapefile, and establishes connectivity of segment endpoints based on 
 #'   spatial proximity.
-#' @param sf Input as an \link[sf]{sf} object. Optional.
+#' @param sf Optional input as an \link[sf]{sf} object, if shapefile has 
+#'   already been read into the R environment.
 #' @param path File path, default is the current working directory.
 #' @param layer Name of the shapefile, without the .shp extension.
 #' @param tolerance Snapping tolerance of segment endpoints to determine 
 #'   connectivity.  Default is 100, therefore care should be exercised when 
 #'   working with larger units of distance, such as km.
-#' @param reproject A valid Proj.4 projection string, if the shapefile is to be 
+#' @param reproject A valid projection, if the shapefile is to be 
 #'   re-projected.  Re-projection is done using \link[sf]{st_transform} in 
 #'   package 'sf'.
-#' @param supplyprojection A valid Proj.4 projection string, if the input 
+#' @param supplyprojection A valid projection, if the input 
 #'   shapefile does not have the projection information attached.
 #' @return Returns an object of class \code{"rivernetwork"} containing all
 #'   spatial and topological information.  See \link{rivernetwork-class}.
@@ -353,7 +354,8 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
 #' @param layer Name of the shapefile, without the .shp extension.
 #' @param rivers The river network object to use.
 #' @return A data frame of river locations, with segment numbers in
-#'   \code{$seg}, vertex numbers in \code{$vert}, snapping distances in \code{$snapdist}, and the remaining columns
+#'   \code{$seg}, vertex numbers in \code{$vert}, snapping distances in 
+#'   \code{$snapdist}, and the remaining columns
 #'   corresponding to the data table in the input point shapefile.
 #' @author Matt Tyers
 #' @note If the input shapefile is detected to be in a different projection than
@@ -395,7 +397,8 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 
 
 #' Plotting a River Network
-#' @description S3 plotting method for the \link{rivernetwork-class}.  Produces a map of all river segments of a river network object.
+#' @description S3 plotting method for the \link{rivernetwork-class}.  
+#'   Produces a map of all river segments of a river network object.
 #' @aliases mapriver
 #' @param x The river network object to plot
 #' @param segmentnum Whether or not to plot segment numbers (defaults to TRUE)
@@ -407,8 +410,11 @@ pointshp2segvert <- function(path=".",layer,rivers) {
 #'   segments will be drawn in solid lines with differing colors.  If
 #'   \code{color==FALSE}, segments will be drawn in the same color with differing line
 #'   types.
-#' @param empty Creates an empty plot if set to \code{TRUE}.  Suppresses differentiation by line type if \code{color==FALSE}, and suppresses segment number labels.  Defaults to \code{FALSE}.
-#' @param linecol Line color to use if \code{empty} is \code{TRUE} or \code{color} is \code{FALSE}.  Defaults to black.
+#' @param empty Creates an empty plot if set to \code{TRUE}.  Suppresses 
+#'   differentiation by line type if \code{color==FALSE}, and suppresses segment 
+#'   number labels.  Defaults to \code{FALSE}.
+#' @param linecol Line color to use if \code{empty} is \code{TRUE} or 
+#'   \code{color} is \code{FALSE}.  Defaults to black.
 #' @param xlab Label for X-axis (defaults to "")
 #' @param ylab Label for Y-axis (defaults to "")
 #' @param ... Additional plotting arguments (see \link[graphics]{par})
@@ -705,13 +711,16 @@ plotrivernetwork2 <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
 
 
 #' Highlight Segments
-#' @description Plots a river network object and displays specified segments in bold, for easy identification.
+#' @description Plots a river network object and displays specified segments in 
+#'   bold, for easy identification.
 #' @param seg A vector of segments to highlight
 #' @param rivers The river network object to use
 #' @param cex The character expansion factor to use for segment labels
 #' @param lwd The line width to use for highlighted segments
-#' @param add Whether to add the highlighted segments to an existing plot (\code{TRUE}) or call a new plot (\code{FALSE}).  Defaults to \code{FALSE}.
-#' @param color Whether to display segment labels as the same color as the segments.  Defaults to \code{FALSE}.
+#' @param add Whether to add the highlighted segments to an existing plot 
+#'   (\code{TRUE}) or call a new plot (\code{FALSE}).  Defaults to \code{FALSE}.
+#' @param color Whether to display segment labels as the same color as the 
+#'   segments.  Defaults to \code{FALSE}.
 #' @param ... Additional plotting arguments (see \link[graphics]{par})
 #' @author Matt Tyers
 #' @examples
@@ -822,7 +831,9 @@ whoconnected <- function(seg,rivers) {
 #' @param x A vector of x-coordinates to transform
 #' @param y A vector of y-coordinates to transform
 #' @param rivers The river network object to use
-#' @return A data frame of river locations, with segment numbers in \code{$seg}, vertex numbers in \code{$vert}, and the snapping distance for each point in \code{$snapdist}.
+#' @return A data frame of river locations, with segment numbers in \code{$seg}, 
+#'   vertex numbers in \code{$vert}, and the snapping distance for each point in 
+#'   \code{$snapdist}.
 #' @author Matt Tyers
 #' @note Conversion to river locations is only valid if the input XY 
 #'   coordinates and river network are in the same projected coordinate system. 
@@ -928,13 +939,15 @@ xy2segvert <- function(x,y,rivers) {
 
 
 #' Draw Points from River Locations
-#' @description Adds points to an active plot.  Works like \link[graphics]{points} but with river locations (segments and vertices) rather than xy coordinates.
+#' @description Adds points to an active plot.  Works like \link[graphics]{points} 
+#'   but with river locations (segments and vertices) rather than xy coordinates.
 #' @param seg A vector of segments
 #' @param vert A vector of vertices
 #' @param rivers The river network object to use
 #' @param pch Point character, as a vector or single value
 #' @param col Point color, as a vector or single value
-#' @param jitter Maximum amount of random noise to add to "jitter" points if desired, so points do not overlap one another
+#' @param jitter Maximum amount of random noise to add to "jitter" points if 
+#'   desired, so points do not overlap one another
 #' @param ... Additional arguments for \link{points}
 #' @author Matt Tyers
 #' @examples
@@ -1001,7 +1014,9 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
 
 
 #' Trim a River Network Object to Specified Segments
-#' @description Removes line segments from a river network object.  User can specify which segments to remove (\code{trim}) or which segments to keep (\code{trimto}).
+#' @description Removes line segments from a river network object.  User can 
+#'   specify which segments to remove (\code{trim}) or which segments to 
+#'   keep (\code{trimto}).
 #' @param trim Vector of line segments to remove
 #' @param trimto Vector of line segments to keep
 #' @param rivers The river network object

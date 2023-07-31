@@ -221,7 +221,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
 #' data(KilleyW)
 #' plot(x=KilleyW)
 #' 
-#' routelist(startseg=1, endseg=16, rivers=KilleyW, reps=1000)
+#' routelist(startseg=1, endseg=16, rivers=KilleyW)
 #' @export
 routelist <- function(startseg,endseg,rivers,reps=100) {
   routes <- list()
@@ -288,7 +288,7 @@ routelist <- function(startseg,endseg,rivers,reps=100) {
 #' plot(x=KilleyW)
 #' 
 #' Killey.dists <- riverdistancelist(startseg=1, endseg=16, startvert=100, endvert=25,
-#'    rivers=KilleyW, reps=1000)
+#'    rivers=KilleyW)
 #' Killey.dists  # 18 routes are detected.
 #' 
 #' # mapping the shortest route detected... 

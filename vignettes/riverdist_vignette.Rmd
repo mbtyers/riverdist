@@ -31,7 +31,7 @@ vignette: >
 <a name="Package overview"></a>
 
 ## Package overview
-The 'riverdist' package is intended as a free and readily-available resource for distance calculation along a river network.  This package was written with fisheries research in mind, but could be applied to other fields.  The 'riverdist' package builds upon the functionality of the 'sp' and 'rgdal' packages, which provide the utility of reading GIS shapefiles into the R environment.  What 'riverdist' adds is the ability to treat a linear feature as a connected network, and to calculate travel routes and travel distances along that network.
+The 'riverdist' package is intended as a free and readily-available resource for distance calculation along a river network.  This package was written with fisheries research in mind, but could be applied to other fields.  The 'riverdist' package builds upon the functionality of the 'sf' package, which provides the utility of reading GIS shapefiles into the R environment.  What 'riverdist' adds is the ability to treat a linear feature as a connected network, and to calculate travel routes and travel distances along that network.
 
 
 <a name="Typical workflow"></a>
@@ -74,7 +74,7 @@ Another important note is that only projected data can be used, both for river n
 
 **Importing a river network using `line2network()`**
 
-In a typical workflow, a user will first import a projected polyline shapefile using `line2network()`.  This function reads the specified shapefile using the 'sp' and 'rgdal' packages, and adds the network connectivity, thus creating a river network object.  If an unprojected shapefile is detected, an error will be generated.  However, the `reproject=` argument allows the `line2network()` to re-project the shapefile before importing it as a river network.
+In a typical workflow, a user will first import a projected polyline shapefile using `line2network()`.  This function reads the specified shapefile using the 'sf' package, and adds the network connectivity, thus creating a river network object.  If an unprojected shapefile is detected, an error will be generated.  However, the `reproject=` argument allows the `line2network()` to re-project the shapefile before importing it as a river network.
 
 While 'riverdist' does provide tools for editing a river network that do not rely on GIS software, it is strongly recommended to simplify the river shapefile as much as possible before importing into R.  In particular, a spatial dissolve will likely be very helpful, if GIS software is available.  This will create a few long line segments instead of many, many short segments.
 

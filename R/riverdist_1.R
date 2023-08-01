@@ -389,7 +389,7 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
 #' 
 #' @export
 pointshp2segvert <- function(path=".",layer,rivers) {
-  rivers <- sp2sf(rivers)   ### think if i want to do this every time
+  # rivers <- sp2sf(rivers)   ### think if i want to do this every time
   # shp <- rgdal::readOGR(dsn=path,layer=layer,pointDropZ=TRUE)
   shp <- sf::read_sf(dsn=path,layer=layer)
   # if(sf::st_crs(shp)$proj4string != sf::st_crs(as(rivers$sp,"sf"))$proj4string) {
@@ -397,8 +397,10 @@ pointshp2segvert <- function(path=".",layer,rivers) {
   if(sf::st_crs(shp)$proj4string != sf::st_crs(rivers$sf)$proj4string) {
     message('\n',"Point projection detected as different from river network.  Re-projecting points before snapping to river network...")
     # projection <- rivers$sp@proj4string@projargs
-    projection <- sf::st_crs(rivers$sf)$proj4string
-    shp <- sf::st_transform(shp, crs=projection) ##
+    
+    # projection <- sf::st_crs(rivers$sf)$proj4string
+    # shp <- sf::st_transform(shp, crs=projection) ##
+    shp <- sf::st_transform(shp, crs=sf::st_crs(rivers$sf)) ##
   }
   # segvert <- xy2segvert(x=shp@coords[,1],y=shp@coords[,2],rivers=rivers)
   coords <- sf::st_coordinates(shp)
@@ -1400,9 +1402,10 @@ removeunconnected <- function(rivers) {
 
 
 
-update_sf <- function(rivers) {
+update_sf <- function(rivers, keep_sp=FALSE) {
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   
-  if(!is.null(rivers$sp) & is.null(rivers$sf)) rivers <- sp2sf(rivers)  ### think if i want to keep this
+  if(!is.null(rivers$sp) & is.null(rivers$sf)) rivers <- sp2sf(rivers, keep_sp=keep_sp)  ### think if i want to keep this
   
   sfold <- rivers$sf
   # sfnew <- sfold # to grab the projection information, etc
@@ -1416,6 +1419,8 @@ update_sf <- function(rivers) {
 
 #' @importFrom methods as
 sp2sf <- function(rivers, keep_sp=FALSE) {
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  
   if(!is.null(rivers$sp)) {
     message('\n',"River network retains old-style dependency on sp package.")
     if(is.null(rivers$sf)) {

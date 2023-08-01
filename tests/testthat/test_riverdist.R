@@ -187,8 +187,8 @@ test_that("isflowconnected",{
 })
 
 test_that("mouthdist",{
-  expect_equal(mouthdist(4,19,abstreams),92996.74,tolerance=0.001)
-  expect_equal(mouthdist(4,19,abstreams_nosegroutes),92996.74,tolerance=0.001)
+  expect_equal(mouthdist(4,19,abstreams),92745.93,tolerance=0.001)
+  expect_equal(mouthdist(4,19,abstreams_nosegroutes),92745.93,tolerance=0.001)
   expect_error(mouthdist(4,19,Kenai3))
 })
 

@@ -1,11 +1,14 @@
 # riverdist 
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/riverdist)](https://cran.r-project.org/package=riverdist)
-[![Travis-CI Build Status](https://travis-ci.org/mbtyers/riverdist.svg?branch=master)](https://travis-ci.org/mbtyers/riverdist)
 
 ### River Network Distance Computation and Applications
 
 The 'riverdist' package is intended as a free and readily-available resource for distance calculation along a river network.  This package was written with fisheries research in mind, but could be applied to other fields.  The 'riverdist' package builds upon the functionality of the 'sf' package, which provide the utility of reading GIS shapefiles into the R environment.  What 'riverdist' adds is the ability to treat a linear feature as a connected network, and to calculate travel routes and travel distances along that network.
+
+Note that the current version of 'riverdist' (>= 0.16.0) is no longer built on 'sp' and 'rgdal' and is not backward-compatible.  A legacy version that uses 'sp' / 'rgdal' ('riverdist' 0.15.5) can be installed via
+
+`devtools::install_github("mbtyers/riverdist@legacy")`
 
 ### Commonly-used functions
 

@@ -155,36 +155,11 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
                          reproject=NULL, supplyprojection=NULL,
                          autofix=TRUE) {
   
-  # if(suppressWarnings(is.na(sp) & all(is.na(sf)))) {
-  #   # sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))  
-  #   ## read to sf here
-  #   sf <- sf::read_sf(dsn = path, layer = layer)
-  # }
-  # 
-  # if(suppressWarnings(is.na(sp))) {
-  #   ## convert sf to sp
-  #   sp <- sf::as_Spatial(sf::st_zm(sf))
-  # }
-  # 
-  # if(suppressWarnings(all(is.na(sf)))) {
-  #   ## convert sp to sf
-  #   sf <- as(sp, "sf")
-  # }
-  # 
-  # if(!inherits(sp, "SpatialLinesDataFrame")) { 
-  #   stop("Specified shapefile is not a linear feature.")
-  # }
-  
   if(is.null(sf)) {
-    # sp <- suppressWarnings(rgdal::readOGR(dsn = path, layer = layer, verbose = F))  
     ## read to sf here
     sf <- sf::read_sf(dsn = path, layer = layer)
   }
   
-  ###### NEED AN APPROPRIATE CHECK HERE
-  # if(!inherits(sp, "SpatialLinesDataFrame")) { 
-  #   stop("Specified shapefile is not a linear feature.")
-  # }
   if(!inherits(sf, c("sf"))) stop("Invalid input to sf= argument")
   
   if(!all(sf::st_geometry_type(sf) %in% c("LINESTRING", "MULTILINESTRING"))) {
@@ -194,16 +169,12 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
   
   projargs <- sf::st_crs(sf)$proj4string
   
-  # if(is.na(sp@proj4string@projargs) & !is.null(supplyprojection)){ 
-  #   sp@proj4string@projargs <- supplyprojection
-  # }
   if(is.na(projargs) & !is.null(supplyprojection)){ 
     projargs <- supplyprojection
   }
   
-  # if(is.na(sp@proj4string@projargs)){
   if(is.na(projargs)){ 
-    stop("Shapefile projection information is missing.  Use supplyprojection= to specify a Proj.4 projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 (in double-quotes).  If so, it must also be reprojected using reproject=.")
+    stop("Shapefile projection information is missing.  Use supplyprojection= to specify a projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 (in double-quotes).  If so, it must also be reprojected using reproject=.")
   }
   
   # # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
@@ -212,103 +183,31 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
   # projected <- sp::is.projected(sp)
   projected <- !sf::st_is_longlat(sf)
   
-  if(is.null(reproject) & !projected) stop("Distances can only be computed from a projected coordinate system.  Use reproject= to specify a Proj.4 projection to use.")
+  if(is.null(reproject) & !projected) stop("Distances can only be computed from a projected coordinate system.  Use reproject= to specify a projection to use.")
   
   if(!is.null(reproject)) {
-    # sp <- sp::spTransform(sp,sp::CRS(reproject))
     sf <- sf::st_transform(sf, crs=reproject)
-    # sp <- sf::as_Spatial(sf::st_zm(sf))
-    
-    # # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
-    # proj4 <- strsplit(projargs,split=" ")
   }
   
-  # ### I think this can go away
-  # units <- "unknown"
-  # for(i in 1:length(proj4[[1]])) {
-  #   if(proj4[[1]][i]!="") {
-  #     proj4arg <- strsplit(proj4[[1]][i],split="=")
-  #     if(proj4arg[[1]][1]=="+units") {
-  #       units <- proj4arg[[1]][2]
-  #       cat('\n',"Units:",proj4arg[[1]][2],'\n')
-  #     }
-  #   }
-  # }
-  # ###
   units <- sf::st_crs(sf)$units_gdal
   cat('\n',"Units:",units,'\n')
   
-  # ## here i am
-  # if(length(sp@lines) > 1) {
-  #   sp_line <- NA
-  #   sp_seg <- NA
-  #   lines <- list()
-  #   j<-1
-  #   for(i in 1:length(sp@lines)) {
-  #     for(k in 1:length(sp@lines[i][[1]]@Lines)) {
-  #       lines[[j]] <- sp@lines[i][[1]]@Lines[[k]]@coords
-  #       sp_line[j] <- i
-  #       sp_seg[j] <- k
-  #       j<-j+1
-  #     }
-  #   }
-  # }
-  # if(length(sp@lines) == 1) {
-  #   lines <- sp@lines[1][[1]]@Lines    # extracting just a list of lines and coordinates
-  #   
-  #   length <- length(lines) # number of line segments
-  #   
-  #   lines.new <- list()
-  #   for(i in 1:length) {
-  #     lines.new[[i]] <- lines[[i]]@coords
-  #   }
-  #   lines <- lines.new 
-  #   sp_line <- rep(1,length)
-  #   sp_seg <- 1:length
-  # }
-  
-  ## here i am
-  # if(length(sf$geometry) > 1) {   ### I think we no longer need this condition!
-    # sp@lines becomes sf$geometry
-    # sp@lines[i][[1]]@Lines becomes sf$geometry[[i]]
-    # sp_line <- NA
-    # sp_seg <- NA
-    lines <- list()
-    j<-1
-    for(i in 1:length(sf$geometry)) {
-      if(sf::st_geometry_type(sf$geometry[[i]]) == "LINESTRING") {
-        lines[[j]] <- sf$geometry[[i]][,1:2]
-        # sp_line[j] <- i #fix this!!!
-        # sp_seg[j] <- NA #fix this!!
-        j <- j+1
-      }
-      if(sf::st_geometry_type(sf$geometry[[i]]) == "MULTILINESTRING") {
-        for(k in 1:length(sf$geometry[[i]])) {
-          lines[[j]] <- sf$geometry[[i]][[k]][,1:2]
-          # sp_line[j] <- i
-          # sp_seg[j] <- k
-          j<-j+1
-        }
+  lines <- list()
+  j<-1
+  for(i in 1:length(sf$geometry)) {
+    if(sf::st_geometry_type(sf$geometry[[i]]) == "LINESTRING") {
+      lines[[j]] <- sf$geometry[[i]][,1:2]
+      j <- j+1
+    }
+    if(sf::st_geometry_type(sf$geometry[[i]]) == "MULTILINESTRING") {
+      for(k in 1:length(sf$geometry[[i]])) {
+        lines[[j]] <- sf$geometry[[i]][[k]][,1:2]
+        j<-j+1
       }
     }
-  # }
-  # if(length(sf$geometry) == 1) {   ########### this is probably wrong
-  #   lines <- lapply(sf$geometry[[1]], function(x) x[,1:2])  
-  #   
-  #   length <- length(lines) # number of line segments
-  #   
-  #   # lines.new <- list()
-  #   # for(i in 1:length) {
-  #   #   lines.new[[i]] <- lines[[i]]@coords
-  #   # }
-  #   # lines <- lines.new 
-  #   sp_line <- rep(1,length)
-  #   sp_seg <- 1:length
-  # }
-  length <- length(lines)
+  }
   
-  # rivID <- 1:length
-  # lineID <- data.frame(rivID,sp_line,sp_seg)
+  length <- length(lines)
   
   connections <- calculateconnections(lines=lines, tolerance=tolerance)
   
@@ -335,14 +234,10 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
     cumuldist[[i]] <- c(0,cumsum(sqrt(((xy[1:(n-1),1] - xy[2:n,1])^2) + ((xy[1:(n-1),2] - xy[2:n,2])^2))))
   }
   
-  # out.names <- c("sf","sp","lineID","lines","connections","lengths","names","mouth","sequenced","tolerance","units","braided","cumuldist")
-  # out <- list(sf,sp,lineID,lines,connections,lengths,names,mouth,sequenced,tolerance,units,braided,cumuldist)
-  # names(out) <- out.names
   out <- list(sf=sf, lines=lines, connections=connections, lengths=lengths, names=names, mouth=mouth,
               sequenced=sequenced, tolerance=tolerance, units=units, braided=braided, cumuldist=cumuldist)
   class(out) <- "rivernetwork"
   
-  # TURN THIS BACK ON AFTER FIXING trimriver()
   if(autofix) {
     length1 <- length(out$lengths)
     suppressMessages(out <- removeduplicates(out))
@@ -389,20 +284,11 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
 #' 
 #' @export
 pointshp2segvert <- function(path=".",layer,rivers) {
-  # rivers <- sp2sf(rivers)   ### think if i want to do this every time
-  # shp <- rgdal::readOGR(dsn=path,layer=layer,pointDropZ=TRUE)
   shp <- sf::read_sf(dsn=path,layer=layer)
-  # if(sf::st_crs(shp)$proj4string != sf::st_crs(as(rivers$sp,"sf"))$proj4string) {
-  # if(sf::st_crs(shp)$proj4string != rivers$sp@proj4string@projargs) {
   if(sf::st_crs(shp)$proj4string != sf::st_crs(rivers$sf)$proj4string) {
     message('\n',"Point projection detected as different from river network.  Re-projecting points before snapping to river network...")
-    # projection <- rivers$sp@proj4string@projargs
-    
-    # projection <- sf::st_crs(rivers$sf)$proj4string
-    # shp <- sf::st_transform(shp, crs=projection) ##
     shp <- sf::st_transform(shp, crs=sf::st_crs(rivers$sf)) ##
   }
-  # segvert <- xy2segvert(x=shp@coords[,1],y=shp@coords[,2],rivers=rivers)
   coords <- sf::st_coordinates(shp)
   segvert <- xy2segvert(x=coords[,1],y=coords[,2],rivers=rivers)
   outdf <- cbind(segvert, sf::st_drop_geometry(shp))
@@ -496,9 +382,9 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
     if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
     axticks1 <- axTicks(1)
-    if(is.na(corthing)) legendleft <- F   ######
-    else legendleft <- corthing<=0   ######
-    if(legendleft) {   ######
+    if(is.na(corthing)) legendleft <- F
+    else legendleft <- corthing<=0
+    if(legendleft) {   
       if(length(axticks1)>5) {
         scalex <- axticks1[c(1,3)]
         labx <- axticks1[2]
@@ -509,7 +395,7 @@ plot.rivernetwork <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=T
       }
       scaley <- axTicks(2)[1]
     }
-    if(!legendleft) {   ######
+    if(!legendleft) {  
       if(length(axticks1)>5) {
         scalex <- axticks1[c(length(axticks1)-2,length(axticks1))]
         labx <- axticks1[length(axticks1)-1]
@@ -571,157 +457,10 @@ scalebar <- function(rivers,cex=.6) {
 }
 
 
-# plotrivernetwork_OLD <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
-#   rivers <- x
-#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-#   lines <- rivers$lines
-#   length <- length(lines)
-#   xmin <- min(lines[[1]][,1])
-#   xmax <- max(lines[[1]][,1])
-#   ymin <- min(lines[[1]][,2])
-#   ymax <- max(lines[[1]][,2])
-#   if(length>1) {
-#     for(j in 2:length) {
-#       if(min(lines[[j]][,1])<xmin) xmin <- min(lines[[j]][,1])
-#       if(max(lines[[j]][,1])>xmax) xmax <- max(lines[[j]][,1])
-#       if(min(lines[[j]][,2])<ymin) ymin <- min(lines[[j]][,2])
-#       if(max(lines[[j]][,2])>ymax) ymax <- max(lines[[j]][,2])
-#       # print(c(j,xmin,xmax,ymin,ymax))
-#     }
-#   }
-#   plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,...=...)
-#   midptx <- midpty <- NA
-#   for(j in 1:length) {
-#     if(!color&!empty) lines(lines[[j]],col=1,lty=j,lwd=lwd)
-#     linecolor <- rgb((sin(j)+1)/2.3,(cos(7*j)+1)/2.3,(sin(3*(length-j))+1)/2.3)
-#     if(color&!empty) lines(lines[[j]],col=linecolor,lty=1,lwd=lwd)
-#     if(color&empty) lines(lines[[j]],col=1,lty=1,lwd=lwd)
-#     linelength <- dim(lines[[j]])[1]
-#     
-#     xplot <- lines[[j]][,1][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
-#     yplot <- lines[[j]][,2][lines[[j]][,1]>par("usr")[1] & lines[[j]][,1]<par("usr")[2] & lines[[j]][,2]>par("usr")[3] & lines[[j]][,2]<par("usr")[4]]
-#     if(length(xplot)>0) midptx[j] <- mean(xplot)
-#     if(length(yplot)>0) midpty[j] <- mean(yplot)
-#     if(length(xplot)==0 | length(yplot)==0) midptx[j] <- midpty[j] <-NA
-#     middle <- floor(length(xplot)/2)
-#     direction <- 3+(abs(xplot[floor(length(xplot)*.25)]-xplot[floor(length(xplot)*.75)]) < abs(yplot[floor(length(yplot)*.25)]-yplot[floor(length(yplot)*.75)]))
-#     if(!offset) direction <- NULL
-#     xtext <- ifelse(length(xplot)>0,xplot[middle],NA)
-#     ytext <- ifelse(length(yplot)>0,yplot[middle],NA)
-#     if(segmentnum&!empty) text(x=xtext,y=ytext,labels=j,pos=direction,cex=cex,col=ifelse(color,linecolor,1))
-#   }
-#   if(scale) {
-#     if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
-#     if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
-#     if(corthing<=0) {
-#       if(length(axTicks(1))>5) {
-#         scalex <- axTicks(1)[c(1,3)]
-#         labx <- axTicks(1)[2]
-#       }
-#       if(length(axTicks(1))<=5) {
-#         scalex <- axTicks(1)[c(1,2)]
-#         labx <- mean(axTicks(1)[c(1,2)])
-#       }
-#       scaley <- axTicks(2)[1]
-#     }
-#     if(corthing>0) {
-#       if(length(axTicks(1))>5) {
-#         scalex <- axTicks(1)[c(length(axTicks(1))-2,length(axTicks(1)))]
-#         labx <- axTicks(1)[length(axTicks(1))-1]
-#       }
-#       if(length(axTicks(1))<=5) {
-#         scalex <- axTicks(1)[c(length(axTicks(1))-1,length(axTicks(1)))]
-#         labx <- mean(axTicks(1)[c(length(axTicks(1))-1,length(axTicks(1)))])
-#       }
-#       scaley <- axTicks(2)[1]
-#     }
-#     lines(scalex,rep(scaley,2))
-#     if(rivers$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
-#     if(rivers$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),rivers$units),pos=3,cex=cex)
-#   }
-# }
 
 
-plotrivernetwork2 <- function(x,segmentnum=TRUE,offset=TRUE,lwd=1,cex=.6,scale=TRUE,color=TRUE,empty=FALSE,xlab="",ylab="",...) {
-  if(!inherits(x, "rivernetwork")) stop("Argument 'x' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  lines <- x$lines
-  length <- length(lines)
-  allx <- unlist(lapply(lines,FUN='[',TRUE,1))
-  ally <- unlist(lapply(lines,FUN='[',TRUE,2))
-  xmax <- max(allx, na.rm=T)
-  xmin <- min(allx, na.rm=T)
-  ymax <- max(ally, na.rm=T)
-  ymin <- min(ally, na.rm=T)
-  plot(c(xmin,xmax),c(ymin,ymax),col="white",cex.axis=.6,asp=1,xlab=xlab,ylab=ylab,...=...)
-  parusr <- par("usr")
-  midptx <- midpty <- NA
-  if(color&!empty) {
-    linecolors <- rgb((sin(1:length)+1)/2.3,(cos(7*1:length)+1)/2.3,(sin(3*(length-(1:length)))+1)/2.3)
-    ltys <- rep(1,length)
-  }
-  if(!color&!empty) {
-    linecolors <- rep(1,length)
-    ltys <- 1:length
-  }
-  if(empty) {
-    ltys <- linecolors <- rep(1,length)
-  }
-  
-  xtext <- ytext <- direction <- rep(NA,length)
-  for(j in 1:length) {
-    lines(lines[[j]],col=linecolors[j],lty=ltys[j],lwd=lwd)
-    
-    xplot <- lines[[j]][,1][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
-    yplot <- lines[[j]][,2][lines[[j]][,1]>parusr[1] & lines[[j]][,1]<parusr[2] & lines[[j]][,2]>parusr[3] & lines[[j]][,2]<parusr[4]]
-    if(length(xplot)>0) midptx[j] <- mean(xplot)
-    if(length(yplot)>0) midpty[j] <- mean(yplot)
-    if(length(xplot)==0 | length(yplot)==0) midptx[j] <- midpty[j] <-NA
-    middle <- floor(length(xplot)/2)
-    direction[j] <- 3+(abs(xplot[floor(length(xplot)*.25)]-xplot[floor(length(xplot)*.75)]) < abs(yplot[floor(length(yplot)*.25)]-yplot[floor(length(yplot)*.75)]))
-    xtext[j] <- ifelse(length(xplot)>0,xplot[middle],NA)
-    ytext[j] <- ifelse(length(yplot)>0,yplot[middle],NA)
-  }
-  if(offset) text(xtext,ytext,labels=1:length,pos=direction,cex=cex,col=linecolors)
-  else text(xtext,ytext,labels=1:length,cex=cex,col=linecolors)
-  if(scale) {
-    if(length>1) corthing <- cor(midptx,midpty,use="complete.obs")
-    if(length==1) corthing <- (lines[[1]][1,1]-lines[[1]][dim(lines[[1]])[1],1])*(lines[[1]][1,2]-lines[[1]][dim(lines[[1]])[1],2])
-    axticks1 <- axTicks(1)
-    if(corthing<=0) {
-      if(length(axticks1)>5) {
-        scalex <- axticks1[c(1,3)]
-        labx <- axticks1[2]
-      }
-      if(length(axticks1)<=5) {
-        scalex <- axticks1[c(1,2)]
-        labx <- mean(axticks1[c(1,2)])
-      }
-      scaley <- axTicks(2)[1]
-    }
-    if(corthing>0) {
-      if(length(axticks1)>5) {
-        scalex <- axticks1[c(length(axticks1)-2,length(axticks1))]
-        labx <- axticks1[length(axticks1)-1]
-      }
-      if(length(axticks1)<=5) {
-        scalex <- axticks1[c(length(axticks1)-1,length(axticks1))]
-        labx <- mean(axticks1[c(length(axticks1)-1,length(axticks1))])
-      }
-      scaley <- axTicks(2)[1]
-    }
-    lines(scalex,rep(scaley,2))
-    if(x$units=="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1])/1000,"km"),pos=3,cex=cex)
-    if(x$units!="m") text(labx,scaley,labels=paste((scalex[2]-scalex[1]),x$units),pos=3,cex=cex)
-  }
-}
 
-# plotrivernetwork2(abstreams)
-# 
-# par(mfrow=c(5,5))
-# system.time(plot(abstreams))
-# system.time(plotrivernetwork2(abstreams))
-# microbenchmark(plot(abstreams))
-# microbenchmark(plotrivernetwork2(abstreams))
+
 
 
 #' Highlight Segments
@@ -782,20 +521,6 @@ highlightseg <- function(seg,rivers,cex=0.8,lwd=3,add=FALSE,color=FALSE,...) {
 #' @importFrom graphics points
 #' @export
 topologydots <- function(rivers,add=FALSE,...) {
-  # if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-  # if(!add) plot(rivers,color=F,...=...)
-  # connections <- rivers$connections
-  # lines <- rivers$lines
-  # connections[is.na(connections)==T]<-0
-  # for(i in 1:dim(connections)[2]) {
-  #   low <- 2
-  #   high <- 2
-  #   if(length(connections[i,][connections[i,]==1 | connections[i,]==2 | connections[i,]==5 | connections[i,]==6])>0) low <- 3
-  #   if(length(connections[i,][connections[i,]==3 | connections[i,]==4 | connections[i,]==5 | connections[i,]==6])>0) high <- 3
-  #   points(lines[[i]][1,1],lines[[i]][1,2],pch=16,col=low)
-  #   points(lines[[i]][dim(lines[[i]])[1],1],
-  #          lines[[i]][dim(lines[[i]])[1],2],pch=16,col=high)
-  # }
   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(!add) plot(rivers,color=F,...=...)
   connections <- rivers$connections
@@ -907,48 +632,7 @@ xy2segvert <- function(x,y,rivers) {
   return(out)
 }
 
-# 
-# xy2segvert_OLD <- function(x,y,rivers) {
-#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-#   if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
-#   seg <- rep(NA,length(x))
-#   vert <- rep(NA,length(x))
-#   snapdist <- rep(NA,length(x))
-#   lines <- rivers$lines
-#   
-#   pdist2 <- function(p1,p2mat) {
-#     dist <- sqrt((p1[1]-p2mat[,1])^2 + (p1[2]-p2mat[,2])^2)
-#     return(dist)
-#   }
-#   
-#   for(i in 1:length(x)) {
-#     min.dist1 <- 1000000
-#     for(river.i in 1:length(lines)) {
-#       dists <- pdist2(c(x[i],y[i]),lines[[river.i]])
-#       min.i <- min(dists)
-#       if(min.i < min.dist1) {
-#         min.dist1 <- min.i
-#         seg[i] <- river.i
-#         vert[i] <- which(dists==min.i)[1]  # if there's a tie, accept the first vertex
-#         snapdist[i] <- pdist(c(x[i],y[i]),lines[[river.i]][vert[i],])
-#       }
-#     }
-#   }
-#   out <- data.frame(seg,vert,snapdist)
-#   return(out)
-# }
-# 
-# rivtest <- Kenai3
-# abpts <- xysim(5000,rivtest)
-# asdf <- xy2segvert2(x=abpts$x,y=abpts$y,rivers=rivtest)
-# 
-# system.time(asdf1 <- xy2segvert(x=abpts$x,y=abpts$y,rivers=rivtest))
-# system.time(asdf2 <- xy2segvert2(x=abpts$x,y=abpts$y,rivers=rivtest))
-# 
-# microbenchmark(asdf1 <- xy2segvert(x=abpts$x,y=abpts$y,rivers=rivtest))
-# microbenchmark(asdf2 <- xy2segvert2(x=abpts$x,y=abpts$y,rivers=rivtest))
-# all.equal(asdf1,asdf2)
-# 
+
 
 
 
@@ -994,36 +678,7 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
   points(x,y,pch=pch,col=col,...=...)
 }
 
-# riverpoints_OLD <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
-#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
-#   if(length(pch)==1) pch <- rep(pch,length(seg))
-#   if(length(col)==1) col <- rep(col,length(seg))
-#   lines <- rivers$lines
-#   if(max(seg,na.rm=T)>length(lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
-#   
-#   for(i in 1:length(seg)) {
-#     if(jitter!=0) {
-#       jitterx <- runif(length(lines[[seg[i]]][vert[i],1]),min=-jitter,max=jitter)
-#       jittery <- runif(length(lines[[seg[i]]][vert[i],2]),min=-jitter,max=jitter)
-#     }
-#     else {
-#       jitterx <- 0
-#       jittery <- 0
-#     }
-#     if(vert[i]>dim(lines[[seg[i]]])[1] | vert[i]<1) stop("Invalid vertex numbers specified.")
-#     points(lines[[seg[i]]][vert[i],1] + jitterx,
-#            lines[[seg[i]]][vert[i],2] + jittery, pch=pch[i],col=col[i],...=...)
-#   }
-# }
 
-
-# 
-# plot(rivtest)
-# system.time(riverpoints(asdf2$seg,asdf2$vert,rivtest))
-# system.time(riverpoints2(asdf2$seg,asdf2$vert,rivtest,pch=16,col=4))
-# 
-# microbenchmark(riverpoints(asdf2$seg,asdf2$vert,rivtest))
-# microbenchmark(riverpoints2(asdf2$seg,asdf2$vert,rivtest))
 
 
 
@@ -1088,85 +743,6 @@ trimriver <- function(trim=NULL,trimto=NULL,rivers) {
     warning("Segment routes and/or distance lookup must be rebuilt - see help(buildsegroutes).")
   }
   trimmed.rivers <- addcumuldist(trimmed.rivers)
-  
-  # # updating sp object
-  # id <- rivers$lineID
-  # sp_lines1 <- rivers$sp@lines[unique(id[segs,2])]   
-  # j<-1
-  # for(i in unique(id[segs,2])) {
-  #   sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[segs,3][id[segs,2]==i]]
-  #   j<-j+1
-  # }
-  # rivID <- NA
-  # sp_line <- NA
-  # sp_seg <- NA
-  # k<-1
-  # for(i in 1:length(sp_lines1)) {
-  #   for(j in 1:length(sp_lines1[[i]]@Lines)) {
-  #     sp_line[k] <- i
-  #     sp_seg[k] <- j
-  #     k<-k+1
-  #   }
-  # }
-  # rivID <- 1:(k-1)
-  # lineID <- data.frame(rivID,sp_line,sp_seg)
-  # trimmed.rivers$lineID <- lineID
-  # trimmed.rivers$sp@lines <- sp_lines1
-  # if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
-  #   trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
-  # }
-  
-  # ## updating sf object
-  # if(is.null(rivers$sf)) rivers$sf <- as(rivers$sp, "sf") ### take this out!!!
-  # 
-  # sf1 <- rivers$sf
-  # trimid <- rivers$lineID[segs,]
-  # 
-  # # updating geometry
-  # geom1 <- sf1$geometry
-  # if(all(sf::st_geometry_type(geom1) == "LINESTRING")) {
-  #   geom2 <- geom1[trimid$sp_line]
-  # }
-  # if(all(sf::st_geometry_type(geom1) == "MULTILINESTRING")) {
-  #   for(i in unique(trimid$sp_line)) {  # sub-elements first
-  #     geom1[[i]] <- geom1[[i]][trimid$sp_seg[trimid$sp_line==i]]    ##### this is the line that breaks
-  #   }
-  #   geom2 <- geom1[unique(trimid$sp_line)]  # then full elements
-  # }
-  # 
-  # # updating data
-  # # data1 <- sf::st_drop_geometry(sf1)[segs,]
-  # data1 <- sf::st_drop_geometry(sf1)[unique(trimid$sp_line),]
-  # 
-  # # constructing new sf object!
-  # trimmed.rivers$sf <- sf::st_sf(data1, geometry=geom2)
-  
-  
-  # id <- rivers$lineID
-  # sf_geom1 <- rivers$sf$geometry[unique(id[segs,2])]   
-  # j<-1
-  # for(i in unique(id[segs,2])) {
-  #   sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[segs,3][id[segs,2]==i]]
-  #   j<-j+1
-  # }
-  # rivID <- NA
-  # sp_line <- NA
-  # sp_seg <- NA
-  # k<-1
-  # for(i in 1:length(geom1)) {
-  #   for(j in 1:length(geom1[[i]])) {
-  #     sp_line[k] <- i
-  #     sp_seg[k] <- j
-  #     k<-k+1
-  #   }
-  # }
-  # rivID <- 1:(k-1)
-  # lineID <- data.frame(rivID,sp_line,sp_seg)
-  # trimmed.rivers$lineID <- lineID
-  # trimmed.rivers$sp@lines <- sp_lines1
-  # if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
-  #   trimmed.rivers$sp@data <- rivers$sp@data[unique(rivers$lineID[segs,2]),]
-  # }
   
   trimmed.rivers <- update_sf(trimmed.rivers)
   
@@ -1319,33 +895,6 @@ trimtopoints <- function(x,y,rivers,method="snap",dist=NULL) {
   }
   rivers1 <- addcumuldist(rivers1)
   
-  # # updating sp object
-  # id <- rivers$lineID
-  # sp_lines1 <- rivers$sp@lines[unique(id[keep,2])]  
-  # j<-1
-  # for(i in unique(id[keep,2])) {
-  #   sp_lines1[[j]]@Lines <- sp_lines1[[j]]@Lines[id[keep,3][id[keep,2]==i]]
-  #   j<-j+1
-  # }
-  # rivID <- NA
-  # sp_line <- NA
-  # sp_seg <- NA
-  # k<-1
-  # for(i in 1:length(sp_lines1)) {
-  #   for(j in 1:length(sp_lines1[[i]]@Lines)) {
-  #     sp_line[k] <- i
-  #     sp_seg[k] <- j
-  #     k<-k+1
-  #   }
-  # }
-  # rivID <- 1:(k-1)
-  # lineID <- data.frame(rivID,sp_line,sp_seg)
-  # rivers1$lineID <- lineID
-  # rivers1$sp@lines <- sp_lines1
-  # if(dim(rivers$sp@data)[1]==max(rivers$lineID[,2]) & dim(rivers$sp@data)[1]>1) {
-  #   rivers1$sp@data <- rivers$sp@data[unique(rivers$lineID[keep,2]),]
-  # }
-  
   rivers1 <- update_sf(rivers1)
   
   message("Note: any point data already using the input river network must be re-transformed to river coordinates using xy2segvert() or ptshp2segvert().")
@@ -1408,8 +957,6 @@ update_sf <- function(rivers, keep_sp=FALSE) {
   if(!is.null(rivers$sp) & is.null(rivers$sf)) rivers <- sp2sf(rivers, keep_sp=keep_sp)  ### think if i want to keep this
   
   sfold <- rivers$sf
-  # sfnew <- sfold # to grab the projection information, etc
-  # sf::st_geometry(sfnew) <- sf::st_sfc(sf::st_multilinestring(rivers$lines))
   sfnew <- sf::st_sf(geometry=sf::st_sfc(sf::st_multilinestring(rivers$lines)))
   sf::st_crs(sfnew) <- sf::st_crs(sfold)
   rivers$sf_current <- sfnew

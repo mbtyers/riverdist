@@ -44,7 +44,7 @@ data(KilleyW)
 plot(x=KilleyW)
 
 Killey.dists <- riverdistancelist(startseg=1, endseg=16, startvert=100, endvert=25,
-   rivers=KilleyW, reps=1000)
+   rivers=KilleyW)
 Killey.dists  # 18 routes are detected.
 
 # mapping the shortest route detected... 

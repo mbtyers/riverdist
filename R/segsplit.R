@@ -1,5 +1,5 @@
 # splitsegments <- function(rivers,tolerance=NULL) {
-#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
 #   lines <- rivers$lines
 #   if(is.null(tolerance)) tolerance <- rivers$tolerance
 #   
@@ -153,7 +153,7 @@
 #'@export
 splitsegments <- function(rivers,tolerance=NULL,splitthese=NULL,splitthemat=NULL,one2one=FALSE,append=FALSE) {
   
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- rivers$lines
   
   if(is.null(splitthese)) splitthese <- 1:length(lines)   ##############
@@ -306,19 +306,20 @@ splitsegments <- function(rivers,tolerance=NULL,splitthese=NULL,splitthemat=NULL
     }
   }
 
-  Id <- 0
-  rivers$sp@data <- data.frame(Id)
-  rivers$sp@lines <- list(rivers$sp@lines[[1]])
-  rivers$sp@lines[[1]]@Lines <- list(rivers$sp@lines[[1]]@Lines[[1]])
-  for(i in 1:length) {
-    rivers$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers$lines[[i]])
-  }
+  # Id <- 0
+  # rivers$sp@data <- data.frame(Id)
+  # rivers$sp@lines <- list(rivers$sp@lines[[1]])
+  # rivers$sp@lines[[1]]@Lines <- list(rivers$sp@lines[[1]]@Lines[[1]])
+  # for(i in 1:length) {
+  #   rivers$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers$lines[[i]])
+  # }
+  # 
+  # rivID <- 1:length
+  # sp_line <- rep(1,length)
+  # sp_seg <- 1:length
+  # rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
   
-  rivID <- 1:length
-  sp_line <- rep(1,length)
-  sp_seg <- 1:length
-  rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
-  
+  rivers <- update_sf(rivers)
 
   if(!is.null(rivers$segroutes)) {
     rivers <- buildsegroutes(rivers,lookup=F)
@@ -388,18 +389,20 @@ splitsegmentat <- function(seg, vert, rivers) {
     }
   }
   
-  Id <- 0
-  rivers$sp@data <- data.frame(Id)
-  rivers$sp@lines <- list(rivers$sp@lines[[1]])
-  rivers$sp@lines[[1]]@Lines <- list(rivers$sp@lines[[1]]@Lines[[1]])
-  for(i in 1:length) {
-    rivers$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers$lines[[i]])
-  }
+  # Id <- 0
+  # rivers$sp@data <- data.frame(Id)
+  # rivers$sp@lines <- list(rivers$sp@lines[[1]])
+  # rivers$sp@lines[[1]]@Lines <- list(rivers$sp@lines[[1]]@Lines[[1]])
+  # for(i in 1:length) {
+  #   rivers$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers$lines[[i]])
+  # }
+  # 
+  # rivID <- 1:length
+  # sp_line <- rep(1,length)
+  # sp_seg <- 1:length
+  # rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
   
-  rivID <- 1:length
-  sp_line <- rep(1,length)
-  sp_seg <- 1:length
-  rivers$lineID <- data.frame(rivID,sp_line,sp_seg)
+  rivers <- update_sf(rivers)
   
   if(!is.null(rivers$segroutes)) {
     rivers <- buildsegroutes(rivers,lookup=F)

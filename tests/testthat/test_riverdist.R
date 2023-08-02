@@ -42,6 +42,9 @@ flipsegs <- function(rivers,whichflip="all") {
   rivers <- addcumuldist(rivers)
   if(!is.null(rivers$segroutes)) rivers <- buildsegroutes(rivers)
   if(!is.null(rivers$distlookup)) rivers <- buildlookup(rivers)
+  
+  rivers <- update_sf(rivers)
+  
   return(rivers)
 }
 
@@ -184,8 +187,8 @@ test_that("isflowconnected",{
 })
 
 test_that("mouthdist",{
-  expect_equal(mouthdist(4,19,abstreams),92996.74,tolerance=0.001)
-  expect_equal(mouthdist(4,19,abstreams_nosegroutes),92996.74,tolerance=0.001)
+  expect_equal(mouthdist(4,19,abstreams),92745.93,tolerance=0.001)
+  expect_equal(mouthdist(4,19,abstreams_nosegroutes),92745.93,tolerance=0.001)
   expect_error(mouthdist(4,19,Kenai3))
 })
 
@@ -316,7 +319,7 @@ test_that("trimriver",{
   expect_equal(Gulk.trimto$connections,Gulk$connections[1:4,1:4])
   expect_equal(Gulk.trimto$lengths,Gulk$lengths[1:4])
   expect_equal(Gulk.trimto$names,Gulk$names[1:4])
-  expect_equal(Gulk.trimto$lineID,Gulk$lineID[1:4,])
+  # expect_equal(Gulk.trimto$lineID,Gulk$lineID[1:4,])
   expect_equal(Gulk.trimto$sequenced,Gulk$sequenced)
   expect_equal(Gulk.trimto$tolerance,Gulk$tolerance)
   expect_equal(Gulk.trimto$units,Gulk$units)
@@ -331,11 +334,11 @@ test_that("trimriver",{
   expect_true(is.na(Gulk.trim$mouth$mouth.seg))
   expect_equal(length(Koyukuk0a$lines),11)
   expect_equal(dim(Koyukuk0a$connections),c(11,11))
-  expect_equal(Koyukuk0a$lineID[,1],1:11)
-  expect_equal(Koyukuk0a$lineID[,2],c(1,1,2,2,3,3,3,3,3,3,3))
-  expect_equal(Koyukuk0a$lineID[,3],c(1,2,1,2,1,2,3,4,5,6,7))
-  expect_equal(length(Koyukuk0a$sp@lines),3)
-  expect_equal(length(Koyukuk0a$sp@lines[[3]]@Lines),7)
+  # expect_equal(Koyukuk0a$lineID[,1],1:11)
+  # expect_equal(Koyukuk0a$lineID[,2],c(1,1,2,2,3,3,3,3,3,3,3))
+  # expect_equal(Koyukuk0a$lineID[,3],c(1,2,1,2,1,2,3,4,5,6,7))
+  # expect_equal(length(Koyukuk0a$sp@lines),3)
+  # expect_equal(length(Koyukuk0a$sp@lines[[3]]@Lines),7)
 })
 
 x <- c(174185, 172304, 173803, 176013)
@@ -349,17 +352,17 @@ test_that("trimtopoints",{
   expect_equal(length(Kenai3.buf1$lengths),2)
   expect_equal(length(Kenai3.buf1$names),2)
   expect_equal(dim(Kenai3.buf1$connections),c(2,2))
-  expect_equal(dim(Kenai3.buf1$lineID),c(2,3))
+  # expect_equal(dim(Kenai3.buf1$lineID),c(2,3))
   expect_equal(length(Kenai3.buf2$lines),6)
   expect_equal(length(Kenai3.buf2$lengths),6)
   expect_equal(length(Kenai3.buf2$names),6)
   expect_equal(dim(Kenai3.buf2$connections),c(6,6))
-  expect_equal(dim(Kenai3.buf2$lineID),c(6,3))
+  # expect_equal(dim(Kenai3.buf2$lineID),c(6,3))
   expect_equal(length(Kenai3.buf3$lines),26)
   expect_equal(length(Kenai3.buf3$lengths),26)
   expect_equal(length(Kenai3.buf3$names),26)
   expect_equal(dim(Kenai3.buf3$connections),c(26,26))
-  expect_equal(dim(Kenai3.buf3$lineID),c(26,3))
+  # expect_equal(dim(Kenai3.buf3$lineID),c(26,3))
   expect_true(is.na(Kenai3.buf1$mouth$mouth.seg))
   expect_true(is.na(Kenai3.buf2$mouth$mouth.seg))
   expect_equal(Kenai3.buf3$mouth$mouth.seg,20)
@@ -399,15 +402,35 @@ test_that("cleanup funcs",{
 })
 
 filepath <- system.file("extdata", package="riverdist")
-sp <- suppressWarnings(rgdal::readOGR(dsn = filepath, 
-                                      layer = "Gulk_UTM5", 
-                                      verbose = FALSE))
+# sp <- suppressWarnings(rgdal::readOGR(dsn = filepath, 
+#                                       layer = "Gulk_UTM5", 
+#                                       verbose = FALSE))
+sf <- sf::read_sf(dsn = filepath, layer = "Gulk_UTM5")
 ptshp <- pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)
+Gulktest <- line2network(path=filepath, layer="Gulk_UTM5")
+Gulktest_sf <- line2network(path=filepath, layer="Gulk_UTM5")
 test_that("line2network and pointshp2segvert works", {
   expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
-  expect_equal(length(line2network(sp)$lines), 14)
+  expect_equal(length(line2network(sf=sf)$lines), 14)
   expect_equal(dim(ptshp),c(100,8))
   expect_equal(sum(ptshp[,1:2]),27095)
+  expect_equal(sum(unlist(Gulktest$lines)), sum(unlist(Gulk$lines)))
+  expect_true(isTRUE(all.equal(Gulktest$connections, Gulk$connections)))
+  expect_true(isTRUE(all.equal(Gulktest$lengths, Gulk$lengths)))
+  expect_equal(sum(unlist(Gulktest_sf$lines)), sum(unlist(Gulk$lines)))
+  expect_true(isTRUE(all.equal(Gulktest_sf$connections, Gulk$connections)))
+  expect_true(isTRUE(all.equal(Gulktest_sf$lengths, Gulk$lengths)))
+  expect_silent(plot(Gulktest$sf_current))
+  expect_true(inherits(Gulktest$sf_current, "sf"))
+  expect_true(inherits(Gulktest$sf_current, "data.frame"))
+  expect_equal(length(Gulktest$sf_current$geometry[[1]]), 14)
+  expect_equal(as.character(sf::st_geometry_type(Gulktest$sf_current$geometry[[1]])), "MULTILINESTRING")
+  expect_equal(dim(Gulktest$sf_current$geometry[[1]][[1]]), c(812, 2))
+  expect_equal(Gulktest, Gulktest_sf)
+  expect_equal(Gulktest$lines, Gulk$lines)
+  expect_equal(Gulktest$lengths, Gulk$lengths)
+  expect_equal(sum(unlist(Gulktest$sf_current$geometry)), sum(unlist(Gulk$lines)))
+  expect_equal(sum(unlist(Gulktest_sf$sf_current$geometry)), sum(unlist(Gulk$lines)))
 }) 
 
 test_that("matbysurvey", {

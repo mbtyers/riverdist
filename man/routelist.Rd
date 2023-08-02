@@ -29,7 +29,7 @@ The previous version of this function returned many possible routes using random
 data(KilleyW)
 plot(x=KilleyW)
 
-routelist(startseg=1, endseg=16, rivers=KilleyW, reps=1000)
+routelist(startseg=1, endseg=16, rivers=KilleyW)
 }
 \author{
 Matt Tyers

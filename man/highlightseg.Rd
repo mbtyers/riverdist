@@ -15,14 +15,17 @@ highlightseg(seg, rivers, cex = 0.8, lwd = 3, add = FALSE, color = FALSE, ...)
 
 \item{lwd}{The line width to use for highlighted segments}
 
-\item{add}{Whether to add the highlighted segments to an existing plot (\code{TRUE}) or call a new plot (\code{FALSE}).  Defaults to \code{FALSE}.}
+\item{add}{Whether to add the highlighted segments to an existing plot 
+(\code{TRUE}) or call a new plot (\code{FALSE}).  Defaults to \code{FALSE}.}
 
-\item{color}{Whether to display segment labels as the same color as the segments.  Defaults to \code{FALSE}.}
+\item{color}{Whether to display segment labels as the same color as the 
+segments.  Defaults to \code{FALSE}.}
 
 \item{...}{Additional plotting arguments (see \link[graphics]{par})}
 }
 \description{
-Plots a river network object and displays specified segments in bold, for easy identification.
+Plots a river network object and displays specified segments in 
+  bold, for easy identification.
 }
 \examples{
 data(Kenai3)

@@ -17,12 +17,14 @@ riverpoints(seg, vert, rivers, pch = 1, col = 1, jitter = 0, ...)
 
 \item{col}{Point color, as a vector or single value}
 
-\item{jitter}{Maximum amount of random noise to add to "jitter" points if desired, so points do not overlap one another}
+\item{jitter}{Maximum amount of random noise to add to "jitter" points if 
+desired, so points do not overlap one another}
 
 \item{...}{Additional arguments for \link{points}}
 }
 \description{
-Adds points to an active plot.  Works like \link[graphics]{points} but with river locations (segments and vertices) rather than xy coordinates.
+Adds points to an active plot.  Works like \link[graphics]{points} 
+  but with river locations (segments and vertices) rather than xy coordinates.
 }
 \examples{
 data(fakefish,Gulk)

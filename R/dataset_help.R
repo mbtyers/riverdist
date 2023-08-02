@@ -197,7 +197,8 @@ NULL
 #' Plotting methods are described in \link{plot.rivernetwork}.
 #'@section Elements: 
 #'  \describe{
-#'    \item{\code{sp}:}{Object of class \code{"SpatialLinesDataFrame"} from package 'sp'; see \link[sp]{SpatialLinesDataFrame-class}.  This is the original object as read by \link[rgdal]{readOGR}, and is preserved to maintain plotting capability.}
+#'    \item{\code{sf}:}{Object of class \code{"sf"} from package 'sf'; see \link[sf]{sf}.  This is the original object as read by \link[sf]{read_sf}, and is preserved to maintain plotting capability.}
+#'    \item{\code{sf_current}:}{Object of class \code{"sf"} from package 'sf'; see \link[sf]{sf}.  This is an updated \link[sf]{sf} object generated from the coordinates in the `lines` element, incorporating any changes to geometry.  Any corresponding data will be dropped.}
 #'    \item{\code{lines}:}{Object of class \code{"list"}.  Each list element is a matrix of XY coordinates of the vertices of a single river segment.}
 #'    \item{\code{connections}:}{Object of class \code{"matrix"}, with \code{"numeric"} elements.  Defined as a square matrix, with elements describing the type of connection detected between line segments.
 #'      \itemize{
@@ -214,12 +215,6 @@ NULL
 #'    \item{\code{sequenced}:}{\code{"logical"}: has value of TRUE if line vertices have been stored in upstream sequence using \link{sequenceverts}.}
 #'    \item{\code{tolerance}:}{\code{"numeric"}: the spatial tolerance that was used in determining river segment endpoint connectivity; see \link{line2network}, \link{splitsegments}.}
 #'    \item{\code{units}:}{\code{"character"}: the spatial units detected from the input shapefile.}
-#'    \item{\code{lineID}:}{Object of class \code{"data.frame"} establishing the relationship between river segments as stored in the \code{sp} and \code{lines} elements, and is used for updating the \code{sp} element during river network editing in \link{dissolve}, \link{splitsegments}, \link{sequenceverts}, \link{trimriver}, and \link{trimtopoints}.
-#'    \itemize{
-#'      \item \code{rivID} gives the list element number of each river segment in \code{lines}.  This is the same number that is used for segment numbering in river locations.
-#'      \item \code{sp_line} gives the corresponding list element in \code{sp@@lines}.
-#'      \item \code{sp_seg} gives the corresponding list element in \code{sp@@lines[[]]@@Lines}.
-#'      }}
 #'    \item{\code{braided}:}{\code{"logical"}: Has value of \code{TRUE} if \link{checkbraidedTF} has detected braiding, \code{FALSE} if no braiding has been detected, and \code{NA} if braiding has not yet been checked.}
 #'    \item{\code{cumuldist}:}{List of class \code{"numeric"}: Each element is a vector of cumulative distances along each river segment, beginning with 0.}
 #'    \item{\code{segroutes}:}{Object of class \code{"list"}, with each element defined as a vector of class \code{"numeric"}, describing the route from the mouth segment to the specific segment.  This element only exists if \link{buildsegroutes} has been run, and can greatly speed up route and distance calculation.}

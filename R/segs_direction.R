@@ -25,7 +25,7 @@
 #' @importFrom grDevices rgb
 #' @export
 mapbyname <- function(rivers,scale=TRUE,cex=.6,...) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   lines <- rivers$lines
   names <- rivers$names
   if(any(is.na(names))) stop("Segment names must be specified.")
@@ -79,7 +79,7 @@ mapbyname <- function(rivers,scale=TRUE,cex=.6,...) {
 #' @importFrom graphics text
 #' @export
 showends <- function(seg,rivers) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(seg>length(rivers$lines) | seg<1) stop("Invalid segment specified.")
   plot(x=rivers)
   lines(rivers$lines[[seg]],lwd=2,col=4)
@@ -114,7 +114,7 @@ showends <- function(seg,rivers) {
 #' @seealso \link{line2network}
 #' @export
 setmouth <- function(seg,vert,rivers) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(seg>length(rivers$lines) | seg<1) stop("Invalid segment specified.")
   if(vert>dim(rivers$lines[[seg]])[1] | vert<1) stop("Invalid vertex specified.")
   
@@ -147,7 +147,7 @@ setmouth <- function(seg,vert,rivers) {
 #' @seealso \link{line2network}
 #' @export
 sequenceverts <- function(rivers) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   tolerance <- rivers$tolerance
   if(is.na(rivers$mouth$mouth.seg) | is.na(rivers$mouth$mouth.vert)) {
     stop("Error - Need to specify segment & vertex of origin")
@@ -164,7 +164,7 @@ sequenceverts <- function(rivers) {
         temp[j,] <- rivers$lines[[i]][(seg.length-j+1),]
       }
       rivers$lines[[i]] <- temp
-      rivers$sp@lines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- temp
+      # rivers$sp@lines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- temp
       if(i==rivers$mouth$mouth.seg) rivers$mouth$mouth.vert<- 1
     }
   } 
@@ -199,5 +199,6 @@ sequenceverts <- function(rivers) {
   rivers$connections <- connections
   rivers$sequenced <- TRUE
   rivers <- addcumuldist(rivers)
+  rivers <- update_sf(rivers)
   return(rivers) 
 }

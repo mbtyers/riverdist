@@ -1,12 +1,18 @@
 #' Interactive Cleanup of the Vertices of Individual Segments
 #' @description A trial version of a function for deep-cleaning a river network.
 #' 
-#' Sometimes a shapefile contains errors that are not obvious at an initial check, typically vertices that should not be there.  
+#' Sometimes a shapefile contains errors that are not obvious at an initial check, 
+#' typically vertices that should not be there.  
 #' 
-#' This function steps through each segment in sequence, and allows the user to interactively remove vertices.
+#' This function steps through each segment in sequence, and allows the user to 
+#' interactively remove vertices.
 #' @param rivers The river network object to use
 #' @param startwith The segment (number) to start with, defaulting to \code{1}.  
-#' @note Stepping through a large and messy river network can be time-consuming.  To resume a cleanup session, use the \code{startwith=} argument and the last returned river network.  For example, if \code{rivers1 <- cleanup_verts(rivers)} were initially called and the user selected "save & close" at segment 100, cleanup can be resumed by calling \code{rivers2 <- cleanup_verts(rivers1, startwith=100)}.
+#' @note Stepping through a large and messy river network can be time-consuming.  
+#' To resume a cleanup session, use the \code{startwith=} argument and the last 
+#' returned river network.  For example, if \code{rivers1 <- cleanup_verts(rivers)} 
+#' were initially called and the user selected "save & close" at segment 100, 
+#' cleanup can be resumed by calling \code{rivers2 <- cleanup_verts(rivers1, startwith=100)}.
 #' @return A new river network object, see
 #'   \link{rivernetwork}
 #' @seealso line2network
@@ -177,13 +183,15 @@ cleanup_verts <- function(rivers, startwith=1) {
   #### finish updating rivers object!!!!
   rivers <- addcumuldist(rivers)
   
-  # updating sp object
-  riverssplines <- rivers$sp@lines
-  for(i in 1:length(rivers$lines)) {
-    # rivers$sp@lines[[rivers$lineID[i,2]]][[rivers$lineID[i,3]]] <- lines[[i]]
-    riverssplines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- rivers$lines[[i]]
-  }   ## really hope this works
-  rivers$sp@lines <- riverssplines  #### only run this if it does!!!
+  # # updating sp object
+  # riverssplines <- rivers$sp@lines
+  # for(i in 1:length(rivers$lines)) {
+  #   # rivers$sp@lines[[rivers$lineID[i,2]]][[rivers$lineID[i,3]]] <- lines[[i]]
+  #   riverssplines[[rivers$lineID[i,2]]]@Lines[[rivers$lineID[i,3]]]@coords <- rivers$lines[[i]]
+  # }   ## really hope this works
+  # rivers$sp@lines <- riverssplines  #### only run this if it does!!!
+  
+  rivers <- update_sf(rivers)
   
   # making a vector of total segment lengths
   lengths <- rep(NA,length(rivers$lines))

@@ -15,7 +15,8 @@ pointshp2segvert(path = ".", layer, rivers)
 }
 \value{
 A data frame of river locations, with segment numbers in
-  \code{$seg}, vertex numbers in \code{$vert}, snapping distances in \code{$snapdist}, and the remaining columns
+  \code{$seg}, vertex numbers in \code{$vert}, snapping distances in 
+  \code{$snapdist}, and the remaining columns
   corresponding to the data table in the input point shapefile.
 }
 \description{

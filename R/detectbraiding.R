@@ -1,5 +1,5 @@
 # checkbraided <- function(rivers,startseg=NULL,endseg=NULL,progress=TRUE) {
-#   if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+#   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
 #   connections <- rivers$connections
 #   length <- length(rivers$lines)
 #   
@@ -79,7 +79,7 @@
 #' checkbraided(startseg=1, endseg=5, rivers=Kenai3.subset)
 #' @export
 checkbraided <- function(rivers,startseg=NULL,endseg=NULL,progress=TRUE) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   
   if(is.null(startseg) | is.null(endseg)) {
     braiding <- checkbraidedTF(rivers=rivers,progress=progress,toreturn="logical")
@@ -143,7 +143,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
     allroutesi <- 1
   }
   
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   connections <- rivers$connections
   length <- length(rivers$lines)
   mouthseg <- ifelse(!is.na(rivers$mouth$mouth.seg),rivers$mouth$mouth.seg,1)
@@ -221,7 +221,7 @@ checkbraidedTF <- function(rivers,toreturn="rivers",progress=TRUE) {
 #' data(KilleyW)
 #' plot(x=KilleyW)
 #' 
-#' routelist(startseg=1, endseg=16, rivers=KilleyW, reps=1000)
+#' routelist(startseg=1, endseg=16, rivers=KilleyW)
 #' @export
 routelist <- function(startseg,endseg,rivers,reps=100) {
   routes <- list()
@@ -288,7 +288,7 @@ routelist <- function(startseg,endseg,rivers,reps=100) {
 #' plot(x=KilleyW)
 #' 
 #' Killey.dists <- riverdistancelist(startseg=1, endseg=16, startvert=100, endvert=25,
-#'    rivers=KilleyW, reps=1000)
+#'    rivers=KilleyW)
 #' Killey.dists  # 18 routes are detected.
 #' 
 #' # mapping the shortest route detected... 

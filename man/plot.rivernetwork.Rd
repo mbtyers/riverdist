@@ -38,9 +38,12 @@ segments will be drawn in solid lines with differing colors.  If
 \code{color==FALSE}, segments will be drawn in the same color with differing line
 types.}
 
-\item{empty}{Creates an empty plot if set to \code{TRUE}.  Suppresses differentiation by line type if \code{color==FALSE}, and suppresses segment number labels.  Defaults to \code{FALSE}.}
+\item{empty}{Creates an empty plot if set to \code{TRUE}.  Suppresses 
+differentiation by line type if \code{color==FALSE}, and suppresses segment 
+number labels.  Defaults to \code{FALSE}.}
 
-\item{linecol}{Line color to use if \code{empty} is \code{TRUE} or \code{color} is \code{FALSE}.  Defaults to black.}
+\item{linecol}{Line color to use if \code{empty} is \code{TRUE} or 
+\code{color} is \code{FALSE}.  Defaults to black.}
 
 \item{xlab}{Label for X-axis (defaults to "")}
 
@@ -49,7 +52,8 @@ types.}
 \item{...}{Additional plotting arguments (see \link[graphics]{par})}
 }
 \description{
-S3 plotting method for the \link{rivernetwork-class}.  Produces a map of all river segments of a river network object.
+S3 plotting method for the \link{rivernetwork-class}.  
+  Produces a map of all river segments of a river network object.
 }
 \note{
 This function is intended to provide basic visual checks for the user,

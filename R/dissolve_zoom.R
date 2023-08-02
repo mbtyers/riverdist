@@ -14,7 +14,7 @@
 #' @importFrom methods new
 #' @export
 dissolve <- function(rivers) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   tolerance <- rivers$tolerance
   lines <- rivers$lines
   connections <- rivers$connections
@@ -135,18 +135,20 @@ dissolve <- function(rivers) {
   if(any(connections %in% 5:6)) rivers1$braided <- TRUE
   rivers1$lengths <- lengths
   
-  Id <- 0
-  rivers1$sp@data <- data.frame(Id)
-  rivers1$sp@lines <- list(rivers$sp@lines[[1]])
-  rivers1$sp@lines[[1]]@Lines <- list(rivers1$sp@lines[[1]]@Lines[[1]])
-  for(i in 1:length) {
-    rivers1$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers1$lines[[i]])
-  }
+  # Id <- 0
+  # rivers1$sp@data <- data.frame(Id)
+  # rivers1$sp@lines <- list(rivers$sp@lines[[1]])
+  # rivers1$sp@lines[[1]]@Lines <- list(rivers1$sp@lines[[1]]@Lines[[1]])
+  # for(i in 1:length) {
+  #   rivers1$sp@lines[[1]]@Lines[[i]] <- new("Line",coords = rivers1$lines[[i]])
+  # }
+  # 
+  # rivID <- 1:length
+  # sp_line <- rep(1,length)
+  # sp_seg <- 1:length
+  # rivers1$lineID <- data.frame(rivID,sp_line,sp_seg)
   
-  rivID <- 1:length
-  sp_line <- rep(1,length)
-  sp_seg <- 1:length
-  rivers1$lineID <- data.frame(rivID,sp_line,sp_seg)
+  rivers1 <- update_sf(rivers1)
   
   if(!is.na(rivers1$mouth$mouth.seg) & !is.na(rivers1$mouth$mouth.vert)) {
     if(rivers1$mouth$mouth.vert > 1 & rivers1$mouth$mouth.vert < dim(rivers1$lines[[rivers1$mouth$mouth.seg]])[1]) {
@@ -182,7 +184,7 @@ dissolve <- function(rivers) {
 #' @importFrom graphics plot
 #' @export
 zoomtoseg <- function(seg,rivers,...) {
-  if(class(rivers)!="rivernetwork") stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(max(seg,na.rm=T)>length(rivers$lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
   coords <- rivers$lines[[seg[1]]]
   if(length(seg)>1) {

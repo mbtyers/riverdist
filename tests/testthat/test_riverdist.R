@@ -480,3 +480,17 @@ test_that("connections 5 and 6", {
   expect_equal(riverdistance(startseg=2, endseg=3, startvert=1, endvert=25, rivers=K2fl), 0, tolerance=0.001)
 })
 
+filepath <- system.file("extdata", package="riverdist")
+WFT2 <- line2network(path=filepath, layer="West_Fork_Trib2")
+test_that("more line2network", {
+  expect_equal(length(line2network(sf=abstreams0$sf)$lines), 179)
+  expect_equal(length(line2network(sf=Koyukuk0$sf)$lines), 26)
+  expect_equal(length(line2network(sf=Koyukuk1$sf)$lines), 17)
+  expect_equal(length(line2network(sf=Koyukuk2$sf_current)$lines), 31)
+  expect_equal(length(line2network(sf=Kenai1$sf)$lines), 152)
+  expect_error(line2network(path=filepath, layer="fakefish_UTM5"), "Invalid input.  Either specified shapefile is not a linear feature, 
+         or not all geometry types are LINESTRING or MULTILINESTRING.")
+  expect_equal(length(WFT2$lines), 1)
+  expect_equal(nrow(WFT2$lines[[1]]), 61)
+  expect_equal(riverdistance(startseg=1, endseg=1, startvert=10, endvert=20, rivers=WFT2), 673.6803)
+})

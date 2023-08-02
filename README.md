@@ -8,6 +8,7 @@ The 'riverdist' package is intended as a free and readily-available resource for
 
 Note that the current version of 'riverdist' (>= 0.16.0) is no longer built on 'sp' and 'rgdal' and is not backward-compatible.  A legacy version that uses 'sp' / 'rgdal' ('riverdist' 0.15.5) can be installed via
 
+`remove.package("riverdist")`   if needed
 `devtools::install_github("mbtyers/riverdist@legacy")`
 
 ### Commonly-used functions
@@ -42,7 +43,5 @@ Summaries and plots are also available at the dataset level, in addition to indi
 Version 0.15.5 of the 'riverdist' package is available on CRAN.
 
 The development version is currently available on Github, and can be installed in R with the following code:
-
-`install.packages("devtools",dependencies=T)`
 
 `devtools::install_github("mbtyers/riverdist")`

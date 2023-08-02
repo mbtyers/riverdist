@@ -2,7 +2,7 @@ Package: riverdist
 Type: Package
 Title: River Network Distance Computation and Applications
 Version: 0.16.0
-Date: 2023-07-28
+Date: 2023-07-31
 Author: Matt Tyers [aut, cre]
 Authors@R: person("Matt", "Tyers", email = "matttyersstat@gmail.com",
     role = c("aut", "cre"))
@@ -15,7 +15,7 @@ Description: Reads river network shape files and computes network distances.
     networks, meaning there is no reliance on external software.
 License: GPL-2
 Depends:
-    R (>= 2.14.0)
+    R (>= 3.5.0)
 Imports:
     sf (>= 1.0-14),
     methods

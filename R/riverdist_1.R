@@ -112,8 +112,6 @@ calculateconnections <- function(lines,tolerance) {
 #' @param reproject A valid projection, if the shapefile is to be 
 #'   re-projected.  Re-projection is done using \link[sf]{st_transform} in 
 #'   package 'sf'.
-#' @param supplyprojection A valid projection, if the input 
-#'   shapefile does not have the projection information attached.
 #' @param autofix Whether to automatically apply two corrections: removal of 
 #'   duplicate segments, and segments with lengths shorter than the connectivity 
 #'   tolerance.  Defaults to `TRUE`.
@@ -152,8 +150,7 @@ calculateconnections <- function(lines,tolerance) {
 #' 
 #' @export
 line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100, 
-                         reproject=NULL, supplyprojection=NULL,
-                         autofix=TRUE) {
+                         reproject=NULL, autofix=TRUE) {
   
   if(is.null(sf)) {
     ## read to sf here
@@ -169,18 +166,10 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
   
   projargs <- sf::st_crs(sf)$proj4string
   
-  if(is.na(projargs) & !is.null(supplyprojection)){ 
-    projargs <- supplyprojection
-  }
-  
   if(is.na(projargs)){ 
-    stop("Shapefile projection information is missing.  Use supplyprojection= to specify a projection to use.  If the input shapefile is in WGS84 geographic (long-lat) coordinates, this will be +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 (in double-quotes).  If so, it must also be reprojected using reproject=.")
+    stop("Shapefile projection information is missing.")
   }
   
-  # # proj4 <- strsplit(sp@proj4string@projargs,split=" ")
-  # proj4 <- strsplit(projargs,split=" ")
-  
-  # projected <- sp::is.projected(sp)
   projected <- !sf::st_is_longlat(sf)
   
   if(is.null(reproject) & !projected) stop("Distances can only be computed from a projected coordinate system.  Use reproject= to specify a projection to use.")

@@ -10,7 +10,6 @@ line2network(
   layer = NA,
   tolerance = 100,
   reproject = NULL,
-  supplyprojection = NULL,
   autofix = TRUE
 )
 }
@@ -29,9 +28,6 @@ working with larger units of distance, such as km.}
 \item{reproject}{A valid projection, if the shapefile is to be 
 re-projected.  Re-projection is done using \link[sf]{st_transform} in 
 package 'sf'.}
-
-\item{supplyprojection}{A valid projection, if the input 
-shapefile does not have the projection information attached.}
 
 \item{autofix}{Whether to automatically apply two corrections: removal of 
 duplicate segments, and segments with lengths shorter than the connectivity 

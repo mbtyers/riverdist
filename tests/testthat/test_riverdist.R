@@ -231,8 +231,6 @@ us <- upstreamseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$
 dirs <- riverdirectionseq(unique=fakefish$fish.id, survey=fakefish$flight, seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk)
 test_that("seqs",{
   expect_equal(ds[1,8],54220.046,tolerance=0.001)
-  # expect_equal(sum(as.vector(ds)[!is.na(as.vector(ds))]),3145402,tolerance=.1)
-  # expect_equal(sum(as.vector(us)[!is.na(as.vector(us))]),49838.52,tolerance=.01)
   expect_equal(sum(unlist(ds)[!is.na(unlist(ds))]),3145402,tolerance=.1)
   expect_equal(sum(unlist(us)[!is.na(unlist(us))]),49838.52,tolerance=.01)
   expect_equal(us[1,8],-54220.046,tolerance=0.001)
@@ -334,11 +332,6 @@ test_that("trimriver",{
   expect_true(is.na(Gulk.trim$mouth$mouth.seg))
   expect_equal(length(Koyukuk0a$lines),11)
   expect_equal(dim(Koyukuk0a$connections),c(11,11))
-  # expect_equal(Koyukuk0a$lineID[,1],1:11)
-  # expect_equal(Koyukuk0a$lineID[,2],c(1,1,2,2,3,3,3,3,3,3,3))
-  # expect_equal(Koyukuk0a$lineID[,3],c(1,2,1,2,1,2,3,4,5,6,7))
-  # expect_equal(length(Koyukuk0a$sp@lines),3)
-  # expect_equal(length(Koyukuk0a$sp@lines[[3]]@Lines),7)
 })
 
 x <- c(174185, 172304, 173803, 176013)
@@ -352,17 +345,14 @@ test_that("trimtopoints",{
   expect_equal(length(Kenai3.buf1$lengths),2)
   expect_equal(length(Kenai3.buf1$names),2)
   expect_equal(dim(Kenai3.buf1$connections),c(2,2))
-  # expect_equal(dim(Kenai3.buf1$lineID),c(2,3))
   expect_equal(length(Kenai3.buf2$lines),6)
   expect_equal(length(Kenai3.buf2$lengths),6)
   expect_equal(length(Kenai3.buf2$names),6)
   expect_equal(dim(Kenai3.buf2$connections),c(6,6))
-  # expect_equal(dim(Kenai3.buf2$lineID),c(6,3))
   expect_equal(length(Kenai3.buf3$lines),26)
   expect_equal(length(Kenai3.buf3$lengths),26)
   expect_equal(length(Kenai3.buf3$names),26)
   expect_equal(dim(Kenai3.buf3$connections),c(26,26))
-  # expect_equal(dim(Kenai3.buf3$lineID),c(26,3))
   expect_true(is.na(Kenai3.buf1$mouth$mouth.seg))
   expect_true(is.na(Kenai3.buf2$mouth$mouth.seg))
   expect_equal(Kenai3.buf3$mouth$mouth.seg,20)
@@ -402,9 +392,6 @@ test_that("cleanup funcs",{
 })
 
 filepath <- system.file("extdata", package="riverdist")
-# sp <- suppressWarnings(rgdal::readOGR(dsn = filepath, 
-#                                       layer = "Gulk_UTM5", 
-#                                       verbose = FALSE))
 sf <- sf::read_sf(dsn = filepath, layer = "Gulk_UTM5")
 ptshp <- pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)
 Gulktest <- line2network(path=filepath, layer="Gulk_UTM5")
@@ -493,3 +480,17 @@ test_that("connections 5 and 6", {
   expect_equal(riverdistance(startseg=2, endseg=3, startvert=1, endvert=25, rivers=K2fl), 0, tolerance=0.001)
 })
 
+filepath <- system.file("extdata", package="riverdist")
+WFT2 <- line2network(path=filepath, layer="West_Fork_Trib2")
+test_that("more line2network", {
+  expect_equal(length(line2network(sf=abstreams0$sf)$lines), 179)
+  expect_equal(length(line2network(sf=Koyukuk0$sf)$lines), 26)
+  expect_equal(length(line2network(sf=Koyukuk1$sf)$lines), 17)
+  expect_equal(length(line2network(sf=Koyukuk2$sf_current)$lines), 31)
+  expect_equal(length(line2network(sf=Kenai1$sf)$lines), 152)
+  expect_error(line2network(path=filepath, layer="fakefish_UTM5"), "Invalid input.  Either specified shapefile is not a linear feature, 
+         or not all geometry types are LINESTRING or MULTILINESTRING.")
+  expect_equal(length(WFT2$lines), 1)
+  expect_equal(nrow(WFT2$lines[[1]]), 61)
+  expect_equal(riverdistance(startseg=1, endseg=1, startvert=10, endvert=20, rivers=WFT2), 673.6803)
+})

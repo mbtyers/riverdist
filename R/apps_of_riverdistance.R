@@ -641,17 +641,17 @@ plot.homerange <- function(x,cumulative=FALSE,lwd=3,maxlwd=10,col=4,pch=21,label
   if(length(main)>1)  mains <- main
   maxlwds <- max(unlist(x$subseg_n),na.rm=T)
   lwdfactor <- ifelse(maxlwds==1,0,(maxlwd-lwd)/(maxlwds-1))
-  for(i in 1:length(x$subseg_n)) {
+  for(i in seq_along(x$subseg_n)) {
     # print(mains)
     plot(x$rivers,empty=T,main=mains[i],...=...)
-    for(j in 1:length(x$subseg_n[[i]])) {
+    for(j in seq_along(x$subseg_n[[i]])) {
       a <- x$subseg_n[[i]][[j]]
       if(!cumulative) a <- 1*(a>0)
       n <- length(a)
       firsts <- c(1,(which(a[-n]!=a[-1])+1))
       lasts <- c(which(a[-n]!=a[-1]),n)
       denses <- a[firsts]
-      for(k in 1:length(denses)) {
+      for(k in seq_along(denses)) {
         if(denses[k]>0){
           if(!is.null(dim(x$rivers$lines[[j]][(firsts[k]:lasts[k]),]))){
             lines(x$rivers$lines[[j]][(firsts[k]:lasts[k]),],lwd=(lwd+cumulative*(lwdfactor*denses[k]-1)),col=col)

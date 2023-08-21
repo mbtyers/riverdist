@@ -1,3 +1,7 @@
+# 'riverdist' 0.16.1 (Aug 21, 2023)
+
+* Fixed a bug in `plot.homerange`
+
 # 'riverdist' 0.16.0 (July 31, 2023)
 
 * Transition to remove dependency on `sp` and `rgdal` packages, and transition to newer-generation `sf` package.

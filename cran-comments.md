@@ -1,6 +1,7 @@
 ## Package update
-* This is an update of the 'riverdist' package to eliminate dependency on the 
-'sp' and 'rgdal' packages, and move to the newer 'sf' package.
+* This is a minor patch to fix a bug in one function.
+* The previous version was an update of the 'riverdist' package to eliminate 
+dependency on the 'sp' and 'rgdal' packages, and move to the newer 'sf' package.
 * I have read and agree to all CRAN policies.
 
 ## Test environments

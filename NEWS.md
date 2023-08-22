@@ -1,6 +1,6 @@
 # 'riverdist' 0.16.1 (Aug 21, 2023)
 
-* Fixed a bug in `plot.homerange`
+* Fixed a bug in `plot.homerange()`
 
 # 'riverdist' 0.16.0 (July 31, 2023)
 

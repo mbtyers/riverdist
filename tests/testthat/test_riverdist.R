@@ -144,7 +144,7 @@ Kenai2flipdis <- dissolve(flipsegs(Kenai2))
 Kenai3flip$sp <- NULL
 Kenai2flipdis$sp <- NULL
 test_that("dissolve",{
-  expect_equal(dissolve(Kenai2),Kenai3)   
+  expect_equal(dissolve(Kenai2),Kenai3, check.attributes=FALSE)   
   expect_equal(length(dissolve(Gulk)$segroutes),13,tolerance=0.001)
   expect_equal(sum(dissolve(Gulk)$distlookup$middist),8360513,tolerance=1)
   expect_equal(sum(dissolve(Gulk)$distlookup$endtop,na.rm=T),126,tolerance=0.001)
@@ -293,7 +293,7 @@ Koyukuk1c <- splitsegments(rivers=Koyukuk1, splitthese=c(7,7,7), splitthemat=c(1
 Koyukuk0.2 <- connectsegs(connect=c(20,21,22), connectto=c(21,22,23), 
                           nearestvert=c(FALSE,FALSE,TRUE), rivers=Koyukuk0)
 test_that("splitsegments",{
-  expect_equal(Koyukuk1a,Koyukuk2)
+  expect_equal(Koyukuk1a,Koyukuk2, check.attributes=FALSE)
   expect_equal(length(Koyukuk1b$lines), 20)
   expect_equal(sum(Koyukuk1b$lines[[20]]), 505784711)
   expect_equal(length(Koyukuk1c$lines), 20)

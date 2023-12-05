@@ -1,3 +1,7 @@
+# 'riverdist' 0.16.2 (Dec 05, 2023)
+
+* Addressing forthcoming changes to `sf` package.
+
 # 'riverdist' 0.16.1 (Aug 21, 2023)
 
 * Fixed a bug in `plot.homerange()`

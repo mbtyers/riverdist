@@ -183,13 +183,13 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
   
   lines <- list()
   j<-1
-  for(i in 1:length(sf$geometry)) {
+  for(i in seq_along(sf$geometry)) {
     if(sf::st_geometry_type(sf$geometry[[i]]) == "LINESTRING") {
       lines[[j]] <- sf$geometry[[i]][,1:2]
       j <- j+1
     }
     if(sf::st_geometry_type(sf$geometry[[i]]) == "MULTILINESTRING") {
-      for(k in 1:length(sf$geometry[[i]])) {
+      for(k in seq_along(sf$geometry[[i]])) {
         lines[[j]] <- sf$geometry[[i]][[k]][,1:2]
         j<-j+1
       }
@@ -656,7 +656,7 @@ riverpoints <- function(seg,vert,rivers,pch=1,col=1,jitter=0,...) {
   if(max(seg,na.rm=T)>length(lines) | min(seg,na.rm=T)<1) stop("Invalid segment numbers specified.")
   
   x <- y <- rep(NA,length(seg))
-  for(i in 1:length(seg)) {
+  for(i in seq_along(seg)) {
     x[i] <- lines[[seg[i]]][vert[i],1]
     y[i] <- lines[[seg[i]]][vert[i],2]
   }

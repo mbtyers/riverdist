@@ -1,3 +1,7 @@
+# 'riverdist' 0.16.3 (Jan 05, 2024)
+
+* Fixed a bug in `riverpoints()`
+
 # 'riverdist' 0.16.2 (Dec 05, 2023)
 
 * Addressing forthcoming changes to `sf` package.

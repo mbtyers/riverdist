@@ -399,7 +399,7 @@ Gulktest_sf <- line2network(path=filepath, layer="Gulk_UTM5")
 test_that("line2network and pointshp2segvert works", {
   expect_equal(length(line2network(path=filepath, layer="Gulk_UTM5")$lines),14)
   expect_equal(length(line2network(sf=sf)$lines), 14)
-  expect_equal(dim(ptshp),c(100,8))
+  expect_equal(dim(ptshp),c(100,10))
   expect_equal(sum(ptshp[,1:2]),27095)
   expect_equal(sum(unlist(Gulktest$lines)), sum(unlist(Gulk$lines)))
   expect_true(isTRUE(all.equal(Gulktest$connections, Gulk$connections)))

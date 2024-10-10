@@ -16,7 +16,8 @@ xy2segvert(x, y, rivers)
 \value{
 A data frame of river locations, with segment numbers in \code{$seg}, 
   vertex numbers in \code{$vert}, and the snapping distance for each point in 
-  \code{$snapdist}.
+  \code{$snapdist}.  Two additional columns are \code{$snap_x} and \code{$snap_y},
+  which give the x- and y-coordinates snapped to the river network.
 }
 \description{
 This function determines the closest vertex in the river network
@@ -52,6 +53,9 @@ head(line98albers)
 
 zoomtoseg(seg=c(162,19), rivers=Kenai1)
 points(line98albers)
+}
+\seealso{
+\link{pointshp2segvert}
 }
 \author{
 Matt Tyers

@@ -251,12 +251,14 @@ line2network <- function(sf = NULL, path=".", layer = NA, tolerance=100,
 #' @param rivers The river network object to use.
 #' @return A data frame of river locations, with segment numbers in
 #'   \code{$seg}, vertex numbers in \code{$vert}, snapping distances in 
-#'   \code{$snapdist}, and the remaining columns
+#'   \code{$snapdist}, snapped x- and y-coordinates in \code{$snap_x} and \code{$snap_y},
+#'   and the remaining columns
 #'   corresponding to the data table in the input point shapefile.
 #' @author Matt Tyers
 #' @note If the input shapefile is detected to be in a different projection than
 #'   the river network, the input shapefile will be re-projected before
 #'   conversion to river locations.
+#' @seealso \link{xy2segvert}
 #' @importFrom sf read_sf
 #' @importFrom sf st_coordinates
 #' @importFrom sf st_drop_geometry
@@ -561,12 +563,14 @@ whoconnected <- function(seg,rivers) {
 #' @param rivers The river network object to use
 #' @return A data frame of river locations, with segment numbers in \code{$seg}, 
 #'   vertex numbers in \code{$vert}, and the snapping distance for each point in 
-#'   \code{$snapdist}.
+#'   \code{$snapdist}.  Two additional columns are \code{$snap_x} and \code{$snap_y},
+#'   which give the x- and y-coordinates snapped to the river network.
 #' @author Matt Tyers
 #' @note Conversion to river locations is only valid if the input XY 
 #'   coordinates and river network are in the same projected coordinate system. 
 #'   Point data in geographic coordinates can be projected using 
 #'   \link[sf]{sf_project} in package 'sf', and an example is shown below.
+#' @seealso \link{pointshp2segvert}
 #' @examples 
 #' data(Gulk,fakefish)
 #' head(fakefish)
@@ -595,7 +599,8 @@ xy2segvert <- function(x,y,rivers) {
   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(any(is.na(x))|any(is.na(y))|!is.numeric(x)|!is.numeric(y)) stop("Missing or non-numeric coordinates.")
   
-  lengthlength <- length(unlist(lines))/2
+  # lengthlength <- length(unlist(lines))/2
+  lengthlength <- length(unlist(rivers$lines))/2
   
   whichseg <- whichvert <- allx <- ally <- rep(NA,lengthlength)
   istart <- 1
@@ -616,11 +621,28 @@ xy2segvert <- function(x,y,rivers) {
   min.i <- mapply(function(x,y) which.min(pdist2(c(x,y),allx,ally))[1],x,y)  # if there's a tie, accept the first vertex
   seg <- whichseg[min.i]
   vert <- whichvert[min.i]
-  snapdist <- sqrt((x-allx[min.i])^2 + (y-ally[min.i])^2)
-  out <- data.frame(seg,vert,snapdist)
+  snap_x <- allx[min.i]
+  snap_y <- ally[min.i]
+  snapdist <- sqrt((x-snap_x)^2 + (y-snap_y)^2)
+  out <- data.frame(seg, vert, snapdist, snap_x, snap_y)
   return(out)
 }
 
+
+
+segvert2xy <- function(seg, vert, rivers) {
+  if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
+  if(any(is.na(seg))|any(is.na(vert))|!is.numeric(seg)|!is.numeric(vert)) stop("Missing or non-numeric coordinates.")
+  if(length(seg) != length(vert)) stop("Length mismatch between seg= and vert= arguments")
+  
+  snap_x <- snap_y <- rep(NA, length(seg))
+  for(i in seq_along(seg)) {
+    snap_x[i] <- rivers$lines[[seg[i]]][vert[i],1]
+    snap_y[i] <- rivers$lines[[seg[i]]][vert[i],2]
+  }
+  out <- data.frame(snap_x, snap_y)
+  return(out)
+}
 
 
 

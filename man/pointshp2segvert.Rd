@@ -16,7 +16,8 @@ pointshp2segvert(path = ".", layer, rivers)
 \value{
 A data frame of river locations, with segment numbers in
   \code{$seg}, vertex numbers in \code{$vert}, snapping distances in 
-  \code{$snapdist}, and the remaining columns
+  \code{$snapdist}, snapped x- and y-coordinates in \code{$snap_x} and \code{$snap_y},
+  and the remaining columns
   corresponding to the data table in the input point shapefile.
 }
 \description{
@@ -40,6 +41,9 @@ plot(x=Gulk)
 points(fakefish_UTM5$x, fakefish_UTM5$y)
 riverpoints(seg=fakefish_UTM5$seg, vert=fakefish_UTM5$vert, rivers=Gulk, pch=16, col=2)
 
+}
+\seealso{
+\link{xy2segvert}
 }
 \author{
 Matt Tyers

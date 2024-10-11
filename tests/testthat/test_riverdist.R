@@ -394,6 +394,7 @@ test_that("cleanup funcs",{
 filepath <- system.file("extdata", package="riverdist")
 sf <- sf::read_sf(dsn = filepath, layer = "Gulk_UTM5")
 ptshp <- pointshp2segvert(path=filepath, layer="fakefish_UTM5", rivers=Gulk)
+ptshp_xy <- segvert2xy(seg=ptshp$seg, vert=ptshp$vert, rivers=Gulk)
 Gulktest <- line2network(path=filepath, layer="Gulk_UTM5")
 Gulktest_sf <- line2network(path=filepath, layer="Gulk_UTM5")
 test_that("line2network and pointshp2segvert works", {
@@ -418,6 +419,9 @@ test_that("line2network and pointshp2segvert works", {
   expect_equal(Gulktest$lengths, Gulk$lengths)
   expect_equal(sum(unlist(Gulktest$sf_current$geometry)), sum(unlist(Gulk$lines)))
   expect_equal(sum(unlist(Gulktest_sf$sf_current$geometry)), sum(unlist(Gulk$lines)))
+  expect_true(all(ptshp[c("snap_x","snap_y")] == ptshp_xy[c("snap_x","snap_y")]))
+  expect_equal(dim(ptshp_xy), c(100, 2))
+  expect_equal(sum(ptshp_xy), 783856956)
 }) 
 
 test_that("matbysurvey", {

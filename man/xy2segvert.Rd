@@ -55,7 +55,7 @@ zoomtoseg(seg=c(162,19), rivers=Kenai1)
 points(line98albers)
 }
 \seealso{
-\link{pointshp2segvert}
+\link{pointshp2segvert}, \link{segvert2xy}
 }
 \author{
 Matt Tyers

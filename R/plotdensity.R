@@ -175,10 +175,10 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' @param lwd The line width to use for background lines if \code{bylwd} is set 
 #'   to \code{TRUE}, or all lines if \code{bylwd} is set to \code{FALSE}. 
 #'   Defaults to 1.
-#' @param linecol The line color to use for background lines if \code{bylwd} is 
-#'   set to \code{TRUE}.  Defaults to \code{"black"}.
-#' @param denscol The line color to use for showing density if \code{bylwd} is 
-#'   set to \code{TRUE}.  Defaults to \code{"black"}.
+#' @param linecol The line color to use for background lines if \code{bycol} is 
+#'   set to \code{FALSE}.  If the default `NULL` is accepted, \code{"black"} lines will be drawn.
+#' @param denscol The line color to use for showing density if \code{bycol} is 
+#'   set to \code{FALSE}.  If the default `NULL` is accepted, \code{"black"} lines will be drawn.
 #' @param alpha The opacity value for lines.  This could potentially allow 
 #'   multiple density plots to be overlayed with different colors.
 #' @param dark A color-saturation adjustment, with values in [0,1].  A value of 
@@ -217,7 +217,7 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 #' plot(x=Gulk_dens)
 #' @export
-plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol="black",denscol="black",alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,scalebar=TRUE,...) {
+plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol=NULL,denscol=NULL,alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,scalebar=TRUE,...) {
   if(!inherits(x, "riverdensity")) stop("Argument x must be an object returned from makeriverdensity().")
   if(dark>1 | dark<0) dark <-1
   if(alpha>1 | alpha<0) alpha <-1
@@ -284,38 +284,42 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
         if(ramp=="grey" | ramp=="gray") {
           cols <- grey((1-quants)*.8)
           denscol <- 1
-          linecol <- grey(.8)
+          if(is.null(linecol)) linecol <- grey(.8)
         }
         if(ramp=="red") {
           cols <- rgb(1,(1-quants)*.8,(1-quants)*.8)
           denscol <- 2
-          linecol <- rgb(1,.8,.8)
+          if(is.null(linecol)) linecol <- rgb(1,.8,.8)
         }
         if(ramp=="green") {
           cols <- rgb((1-quants)*.8,1,(1-quants)*.8)
           denscol <- 3
-          linecol <- rgb(.8,1,.8)
+          if(is.null(linecol)) linecol <- rgb(.8,1,.8)
         }
         if(ramp=="blue") {
           cols <- rgb((1-quants)*.8,(1-quants)*.8,1)
           denscol <- 4
-          linecol <- rgb(.8,.8,1)
+          if(is.null(linecol)) linecol <- rgb(.8,.8,1)
         }
         if(ramp=="heat") {
           cols <- heat.colors(1000)[ceiling(900*(1-quants))+1]
           denscol <- heat.colors(1000)[1]
-          linecol <- heat.colors(1000)[901]
+          if(is.null(linecol)) linecol <- heat.colors(1000)[901]
         }
         if(ramp=="stoplight") {
           cols <- rainbow(1000)[ceiling(300*(1-quants))+1] 
           denscol <- rainbow(1000)[1] 
-          linecol <- rainbow(1000)[301]
+          if(is.null(linecol)) linecol <- rainbow(1000)[301]
         }
         if(ramp=="rainbow") {
           cols <- rainbow(1000)[ceiling(700*(1-quants))+1]
           denscol <- rainbow(1000)[1] 
-          linecol <- rainbow(1000)[701]
+          if(is.null(linecol)) linecol <- rainbow(1000)[701]
         }
+      }
+      if(!bycol) {
+        if(is.null(linecol)) linecol <- "black"
+        if(is.null(denscol)) denscol <- "black"
       }
       if(bylwd) {
         lwds <- maxlwd*quants
@@ -344,6 +348,68 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
   }
 }
 
+
+densityanomaly <- function(riverdensity, whichplots=NULL, 
+                           method=c("overlap", "both", "positive", "negative"),
+                           parmfrow=NULL, ...) {
+  if(is.null(whichplots)) whichplots <- seq_along(riverdensity$densities)
+  method <- match.arg(method)
+  
+  nsurvey <- unname(table(riverdensity$survey))
+  weights <- mean(nsurvey)/nsurvey
+  
+  meandens <- list()
+  for(i_segment in 1:length(riverdensity$densities[[1]])) {
+    meandens[[i_segment]] <- NA
+    for(i_vertex in 1:length(riverdensity$densities[[1]][[i_segment]])) {
+      meandens[[i_segment]][i_vertex] <- mean(sapply(riverdensity$densities[whichplots], 
+                                                     \(x) x[[i_segment]][i_vertex])*
+                                                weights[whichplots])
+    }
+  }
+  
+  densitydiffs_positive <- riverdensity
+  densitydiffs_negative <- riverdensity
+  for(i_survey in 1:length(riverdensity$densities)) {
+    for(i_segment in 1:length(riverdensity$densities[[1]])) {
+      for(i_vertex in 1:length(riverdensity$densities[[1]][[i_segment]])) {
+        thediff <- riverdensity$densities[[i_survey]][[i_segment]][i_vertex]*weights[i_survey] -
+          meandens[[i_segment]][i_vertex]
+        densitydiffs_negative$densities[[i_survey]][[i_segment]][i_vertex] <-
+          ifelse(thediff < 0, -thediff, 0)
+        densitydiffs_positive$densities[[i_survey]][[i_segment]][i_vertex] <-
+          ifelse(thediff > 0, thediff, 0)
+        
+      }
+    }
+  }
+  
+  # still need to make sure whichplots= works right
+  # need to add addl arguments to plot.riverdensity
+  
+  if(method %in% c("negative", "both")) {
+    if(!is.null(parmfrow)) par(mfrow=parmfrow)
+    plot(densitydiffs_negative, ramp="blue", whichplots=whichplots, ...=...)
+  }
+  if(method %in% c("positive", "both")) {
+    if(!is.null(parmfrow)) par(mfrow=parmfrow)
+    plot(densitydiffs_positive, ramp="red", whichplots=whichplots, ...=...)
+    
+  }
+  if(method == "overlap") {
+    if(!is.null(parmfrow)) par(mfrow=parmfrow)
+    for(iplot in whichplots) {
+      plot(densitydiffs_negative, ramp="blue",
+           whichplots=iplot, ...=...)
+      plot(densitydiffs_positive, ramp="red", 
+           whichplots=iplot, add=TRUE, linecol=NA, ...=...)
+      # for(ilines in seq_along(riverdensity$rivers$lines)) {
+      #   lines(riverdensity$rivers$lines[[ilines]], col=NA)
+      # }
+    }
+  }
+}
+# densityanomaly(riverdensity=Gulk_dens, parmfrow=c(2,5))
 
 
 #' Plot Points Used for Kernel Density

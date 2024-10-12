@@ -570,7 +570,7 @@ whoconnected <- function(seg,rivers) {
 #'   coordinates and river network are in the same projected coordinate system. 
 #'   Point data in geographic coordinates can be projected using 
 #'   \link[sf]{sf_project} in package 'sf', and an example is shown below.
-#' @seealso \link{pointshp2segvert}
+#' @seealso \link{pointshp2segvert}, \link{segvert2xy}
 #' @examples 
 #' data(Gulk,fakefish)
 #' head(fakefish)
@@ -630,6 +630,31 @@ xy2segvert <- function(x,y,rivers) {
 
 
 
+#' Convert River Locations to XY coordinates
+#' @description This function is almost the reverse of \link{xy2segvert}, and
+#' returns a data frame of the XY spatial coordinates corresponding to vectors
+#' of segment and vertex.  It should be noted that this only returns the spatial
+#' coordinates from the river network itself, and will not necessarily correspond
+#' to the original set of point data.
+#' @param seg A vector of river segments to transform
+#' @param vert A vector of river vertices to transform
+#' @param rivers The river network object to use
+#' @return A data frame of XY coordinates, given as \code{$snap_x} and \code{$snap_y}..
+#' @author Matt Tyers
+#' @seealso \link{xy2segvert}, \link{pointshp2segvert}
+#' @examples 
+#' data(Gulk,fakefish)
+#' head(fakefish)
+#' 
+#' xy_from_segvert <- segvert2xy(seg=fakefish$seg, vert=fakefish$vert, 
+#'                    rivers=Gulk)
+#' head(xy_from_segvert)
+#' 
+#' plot(x=Gulk, xlim=c(862000,882000), ylim=c(6978000,6993000))
+#' points(x=fakefish$x, y=fakefish$y, pch=16, col=2)
+#' 
+#' points(x=xy_from_segvert$snap_x, y=xy_from_segvert$snap_y, pch=15, col=4)
+#' @export
 segvert2xy <- function(seg, vert, rivers) {
   if(!inherits(rivers, "rivernetwork")) stop("Argument 'rivers' must be of class 'rivernetwork'.  See help(line2network) for more information.")
   if(any(is.na(seg))|any(is.na(vert))|!is.numeric(seg)|!is.numeric(vert)) stop("Missing or non-numeric coordinates.")

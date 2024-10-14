@@ -76,7 +76,7 @@ Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 plot(x=Gulk_dens)
 }
 \seealso{
-\link{plot.riverdensity}, \link{plotriverdensitypoints}
+\link{plot.riverdensity}, \link{densityanomaly}, \link{plotriverdensitypoints}
 }
 \author{
 Matt Tyers

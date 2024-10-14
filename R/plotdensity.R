@@ -36,7 +36,7 @@
 #'   length of the river network.
 #' @note This function is distance-computation intensive, and may be slow-running if a river network is used that does not have segment routes and/or distance lookup tables for fast distance computation.  See \link{buildsegroutes} and/or \link{buildlookup} for more information.
 #' @return A river density object, see \link{riverdensity-class}.
-#' @seealso \link{plot.riverdensity}, \link{plotriverdensitypoints}
+#' @seealso \link{plot.riverdensity}, \link{densityanomaly}, \link{plotriverdensitypoints}
 #' @author Matt Tyers
 #' @importFrom utils txtProgressBar
 #' @importFrom utils setTxtProgressBar
@@ -199,7 +199,7 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #'   existing plot (\code{TRUE}).  Defaults to \code{FALSE}.
 #' @param scalebar Whether to add a scale bar to plot(s).  Defaults to \code{TRUE}.
 #' @param ... Additional plotting parameters.
-#' @seealso \link{makeriverdensity}, \link{plotriverdensitypoints}
+#' @seealso \link{makeriverdensity}, \link{densityanomaly}, \link{plotriverdensitypoints}
 #' @method plot riverdensity
 #' @aliases plotriverdensity
 #' @author Matt Tyers
@@ -217,10 +217,14 @@ makeriverdensity <- function(seg,vert,rivers,survey=NULL,kernel="gaussian",bw=NU
 #' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
 #' plot(x=Gulk_dens)
 #' @export
-plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRUE,maxlwd=10,pwr=0.7,scalebyN=TRUE,ramp="grey",lwd=1,linecol=NULL,denscol=NULL,alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,scalebar=TRUE,...) {
+plot.riverdensity <- function(x, whichplots=NULL, points=TRUE, bycol=TRUE, bylwd=TRUE,
+                              maxlwd=10, pwr=0.7, scalebyN=TRUE, 
+                              ramp=c("grey","gray","red","green","blue","heat","stoplight","rainbow"),
+                              lwd=1,linecol=NULL,denscol=NULL,alpha=1,dark=1,showN=TRUE,main=NULL,xlab="",ylab="",add=FALSE,scalebar=TRUE,...) {
   if(!inherits(x, "riverdensity")) stop("Argument x must be an object returned from makeriverdensity().")
   if(dark>1 | dark<0) dark <-1
   if(alpha>1 | alpha<0) alpha <-1
+  ramp <- match.arg(ramp)
   densities <- x$densities
   endptverts <- x$endptverts
   densverts <- x$densverts
@@ -349,31 +353,81 @@ plot.riverdensity <- function(x,whichplots=NULL,points=TRUE,bycol=TRUE,bylwd=TRU
 }
 
 
-densityanomaly <- function(riverdensity, whichplots=NULL, 
+#' Plot Difference from Mean Kernel Density Using River Distance
+#' @description Plots kernel density anomaly for each survey, which is defined as 
+#' the difference between kernel density for each survey and mean kernel density 
+#' across all surveys.  The intent of this function is to highlight areas in which 
+#' density is higher or lower for specific surveys than it is on average.
+#' 
+#' The input argument is an object returned from \link{makeriverdensity}.
+#' @param x An object returned from \link{makeriverdensity}.
+#' @param whichplots A vector of plots to produce, if multiple plots are 
+#'   produced.  For example, specifying \code{whichplot=c(2,3,4)} will result in
+#'   only the second, third, and fourth plots of the sequence being produced. 
+#'   Accepting the default (\code{NULL}) will result in all plots being 
+#'   produced.  Note: this will also be the set of kernel densities used to 
+#'   calculate the mean kernel density and thereby differences from mean kernel
+#'   density. 
+#' @param method Whether to produce plots for positive and negative anomalies
+#' overlayed (\code{"overlay"}), in sequence (\code{"both"}), or positive or 
+#' negative only (\code{"positive"} or \code{"negative"}).
+#' @param negative_ramp Color ramp to use for negative anomaly (see \link{plot.riverdensity}
+#' for more details).  Defaults to \code{"blue"}.
+#' @param positive_ramp Color ramp to use for negative anomaly (see \link{plot.riverdensity}
+#' for more details).  Defaults to \code{"red"}.
+#' @param parmrow Optional argument to \code{par(mfrow)=}, which may be useful if
+#' \code{method="both"}.  Defaults to \code{NULL}.
+#' @param ... Additional arguments to \link{plot.riverdensity}.
+#' @return \code{NULL}
+#' @seealso \link{makeriverdensity}, \link{plot.riverdensity}, \link{plotriverdensitypoints}
+#' @author Matt Tyers
+#' @examples
+#' data(Gulk, fakefish)
+#' 
+#' Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk, 
+#'   survey=fakefish$flight.date)
+#'   
+#' # first, the behavior of plot.riverdensity
+#' # # 10 plots will be created, recommend calling par(mfrow=c(2,5))
+#' plot(x=Gulk_dens)
+#' 
+#' # next, showing densityanomaly
+#' densityanomaly(x=Gulk_dens, parmfrow=c(2,5))
+#' densityanomaly(x=Gulk_dens, method="negative", parmfrow=c(2,5))
+#' densityanomaly(x=Gulk_dens, method="positive", parmfrow=c(2,5))
+#' @export
+densityanomaly <- function(x, whichplots=NULL, 
                            method=c("overlap", "both", "positive", "negative"),
+                           negative_ramp = "blue", positive_ramp="red",
                            parmfrow=NULL, ...) {
-  if(is.null(whichplots)) whichplots <- seq_along(riverdensity$densities)
+  if(is.null(whichplots)) whichplots <- seq_along(x$densities)
   method <- match.arg(method)
   
-  nsurvey <- unname(table(riverdensity$survey))
+  parmfrow1 <- par("mfrow")
+  # parmfrow_exit <- par(mfrow=parmfrow1)
+  if(!is.null(parmfrow)) {
+    on.exit(par(mfrow=parmfrow1))
+  }
+  
+  nsurvey <- unname(table(x$survey))
   weights <- mean(nsurvey)/nsurvey
   
   meandens <- list()
-  for(i_segment in 1:length(riverdensity$densities[[1]])) {
+  for(i_segment in 1:length(x$densities[[1]])) {
     meandens[[i_segment]] <- NA
-    for(i_vertex in 1:length(riverdensity$densities[[1]][[i_segment]])) {
-      meandens[[i_segment]][i_vertex] <- mean(sapply(riverdensity$densities[whichplots], 
+    for(i_vertex in 1:length(x$densities[[1]][[i_segment]])) {
+      meandens[[i_segment]][i_vertex] <- mean(sapply(x$densities[whichplots], 
                                                      \(x) x[[i_segment]][i_vertex])*
                                                 weights[whichplots])
     }
   }
   
-  densitydiffs_positive <- riverdensity
-  densitydiffs_negative <- riverdensity
-  for(i_survey in 1:length(riverdensity$densities)) {
-    for(i_segment in 1:length(riverdensity$densities[[1]])) {
-      for(i_vertex in 1:length(riverdensity$densities[[1]][[i_segment]])) {
-        thediff <- riverdensity$densities[[i_survey]][[i_segment]][i_vertex]*weights[i_survey] -
+  densitydiffs_positive <- x
+  densitydiffs_negative <- x
+  for(i_survey in 1:length(x$densities)) {
+    for(i_segment in 1:length(x$densities[[1]])) {
+      for(i_vertex in 1:length(x$densities[[1]][[i_segment]])) {
+        thediff <- x$densities[[i_survey]][[i_segment]][i_vertex]*weights[i_survey] -
           meandens[[i_segment]][i_vertex]
         densitydiffs_negative$densities[[i_survey]][[i_segment]][i_vertex] <-
           ifelse(thediff < 0, -thediff, 0)
@@ -385,31 +439,31 @@ densityanomaly <- function(riverdensity, whichplots=NULL,
   }
   
   # still need to make sure whichplots= works right
-  # need to add addl arguments to plot.riverdensity
+  # need to add addl arguments to plot.x
   
   if(method %in% c("negative", "both")) {
     if(!is.null(parmfrow)) par(mfrow=parmfrow)
-    plot(densitydiffs_negative, ramp="blue", whichplots=whichplots, ...=...)
+    plot(densitydiffs_negative, ramp=negative_ramp, whichplots=whichplots, ...=...)
   }
   if(method %in% c("positive", "both")) {
     if(!is.null(parmfrow)) par(mfrow=parmfrow)
-    plot(densitydiffs_positive, ramp="red", whichplots=whichplots, ...=...)
+    plot(densitydiffs_positive, ramp=positive_ramp, whichplots=whichplots, ...=...)
     
   }
   if(method == "overlap") {
     if(!is.null(parmfrow)) par(mfrow=parmfrow)
     for(iplot in whichplots) {
-      plot(densitydiffs_negative, ramp="blue",
+      plot(densitydiffs_negative, ramp=negative_ramp,
            whichplots=iplot, ...=...)
-      plot(densitydiffs_positive, ramp="red", 
+      plot(densitydiffs_positive, ramp=positive_ramp, 
            whichplots=iplot, add=TRUE, linecol=NA, ...=...)
-      # for(ilines in seq_along(riverdensity$rivers$lines)) {
-      #   lines(riverdensity$rivers$lines[[ilines]], col=NA)
+      # for(ilines in seq_along(x$rivers$lines)) {
+      #   lines(x$rivers$lines[[ilines]], col=NA)
       # }
     }
   }
 }
-# densityanomaly(riverdensity=Gulk_dens, parmfrow=c(2,5))
+
 
 
 #' Plot Points Used for Kernel Density

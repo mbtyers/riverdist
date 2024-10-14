@@ -430,6 +430,17 @@ plot(x=fakefish_density, ramp="blue", dark=0.85, maxlwd=15,
                  whichplots=c(1:8,10))
 ```
 
+**Calculating and plotting kernel density anomaly using `densityanomaly()`**
+
+A function is also provided to calculate and plot the kernel density anomaly, which is defined as the difference between kernel density for a given survey at a given location and the mean kernel density calculated for all surveys at that location.  The intent is to graphically highlight regions for which density is higher or lower for a specific survey, as compared to the full study.
+
+```{r,fig.width=7.5,fig.height=10,echo=FALSE}
+data(fakefish_density)
+par(mfrow=c(3,3))
+densityanomaly(x=fakefish_density, maxlwd=15,
+                 whichplots=c(1:8,10))
+```
+
 
 <a name="Spatial data spread for each flight event"></a>
 

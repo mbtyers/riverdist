@@ -439,6 +439,8 @@ test_that("riverdensity", {
   expect_equal(length(fakesubdens$densities),7)
   expect_equal(length(fakesubdens$densities[[1]]),14)
   expect_equal(sum(unlist(fakesubdens$densities)),0.04737915,tolerance=0.000001)
+  expect_silent(plot(fakesubdens))
+  expect_silent(densityanomaly(fakesubdens))
 })
 
 test_that("addverts", {

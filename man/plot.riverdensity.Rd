@@ -14,7 +14,7 @@
   maxlwd = 10,
   pwr = 0.7,
   scalebyN = TRUE,
-  ramp = "grey",
+  ramp = c("grey", "gray", "red", "green", "blue", "heat", "stoplight", "rainbow"),
   lwd = 1,
   linecol = NULL,
   denscol = NULL,
@@ -129,7 +129,7 @@ Gulk_dens <- makeriverdensity(seg=fakefish$seg, vert=fakefish$vert, rivers=Gulk,
 plot(x=Gulk_dens)
 }
 \seealso{
-\link{makeriverdensity}, \link{plotriverdensitypoints}
+\link{makeriverdensity}, \link{densityanomaly}, \link{plotriverdensitypoints}
 }
 \author{
 Matt Tyers

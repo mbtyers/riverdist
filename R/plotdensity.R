@@ -375,7 +375,7 @@ plot.riverdensity <- function(x, whichplots=NULL, points=TRUE, bycol=TRUE, bylwd
 #' for more details).  Defaults to \code{"blue"}.
 #' @param positive_ramp Color ramp to use for negative anomaly (see \link{plot.riverdensity}
 #' for more details).  Defaults to \code{"red"}.
-#' @param parmrow Optional argument to \code{par(mfrow)=}, which may be useful if
+#' @param parmfrow Optional argument to \code{par(mfrow)=}, which may be useful if
 #' \code{method="both"}.  Defaults to \code{NULL}.
 #' @param ... Additional arguments to \link{plot.riverdensity}.
 #' @return \code{NULL}

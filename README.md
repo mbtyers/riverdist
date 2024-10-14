@@ -19,7 +19,7 @@ Note that the current version of 'riverdist' (>= 0.16.0) is no longer built on '
 
 * `plot()` when used with a river network object produces a simple map of the network, with segments labeled and differentiated by color or line type.
 
-* `xy2segvert()` converts a set of X-Y coordinates to river network coordinates by "snapping" each point to the nearest river vertex.  `pointshp2segvert()` does the same, with the input being a point shapefile.
+* `xy2segvert()` converts a set of X-Y coordinates to river network coordinates by "snapping" each point to the nearest river vertex.  `pointshp2segvert()` does the same, with the input being a point shapefile.  `segvert2xy()` is its near-opposite, and extracts X-Y coordinates corresponding to vectors of segment and vertex.
 
 * `riverdistance()`, `riverdirection()`, and `upstream()` return the network distance, the travel direction (upstream or downstream), and the directional (upstream) distance between two river locations, respectively.  Options are included for different handling of locations that are flow-connected or flow-separate, as well as net directional distance when locations are flow-separate.
 
@@ -33,7 +33,7 @@ Several automated analyses are built in.  In most cases, there is a direction or
 
 Summaries and plots are also available at the dataset level, in addition to individuals, which is likely to be much more useful to analysis.
 
-* `makeriverdensity()` calculates a kernel density object which can be plotted with `plot()` to create a kernel density map.  Depending on the usage of `makeriverdensity()`, this may be a sequence of maps.
+* `makeriverdensity()` calculates a kernel density object which can be plotted with `plot()` to create a kernel density map.  Depending on the usage of `makeriverdensity()`, this may be a sequence of maps.  Differences in kernel density for specific surveys as compared to overall density can be plotted with `densityanomaly()`.
 * `kfunc()` provides plotting of empirical k-functions for each survey event, giving evidence of clustering or dispersal behavior.
 * `plotseq()` produces a plot of a distance sequence such as that returned from `mouthdistbysurvey()` providing plots of overall distance or upriver position for each survey event.
 * `matbysurveylist()` produces a list of matrices of distances or upstream distances between all survey events, for each individual.  This can be plotted using `plotmatbysurveylist()`, creating a summary plot for all individuals.

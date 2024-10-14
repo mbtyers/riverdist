@@ -1,3 +1,17 @@
+# 'riverdist' 0.17.0 (Oct 14, 2024)
+
+### Added capabilities:
+
+* `densityanomaly()` added, to highlight differences between kernel density for individual surveys and mean kernel density across all surveys
+
+* `segvert2xy()` added, to extract XY coordinates from vectors of segment and vertex
+
+* `xy2segvert()` and `ptshp2segvert()` now include columns `snap_x` and `snap_y`, corresponding to the XY coordinates of each point, "snapped" to the river network.
+
+### Minor bug fix: 
+
+* fixed scale bar in `plot.riverdensity()`
+
 # 'riverdist' 0.16.3 (Jan 05, 2024)
 
 * Fixed a bug in `riverpoints()`

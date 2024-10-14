@@ -35,10 +35,10 @@ for more details).  Defaults to \code{"blue"}.}
 \item{positive_ramp}{Color ramp to use for negative anomaly (see \link{plot.riverdensity}
 for more details).  Defaults to \code{"red"}.}
 
-\item{...}{Additional arguments to \link{plot.riverdensity}.}
-
-\item{parmrow}{Optional argument to \code{par(mfrow)=}, which may be useful if
+\item{parmfrow}{Optional argument to \code{par(mfrow)=}, which may be useful if
 \code{method="both"}.  Defaults to \code{NULL}.}
+
+\item{...}{Additional arguments to \link{plot.riverdensity}.}
 }
 \value{
 \code{NULL}

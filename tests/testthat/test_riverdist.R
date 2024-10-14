@@ -441,6 +441,10 @@ test_that("riverdensity", {
   expect_equal(sum(unlist(fakesubdens$densities)),0.04737915,tolerance=0.000001)
   expect_silent(plot(fakesubdens))
   expect_silent(densityanomaly(fakesubdens))
+  expect_silent(densityanomaly(fakesubdens, whichplots = 1:2, parmfrow=1:2))
+  expect_silent(densityanomaly(fakesubdens, whichplots = 1:2, method="both"))
+  expect_silent(densityanomaly(fakesubdens, whichplots = 1:2, method="positive"))
+  expect_silent(densityanomaly(fakesubdens, whichplots = 1:2, method="negative"))
 })
 
 test_that("addverts", {

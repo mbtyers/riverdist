@@ -3,13 +3,13 @@
 * I have read and agree to all CRAN policies.
 
 ## Test environments
-* local Windows 10 install, R 4.3.1
+* local Windows 10 install, R 4.4.1
 * winbuilder R-Devel
-* winbuilder R-Release 4.3.2
-* macbuilder R-Release 4.3.0
+* winbuilder R-Release 4.4.1
+* macbuilder R-Release 4.4.0
 
 ## R CMD check results
 * There are no ERRORs, WARNINGs, or NOTEs.
 
 ## Downstream dependencies
-* This is a fairly new package and there are not yet any downstream dependencies.
+* There are no known downstream dependencies.

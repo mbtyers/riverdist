@@ -8,10 +8,10 @@ Authors@R: person("Matt", "Tyers", email = "matttyersstat@gmail.com",
     role = c("aut", "cre"))
 Maintainer: Matt Tyers <matttyersstat@gmail.com>
 Description: Reads river network shape files and computes network distances.
-    Also included are a variety of computation and graphical tools designed 
-    for fisheries telemetry research, such as minimum home range, kernel density 
-    estimation, and clustering analysis using empirical k-functions with 
-    a bootstrap envelope.  Tools are also provided for editing the river 
+    Also included are a variety of computation and graphical tools designed
+    for fisheries telemetry research, such as minimum home range, kernel density
+    estimation, and clustering analysis using empirical k-functions with
+    a bootstrap envelope.  Tools are also provided for editing the river
     networks, meaning there is no reliance on external software.
 License: GPL-2
 Depends:
@@ -22,6 +22,7 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
+    tibble,
     testthat
 VignetteBuilder: knitr
 LazyData: TRUE

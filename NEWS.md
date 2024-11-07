@@ -1,3 +1,7 @@
+# 'riverdist' 0.17.1 (Nov 07, 2024)
+
+* Patch to fix waldo dependency
+
 # 'riverdist' 0.17.0 (Oct 14, 2024)
 
 ### Added capabilities:
